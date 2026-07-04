@@ -1,0 +1,227 @@
+aid: digitail
+url: https://raw.githubusercontent.com/api-evangelist/digitail/refs/heads/main/apis.yml
+name: Digitail
+kind: company
+description: Digitail is a cloud-based, AI-native veterinary practice management
+  software (PIMS) that consolidates scheduling, electronic medical records, AI SOAP
+  dictation, client communication, billing, inventory, and reporting into one
+  platform, paired with a Pet Parent mobile app for booking, records access, and
+  payments. The Digitail Open API is a documented REST API (base
+  https://developer.digitail.io/api/v1) secured with OAuth 2.0 authorization-code
+  grant with PKCE, giving clinics, technology partners, and ecosystem players
+  (labs, insurers, pharmacies, telemedicine, analytics) programmatic, real-time
+  access to clinic data. API credentials are provisioned via an access
+  registration; Open API access is included across Digitail subscription plans.
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+tags:
+- Veterinary
+- PIMS
+- Practice Management
+- Pets
+- Healthcare
+- Scheduling
+- Billing
+- SaaS
+created: '2026-07-04'
+modified: '2026-07-04'
+specificationVersion: '0.19'
+apis:
+- aid: digitail:digitail-pets-api
+  name: Digitail Pets API
+  tags:
+  - Pets
+  - Patients
+  - Breeds
+  - Species
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://documentation.digitail.io/list-all-pets
+  baseURL: https://developer.digitail.io/api/v1
+  properties:
+  - url: https://documentation.digitail.io/
+    type: Documentation
+  - url: https://documentation.digitail.io/list-all-pets
+    type: APIReference
+  - url: openapi/digitail-openapi.yml
+    type: OpenAPI
+  description: List, retrieve, and manage patient records (pets) and their archive,
+    along with supporting reference data - species, breeds, and blood types.
+    Confirmed endpoints include GET /pets and GET /pets/{id}.
+- aid: digitail:digitail-pet-parents-clients-api
+  name: Digitail Pet Parents and Clients API
+  tags:
+  - Pet Parents
+  - Clients
+  - Owners
+  - CRM
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://documentation.digitail.io/
+  baseURL: https://developer.digitail.io/api/v1
+  properties:
+  - url: https://documentation.digitail.io/
+    type: Documentation
+  - url: openapi/digitail-openapi.yml
+    type: OpenAPI
+  description: Manage pet parents (owners) and client records - the people and
+    accounts a clinic bills and communicates with - and their association to pets
+    and clinics.
+- aid: digitail:digitail-appointments-api
+  name: Digitail Appointments API
+  tags:
+  - Appointments
+  - Scheduling
+  - Visit Types
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://documentation.digitail.io/get-all-appointments
+  baseURL: https://developer.digitail.io/api/v1
+  properties:
+  - url: https://documentation.digitail.io/get-all-appointments
+    type: APIReference
+  - url: openapi/digitail-openapi.yml
+    type: OpenAPI
+  description: List and retrieve appointments, change appointment status, and read
+    visit types for scheduling integrations. Confirmed endpoints include GET
+    /appointments, GET /appointments/{id}, and PUT /appointment/{id}/change-status.
+- aid: digitail:digitail-clinical-records-api
+  name: Digitail Clinical Records API
+  tags:
+  - Medical Records
+  - Consultations
+  - Prescriptions
+  - Medication
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://documentation.digitail.io/
+  baseURL: https://developer.digitail.io/api/v1
+  properties:
+  - url: https://documentation.digitail.io/
+    type: Documentation
+  - url: openapi/digitail-openapi.yml
+    type: OpenAPI
+  description: Read and manage clinical records - medical records, prescriptions,
+    medications, periodical treatments, and reminder protocol usages - that make up
+    a patient's health history.
+- aid: digitail:digitail-labs-api
+  name: Digitail Labs API
+  tags:
+  - Labs
+  - Diagnostics
+  - Results
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://documentation.digitail.io/
+  baseURL: https://developer.digitail.io/api/v1
+  properties:
+  - url: https://documentation.digitail.io/
+    type: Documentation
+  - url: openapi/digitail-openapi.yml
+    type: OpenAPI
+  description: Push and retrieve laboratory data - diagnostic orders and results -
+    enabling reference labs and in-house analyzers to sync results into the
+    patient record.
+- aid: digitail:digitail-billing-api
+  name: Digitail Billing and Invoicing API
+  tags:
+  - Invoices
+  - Charges
+  - Sales
+  - Estimates
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://documentation.digitail.io/
+  baseURL: https://developer.digitail.io/api/v1
+  properties:
+  - url: https://documentation.digitail.io/
+    type: Documentation
+  - url: openapi/digitail-openapi.yml
+    type: OpenAPI
+  description: Read and sync financial data - invoices, charges, sales, patient
+    estimates, and service packages - for accounting, payments, and revenue
+    reporting integrations.
+- aid: digitail:digitail-clinics-staff-api
+  name: Digitail Clinics and Staff API
+  tags:
+  - Clinics
+  - Vets
+  - Roles
+  - Organization
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://documentation.digitail.io/retrieve-a-vet
+  baseURL: https://developer.digitail.io/api/v1
+  properties:
+  - url: https://documentation.digitail.io/retrieve-a-vet
+    type: APIReference
+  - url: https://documentation.digitail.io/retrieve-a-clinic
+    type: APIReference
+  - url: openapi/digitail-openapi.yml
+    type: OpenAPI
+  description: Read clinic, veterinarian, and role records - including public
+    clinic and public vet directories - and the logged-in user context. Confirmed
+    endpoints include GET /vets/{id} and GET /clinic/{id}.
+- aid: digitail:digitail-client-communication-api
+  name: Digitail Client Communication API
+  tags:
+  - Communication
+  - Messaging
+  - Reminders
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://documentation.digitail.io/
+  baseURL: https://developer.digitail.io/api/v1
+  properties:
+  - url: https://documentation.digitail.io/
+    type: Documentation
+  - url: openapi/digitail-openapi.yml
+    type: OpenAPI
+  description: Send and manage client communications - SMS, chat, and email
+    messaging with pet parents - for reminder, marketing, and telemedicine
+    workflows.
+- aid: digitail:digitail-files-api
+  name: Digitail Files API
+  tags:
+  - Files
+  - Attachments
+  - Documents
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://documentation.digitail.io/
+  baseURL: https://developer.digitail.io/api/v1
+  properties:
+  - url: https://documentation.digitail.io/
+    type: Documentation
+  - url: openapi/digitail-openapi.yml
+    type: OpenAPI
+  description: Upload, attach, and retrieve files and documents - such as imaging,
+    scanned records, and attachments - tied to pets, clients, and records.
+- aid: digitail:digitail-reports-api
+  name: Digitail Reports API
+  tags:
+  - Reports
+  - Analytics
+  - Tags
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://documentation.digitail.io/
+  baseURL: https://developer.digitail.io/api/v1
+  properties:
+  - url: https://documentation.digitail.io/
+    type: Documentation
+  - url: openapi/digitail-openapi.yml
+    type: OpenAPI
+  description: Retrieve reporting data and tags for building dashboards and
+    financial, operational, and performance analytics on top of clinic data.
+common:
+- type: LinkedIn
+  url: https://www.linkedin.com/company/digitail-veterinary-software/
+- type: Website
+  url: https://digitail.com/
+- type: Documentation
+  url: https://documentation.digitail.io/
+- type: SignUp
+  url: https://digitail.com/api/access
+- type: Plans
+  url: plans/digitail-plans-pricing.yml
+- type: RateLimits
+  url: rate-limits/digitail-rate-limits.yml
+- type: FinOps
+  url: finops/digitail-finops.yml
+- type: Integrations
+  url: https://digitail.com/integrations/
+- url: https://digitail.com/blog/
+  type: Blog
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

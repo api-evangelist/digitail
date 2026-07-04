@@ -1,0 +1,130 @@
+aid: digitail
+name: Digitail
+review:
+  question: Does Digitail expose a documented public WebSocket API?
+  answer: false
+  date: '2026-07-04'
+  reviewer: API Evangelist
+  asyncapiSpecCreated: false
+  asyncapiScopeNote: |
+    No AsyncAPI document was authored. Digitail's public developer surface (the
+    Open API at https://developer.digitail.io/api/v1) is request/response REST
+    over HTTPS, authenticated with OAuth 2.0 authorization-code + PKCE. No
+    server-push transport (WebSocket or SSE) is documented on Digitail's own
+    API. Digitail markets real-time client communication (SMS, chat, email) and
+    a live "flowboard," but those are product features; there is no documented
+    public WebSocket or streaming endpoint to model.
+findings:
+  summary: |
+    Digitail exposes a real, publicly documented REST API - not a WebSocket API.
+    The Open API is documented at https://documentation.digitail.io/ with a base
+    URL of https://developer.digitail.io/api/v1. Requests use JSON
+    (accept/content-type: application/json), page/per_page pagination, and a
+    documented 200 requests-per-minute rate limit. Authentication is OAuth 2.0
+    authorization-code grant with PKCE: authorization at
+    https://vet.digitail.io/oauth/authorize and token exchange at
+    https://vet.digitail.io/oauth/token, returning a long-lived bearer access
+    token plus a refresh token. Credentials are provisioned through an API
+    access registration (digitail.com/api/access); "Open API access" is listed
+    across Digitail's subscription plans. No WebSocket (ws:// or wss://) or
+    other bidirectional/streaming endpoint is documented on Digitail's own API.
+  accessModel: |
+    Publicly documented but credential-gated. Anyone can read the full API
+    reference, but obtaining OAuth client credentials requires completing an
+    API access registration and being a Digitail customer or approved
+    integration partner (labs, insurers, pharmacies, telemedicine, analytics).
+  transports:
+    - protocol: REST
+      scheme: https
+      baseURL: https://developer.digitail.io/api/v1
+      documented: true
+      note: JSON request/response REST, OAuth 2.0 bearer auth, page/per_page pagination, 200 req/min.
+    - protocol: OAuth 2.0
+      scheme: https
+      documented: true
+      note: Authorization-code grant with PKCE. authorize + token endpoints on vet.digitail.io.
+    - protocol: WebSocket
+      scheme: wss
+      documented: false
+      note: No WebSocket endpoint is documented anywhere in the Digitail API reference as of the review date.
+  endpointsConfirmedRest:
+    - GET https://developer.digitail.io/api/v1/pets
+    - GET https://developer.digitail.io/api/v1/pets/{id}
+    - GET https://developer.digitail.io/api/v1/appointments
+    - GET https://developer.digitail.io/api/v1/appointments/{id}
+    - PUT https://developer.digitail.io/api/v1/appointment/{id}/change-status
+    - GET https://developer.digitail.io/api/v1/vets/{id}
+    - GET https://developer.digitail.io/api/v1/clinic/{id}
+  documentedResourceCategories:
+    - Appointments
+    - BloodTypes
+    - Breeds
+    - Charges
+    - Clinics
+    - Client Communication
+    - Files
+    - Invoices
+    - Labs
+    - Records
+    - Pets Archive
+    - Pet Parents
+    - Pets
+    - Medication
+    - Periodical Treatments
+    - Prescriptions
+    - Reports
+    - Sales
+    - Service Packages
+    - Species
+    - Tags
+    - Vets
+    - Roles
+    - Public Clinics
+    - Public Vets
+    - Reminder Protocol Usages
+    - Patient Estimates
+    - Clients
+    - Visit Types
+  endpointsModeled: |
+    The apis.yml groups the documented resource categories above into ten
+    logical APIs. Beyond the confirmed endpoints listed under
+    endpointsConfirmedRest, the per-resource CRUD operations in the OpenAPI are
+    modeled from the documented resource list and standard REST + page/per_page
+    conventions; they are flagged with x-endpoints-modeled in
+    openapi/digitail-openapi.yml. No request/response schemas were fabricated
+    beyond the confirmed pagination and auth behavior.
+sources:
+  - url: https://documentation.digitail.io/
+    type: Documentation
+    note: API overview; resource category sidebar; JSON, pagination, 200 req/min.
+  - url: https://documentation.digitail.io/authentication
+    type: Documentation
+    note: OAuth 2.0 authorization-code + PKCE; authorize/token endpoints on vet.digitail.io; API access registration.
+  - url: https://documentation.digitail.io/list-all-pets
+    type: APIReference
+    note: GET /pets with page/per_page and filter[clinic_id]; confirms base https://developer.digitail.io/api/v1.
+  - url: https://documentation.digitail.io/get-all-appointments
+    type: APIReference
+    note: GET /appointments; retrieve and change-status endpoints.
+  - url: https://documentation.digitail.io/retrieve-a-vet
+    type: APIReference
+    note: GET /vets/{id}.
+  - url: https://documentation.digitail.io/retrieve-a-clinic
+    type: APIReference
+    note: GET /clinic/{id}.
+  - url: https://digitail.com/plans/
+    type: Pricing
+    note: Mobile / Growth / Growth AI / Enterprise tiers; Open API access included across plans.
+  - url: https://digitail.com/
+    type: Website
+    note: Cloud AI-native veterinary PIMS plus Pet Parent app.
+actions:
+  asyncapiPath: null
+  apisYmlUpdated: true
+  reason: |
+    Digitail's own public API is request/response REST secured with OAuth 2.0
+    (authorization-code + PKCE). No WebSocket or server-push transport is
+    documented, so no AsyncAPI document was created. A modeled OpenAPI was
+    authored covering the documented resource categories, with confirmed
+    endpoints verified against the public reference and remaining operations
+    flagged as modeled.

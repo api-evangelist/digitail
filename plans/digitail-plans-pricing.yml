@@ -1,0 +1,129 @@
+specification: API Commons Plans
+specificationVersion: '0.1'
+schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main/schema/api-commons.yml#/$defs/Plans
+provider: Digitail
+providerId: digitail
+created: '2026-07-04'
+modified: '2026-07-04'
+reconciled: false
+tags:
+- Veterinary
+- PIMS
+- Practice Management
+- SaaS
+- Plans
+description: >-
+  Digitail is sold as a per-practice SaaS subscription, not as usage-metered API
+  access. Digitail publishes four tiers - Mobile, Growth, Growth AI, and
+  Enterprise - differentiated by product features (AI workflows, communication,
+  reporting) rather than by API volume. Specific monthly per-practice prices are
+  not published on the plans page; Digitail directs prospects to book a demo or
+  contact sales. "Open API access" and integrations are listed as included
+  across the standard plans, so API use is bundled with the subscription rather
+  than priced separately. API credentials are provisioned through an API access
+  registration at digitail.com/api/access.
+notes: >-
+  Prices are not publicly listed; obtain current per-practice pricing from
+  Digitail sales during reconciliation. API access is credential-gated but not
+  separately metered or billed as of the review date.
+sources:
+- https://digitail.com/plans/
+- https://digitail.com/
+- https://documentation.digitail.io/
+- https://digitail.com/api/access
+plans:
+- id: digitail-mobile
+  name: Mobile
+  type: subscription
+  description: >-
+    Simple, essential tools to get a mobile veterinary clinic running quickly.
+    Includes core practice management, in-house data migration, 1:1 onboarding,
+    24/7 support, and Open API access + integrations.
+  entries:
+  - label: Per-Practice Subscription
+    name: mobile_subscription
+    type: flat
+    metric: subscription
+    limit: -1
+    timeFrame: month
+    geo: global
+    unit: 1
+    price: contact sales (not publicly listed)
+    userMultiplied: false
+  elements:
+  - name: Core Practice Management
+  - name: Open API Access
+  - name: Integrations
+  - name: 24/7 Support
+- id: digitail-growth
+  name: Growth
+  type: subscription
+  description: >-
+    Everything a modern brick-and-mortar practice needs to operate and grow -
+    scheduling, medical records, billing, communication, and reporting - plus
+    Open API access and integrations.
+  entries:
+  - label: Per-Practice Subscription
+    name: growth_subscription
+    type: flat
+    metric: subscription
+    limit: -1
+    timeFrame: month
+    geo: global
+    unit: 1
+    price: contact sales (not publicly listed)
+    userMultiplied: false
+  elements:
+  - name: Scheduling and Records
+  - name: Billing and Reporting
+  - name: Client Communication
+  - name: Open API Access
+  - name: Integrations
+- id: digitail-growth-ai
+  name: Growth AI
+  type: subscription
+  description: >-
+    The Growth feature set with AI workflows - AI SOAP dictation and automation -
+    supercharging the entire practice, plus Open API access and integrations.
+  entries:
+  - label: Per-Practice Subscription
+    name: growth_ai_subscription
+    type: flat
+    metric: subscription
+    limit: -1
+    timeFrame: month
+    geo: global
+    unit: 1
+    price: contact sales (not publicly listed)
+    userMultiplied: false
+  elements:
+  - name: AI Workflows and SOAP Dictation
+  - name: Scheduling and Records
+  - name: Billing and Reporting
+  - name: Open API Access
+  - name: Integrations
+- id: digitail-enterprise
+  name: Enterprise
+  type: enterprise
+  description: >-
+    Custom plan for multi-location groups and hospital enterprises with
+    negotiated pricing, onboarding, and support. Contact Digitail sales.
+  entries:
+  - label: Enterprise Agreement
+    name: enterprise
+    type: flat
+    metric: contract
+    limit: -1
+    timeFrame: year
+    geo: global
+    unit: 1
+    price: contact sales
+    userMultiplied: false
+  elements:
+  - name: Multi-Location Management
+  - name: Custom Onboarding
+  - name: Open API Access
+  - name: Priority Support
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

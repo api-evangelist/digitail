@@ -1,0 +1,47 @@
+specification: API Commons FinOps
+specificationVersion: '0.1'
+schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main/schema/api-commons.yml#/$defs/FinOps
+provider: Digitail
+providerId: digitail
+created: '2026-07-04'
+modified: '2026-07-04'
+reconciled: false
+tags:
+- Veterinary
+- PIMS
+- FinOps
+- Cost Management
+description: >-
+  Digitail's Open API is not usage-metered or separately billed. "Open API
+  access" is bundled into the per-practice SaaS subscription (Mobile, Growth,
+  Growth AI, Enterprise), so there is no per-call or per-token cost to forecast -
+  API cost is subsumed by the practice's monthly plan. The relevant FinOps
+  levers are therefore subscription-tier selection and staying within the
+  operational 200 requests-per-minute rate limit rather than metered spend.
+notes: >-
+  No metered API pricing exists to model. FinOps attention centers on choosing
+  the right per-practice tier and designing integrations to respect the
+  200 req/min limit (pagination, caching, incremental sync) rather than
+  controlling per-request spend.
+sources:
+- https://digitail.com/plans/
+- https://documentation.digitail.io/
+- https://digitail.com/api/access
+model:
+  billing: subscription
+  apiMetered: false
+  unit: per-practice subscription
+  freeTier: false
+  notes: >-
+    API access is included with the subscription; no incremental API charges
+    are published. Cost is driven by plan tier and number of practices/locations.
+practices:
+- name: Right-Size the Subscription Tier
+  description: Match the plan (Mobile / Growth / Growth AI / Enterprise) to the practice's feature and location needs, since API access rides along with the subscription.
+- name: Respect the Rate Limit
+  description: Design integrations to stay within 200 requests/minute using pagination, incremental sync, and caching to avoid throttling rather than incurring cost.
+- name: Reuse Tokens
+  description: Reuse the long-lived bearer access token and refresh it rather than re-running the authorization flow, reducing auth overhead.
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

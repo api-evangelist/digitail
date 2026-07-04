@@ -1,0 +1,48 @@
+specification: API Commons Rate Limits
+specificationVersion: '0.1'
+schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main/schema/api-commons.yml#/$defs/RateLimits
+provider: Digitail
+providerId: digitail
+created: '2026-07-04'
+modified: '2026-07-04'
+reconciled: false
+tags:
+- Veterinary
+- PIMS
+- Rate Limiting
+- Quotas
+description: >-
+  The Digitail Open API documents a rate limit of 200 requests per minute.
+  Requests are paginated with page and per_page (default 15) query parameters,
+  so large data sets should be walked page by page within the per-minute
+  budget. No separate daily quota or per-endpoint numeric limits are published
+  as of the review date beyond the 200 requests-per-minute ceiling.
+notes: >-
+  Verify whether the 200 req/min limit is per client, per clinic, or per token
+  during reconciliation. Implement exponential backoff with jitter and honor
+  Retry-After on 429 responses.
+sources:
+- https://documentation.digitail.io/
+- https://documentation.digitail.io/authentication
+- https://documentation.digitail.io/list-all-pets
+responseCodes:
+  throttled: 429
+limits:
+- name: API Requests
+  scope: account
+  metric: requests
+  limit: 200 per minute
+  notes: Documented ceiling of 200 requests per minute across the Open API.
+- name: Pagination Page Size
+  scope: request
+  metric: records
+  limit: per_page (default 15)
+  notes: Results are paginated via page and per_page query parameters.
+policies:
+- name: Backoff Strategy
+  description: Clients should implement exponential backoff with jitter and honor Retry-After on 429 (Too Many Requests) responses.
+- name: Pagination Walking
+  description: Retrieve large collections by iterating page/per_page rather than requesting oversized pages, staying within the 200 req/min budget.
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com
