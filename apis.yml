@@ -204,6 +204,10 @@ apis:
   description: Retrieve reporting data and tags for building dashboards and
     financial, operational, and performance analytics on top of clinic data.
 common:
+- type: DomainSecurity
+  url: security/digitail-domain-security.yml
+- type: Authentication
+  url: authentication/digitail-authentication.yml
 - type: OAuthScopes
   url: scopes/digitail-scopes.yml
 - type: LinkedIn
