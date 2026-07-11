@@ -204,6 +204,8 @@ apis:
   description: Retrieve reporting data and tags for building dashboards and
     financial, operational, and performance analytics on top of clinic data.
 common:
+- type: OAuthScopes
+  url: scopes/digitail-scopes.yml
 - type: LinkedIn
   url: https://www.linkedin.com/company/digitail-veterinary-software/
 - type: Website

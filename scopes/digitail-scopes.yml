@@ -1,0 +1,17 @@
+generated: '2026-07-11'
+method: derived
+source: openapi/digitail-openapi.yml
+docs: https://documentation.digitail.io/authentication
+note: Digitail's OAuth 2.0 authorization-code-with-PKCE flow does not use or document
+  any scopes; access is granted per approved application registration
+  (https://documentation.digitail.io/authentication).
+schemes:
+- name: oauth2
+  source: openapi/digitail-openapi.yml
+  flows:
+  - flow: authorizationCode
+    authorizationUrl: https://vet.digitail.io/oauth/authorize
+    tokenUrl: https://vet.digitail.io/oauth/token
+  description: OAuth 2.0 authorization-code grant with PKCE. Bearer access token is long-lived;
+    a refresh token is also returned.
+scopes: []
