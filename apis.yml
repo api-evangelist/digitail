@@ -204,6 +204,8 @@ apis:
   description: Retrieve reporting data and tags for building dashboards and
     financial, operational, and performance analytics on top of clinic data.
 common:
+- type: AgenticAccess
+  url: agentic-access/digitail-agentic-access.yml
 - type: DomainSecurity
   url: security/digitail-domain-security.yml
 - type: Authentication
