@@ -1,0 +1,62 @@
+openapi: 3.0.3
+info:
+  title: Digitail Open Appointments Clinics API
+  version: v1
+  description: Modeled OpenAPI for the Digitail Open API, a documented REST API for the Digitail cloud veterinary practice management platform (PIMS). The base URL, OAuth 2.0 authorization-code + PKCE authentication, JSON media types, page/per_page pagination, and the 200 requests-per-minute rate limit are taken from the public documentation at https://documentation.digitail.io/. Endpoints marked with x-endpoints-modeled are inferred from the documented resource categories and standard REST conventions rather than verified against per-endpoint reference pages. Confirmed endpoints (pets, appointments, vets, clinics) were verified against the public reference. Obtain OAuth client credentials via the API access registration at https://digitail.com/api/access.
+  contact:
+    name: API Evangelist
+    email: kin@apievangelist.com
+  x-endpoints-modeled: true
+servers:
+- url: https://developer.digitail.io/api/v1
+  description: Digitail Open API v1
+security:
+- oauth2: []
+tags:
+- name: Clinics
+paths:
+  /clinic/{id}:
+    get:
+      operationId: retrieveClinic
+      summary: Retrieve a clinic
+      description: Retrieve a single clinic record. Confirmed endpoint.
+      tags:
+      - Clinics
+      parameters:
+      - $ref: '#/components/parameters/idPath'
+      responses:
+        '200':
+          $ref: '#/components/responses/Resource'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+components:
+  responses:
+    Unauthorized:
+      description: Missing or invalid OAuth 2.0 bearer token.
+    Resource:
+      description: A single resource.
+      content:
+        application/json:
+          schema:
+            type: object
+  parameters:
+    idPath:
+      name: id
+      in: path
+      description: Resource identifier.
+      required: true
+      schema:
+        type: integer
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      description: OAuth 2.0 authorization-code grant with PKCE. Bearer access token is long-lived; a refresh token is also returned.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://vet.digitail.io/oauth/authorize
+          tokenUrl: https://vet.digitail.io/oauth/token
+          refreshUrl: https://vet.digitail.io/oauth/token
+          scopes: {}
+externalDocs:
+  description: Digitail API Documentation
+  url: https://documentation.digitail.io/

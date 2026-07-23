@@ -1,0 +1,142 @@
+openapi: 3.0.3
+info:
+  title: Digitail Open Appointments API
+  version: v1
+  description: Modeled OpenAPI for the Digitail Open API, a documented REST API for the Digitail cloud veterinary practice management platform (PIMS). The base URL, OAuth 2.0 authorization-code + PKCE authentication, JSON media types, page/per_page pagination, and the 200 requests-per-minute rate limit are taken from the public documentation at https://documentation.digitail.io/. Endpoints marked with x-endpoints-modeled are inferred from the documented resource categories and standard REST conventions rather than verified against per-endpoint reference pages. Confirmed endpoints (pets, appointments, vets, clinics) were verified against the public reference. Obtain OAuth client credentials via the API access registration at https://digitail.com/api/access.
+  contact:
+    name: API Evangelist
+    email: kin@apievangelist.com
+  x-endpoints-modeled: true
+servers:
+- url: https://developer.digitail.io/api/v1
+  description: Digitail Open API v1
+security:
+- oauth2: []
+tags:
+- name: Appointments
+paths:
+  /appointments:
+    get:
+      operationId: listAppointments
+      summary: Get all appointments
+      description: List appointments. Confirmed endpoint.
+      tags:
+      - Appointments
+      parameters:
+      - $ref: '#/components/parameters/page'
+      - $ref: '#/components/parameters/perPage'
+      responses:
+        '200':
+          $ref: '#/components/responses/Paginated'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+  /appointments/{id}:
+    get:
+      operationId: retrieveAppointment
+      summary: Retrieve an appointment
+      description: Retrieve a single appointment. Confirmed endpoint.
+      tags:
+      - Appointments
+      parameters:
+      - $ref: '#/components/parameters/idPath'
+      responses:
+        '200':
+          $ref: '#/components/responses/Resource'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /appointment/{id}/change-status:
+    put:
+      operationId: changeAppointmentStatus
+      summary: Change appointment status
+      description: Change the status of an appointment. Confirmed endpoint.
+      tags:
+      - Appointments
+      parameters:
+      - $ref: '#/components/parameters/idPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/Resource'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+components:
+  responses:
+    Paginated:
+      description: A paginated list of resources.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  type: object
+              meta:
+                type: object
+                properties:
+                  current_page:
+                    type: integer
+                  per_page:
+                    type: integer
+                  total:
+                    type: integer
+    Unauthorized:
+      description: Missing or invalid OAuth 2.0 bearer token.
+    Resource:
+      description: A single resource.
+      content:
+        application/json:
+          schema:
+            type: object
+    TooManyRequests:
+      description: Rate limit exceeded (200 requests per minute).
+  parameters:
+    idPath:
+      name: id
+      in: path
+      description: Resource identifier.
+      required: true
+      schema:
+        type: integer
+    perPage:
+      name: per_page
+      in: query
+      description: Results per page (default 15).
+      required: false
+      schema:
+        type: integer
+        default: 15
+        minimum: 1
+    page:
+      name: page
+      in: query
+      description: Page number (default 1).
+      required: false
+      schema:
+        type: integer
+        default: 1
+        minimum: 1
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      description: OAuth 2.0 authorization-code grant with PKCE. Bearer access token is long-lived; a refresh token is also returned.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://vet.digitail.io/oauth/authorize
+          tokenUrl: https://vet.digitail.io/oauth/token
+          refreshUrl: https://vet.digitail.io/oauth/token
+          scopes: {}
+externalDocs:
+  description: Digitail API Documentation
+  url: https://documentation.digitail.io/
