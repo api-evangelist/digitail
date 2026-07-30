@@ -12,7 +12,20 @@ description: Digitail is a cloud-based, AI-native veterinary practice management
   (labs, insurers, pharmacies, telemedicine, analytics) programmatic, real-time
   access to clinic data. API credentials are provisioned via an access
   registration; Open API access is included across Digitail subscription plans.
-image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+accessModel:
+  pricing: paid
+  onboarding: approval
+  trial: false
+  try_now: false
+  public: false
+  label: Paid · Requires approval
+  confidence: high
+  source:
+  - plans
+  - authentication
+  generated: '2026-07-22'
+  method: derived
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/digitail.png
 tags:
 - Veterinary
 - PIMS
@@ -26,183 +39,366 @@ created: '2026-07-04'
 modified: '2026-07-04'
 specificationVersion: '0.19'
 apis:
-- aid: digitail:digitail-pets-api
-  name: Digitail Pets API
-  tags:
-  - Pets
-  - Patients
-  - Breeds
-  - Species
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
-  humanURL: https://documentation.digitail.io/list-all-pets
-  baseURL: https://developer.digitail.io/api/v1
-  properties:
-  - url: https://documentation.digitail.io/
-    type: Documentation
-  - url: https://documentation.digitail.io/list-all-pets
-    type: APIReference
-  - url: openapi/digitail-openapi.yml
-    type: OpenAPI
-  description: List, retrieve, and manage patient records (pets) and their archive,
-    along with supporting reference data - species, breeds, and blood types.
-    Confirmed endpoints include GET /pets and GET /pets/{id}.
-- aid: digitail:digitail-pet-parents-clients-api
-  name: Digitail Pet Parents and Clients API
-  tags:
-  - Pet Parents
-  - Clients
-  - Owners
-  - CRM
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
-  humanURL: https://documentation.digitail.io/
-  baseURL: https://developer.digitail.io/api/v1
-  properties:
-  - url: https://documentation.digitail.io/
-    type: Documentation
-  - url: openapi/digitail-openapi.yml
-    type: OpenAPI
-  description: Manage pet parents (owners) and client records - the people and
-    accounts a clinic bills and communicates with - and their association to pets
-    and clinics.
 - aid: digitail:digitail-appointments-api
   name: Digitail Appointments API
+  description: The Appointments API from Digitail — 3 operation(s) for appointments.
+  humanURL: https://documentation.digitail.io/list-all-pets
+  baseURL: https://developer.digitail.io/api/v1
   tags:
   - Appointments
-  - Scheduling
-  - Visit Types
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
-  humanURL: https://documentation.digitail.io/get-all-appointments
-  baseURL: https://developer.digitail.io/api/v1
   properties:
-  - url: https://documentation.digitail.io/get-all-appointments
-    type: APIReference
-  - url: openapi/digitail-openapi.yml
-    type: OpenAPI
-  description: List and retrieve appointments, change appointment status, and read
-    visit types for scheduling integrations. Confirmed endpoints include GET
-    /appointments, GET /appointments/{id}, and PUT /appointment/{id}/change-status.
-- aid: digitail:digitail-clinical-records-api
-  name: Digitail Clinical Records API
-  tags:
-  - Medical Records
-  - Consultations
-  - Prescriptions
-  - Medication
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
-  humanURL: https://documentation.digitail.io/
+  - type: OpenAPI
+    url: openapi/digitail-appointments-api-openapi.yml
+  - type: Documentation
+    url: https://documentation.digitail.io/
+  - type: APIReference
+    url: https://documentation.digitail.io/list-all-pets
+  - type: APIReference
+    url: https://documentation.digitail.io/get-all-appointments
+  - type: APIReference
+    url: https://documentation.digitail.io/retrieve-a-vet
+  - type: APIReference
+    url: https://documentation.digitail.io/retrieve-a-clinic
+- aid: digitail:digitail-breeds-api
+  name: Digitail Breeds API
+  description: The Breeds API from Digitail — 1 operation(s) for breeds.
+  humanURL: https://documentation.digitail.io/list-all-pets
   baseURL: https://developer.digitail.io/api/v1
-  properties:
-  - url: https://documentation.digitail.io/
-    type: Documentation
-  - url: openapi/digitail-openapi.yml
-    type: OpenAPI
-  description: Read and manage clinical records - medical records, prescriptions,
-    medications, periodical treatments, and reminder protocol usages - that make up
-    a patient's health history.
-- aid: digitail:digitail-labs-api
-  name: Digitail Labs API
   tags:
-  - Labs
-  - Diagnostics
-  - Results
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
-  humanURL: https://documentation.digitail.io/
+  - Breeds
+  properties:
+  - type: OpenAPI
+    url: openapi/digitail-breeds-api-openapi.yml
+  - type: Documentation
+    url: https://documentation.digitail.io/
+  - type: APIReference
+    url: https://documentation.digitail.io/list-all-pets
+  - type: APIReference
+    url: https://documentation.digitail.io/get-all-appointments
+  - type: APIReference
+    url: https://documentation.digitail.io/retrieve-a-vet
+  - type: APIReference
+    url: https://documentation.digitail.io/retrieve-a-clinic
+- aid: digitail:digitail-charges-api
+  name: Digitail Charges API
+  description: The Charges API from Digitail — 1 operation(s) for charges.
+  humanURL: https://documentation.digitail.io/list-all-pets
   baseURL: https://developer.digitail.io/api/v1
-  properties:
-  - url: https://documentation.digitail.io/
-    type: Documentation
-  - url: openapi/digitail-openapi.yml
-    type: OpenAPI
-  description: Push and retrieve laboratory data - diagnostic orders and results -
-    enabling reference labs and in-house analyzers to sync results into the
-    patient record.
-- aid: digitail:digitail-billing-api
-  name: Digitail Billing and Invoicing API
   tags:
-  - Invoices
   - Charges
-  - Sales
-  - Estimates
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
-  humanURL: https://documentation.digitail.io/
-  baseURL: https://developer.digitail.io/api/v1
   properties:
-  - url: https://documentation.digitail.io/
-    type: Documentation
-  - url: openapi/digitail-openapi.yml
-    type: OpenAPI
-  description: Read and sync financial data - invoices, charges, sales, patient
-    estimates, and service packages - for accounting, payments, and revenue
-    reporting integrations.
-- aid: digitail:digitail-clinics-staff-api
-  name: Digitail Clinics and Staff API
+  - type: OpenAPI
+    url: openapi/digitail-charges-api-openapi.yml
+  - type: Documentation
+    url: https://documentation.digitail.io/
+  - type: APIReference
+    url: https://documentation.digitail.io/list-all-pets
+  - type: APIReference
+    url: https://documentation.digitail.io/get-all-appointments
+  - type: APIReference
+    url: https://documentation.digitail.io/retrieve-a-vet
+  - type: APIReference
+    url: https://documentation.digitail.io/retrieve-a-clinic
+- aid: digitail:digitail-clients-api
+  name: Digitail Clients API
+  description: The Clients API from Digitail — 1 operation(s) for clients.
+  humanURL: https://documentation.digitail.io/list-all-pets
+  baseURL: https://developer.digitail.io/api/v1
+  tags:
+  - Clients
+  properties:
+  - type: OpenAPI
+    url: openapi/digitail-clients-api-openapi.yml
+  - type: Documentation
+    url: https://documentation.digitail.io/
+  - type: APIReference
+    url: https://documentation.digitail.io/list-all-pets
+  - type: APIReference
+    url: https://documentation.digitail.io/get-all-appointments
+  - type: APIReference
+    url: https://documentation.digitail.io/retrieve-a-vet
+  - type: APIReference
+    url: https://documentation.digitail.io/retrieve-a-clinic
+- aid: digitail:digitail-clinics-api
+  name: Digitail Clinics API
+  description: The Clinics API from Digitail — 1 operation(s) for clinics.
+  humanURL: https://documentation.digitail.io/list-all-pets
+  baseURL: https://developer.digitail.io/api/v1
   tags:
   - Clinics
-  - Vets
-  - Roles
-  - Organization
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
-  humanURL: https://documentation.digitail.io/retrieve-a-vet
-  baseURL: https://developer.digitail.io/api/v1
   properties:
-  - url: https://documentation.digitail.io/retrieve-a-vet
-    type: APIReference
-  - url: https://documentation.digitail.io/retrieve-a-clinic
-    type: APIReference
-  - url: openapi/digitail-openapi.yml
-    type: OpenAPI
-  description: Read clinic, veterinarian, and role records - including public
-    clinic and public vet directories - and the logged-in user context. Confirmed
-    endpoints include GET /vets/{id} and GET /clinic/{id}.
-- aid: digitail:digitail-client-communication-api
-  name: Digitail Client Communication API
-  tags:
-  - Communication
-  - Messaging
-  - Reminders
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
-  humanURL: https://documentation.digitail.io/
-  baseURL: https://developer.digitail.io/api/v1
-  properties:
-  - url: https://documentation.digitail.io/
-    type: Documentation
-  - url: openapi/digitail-openapi.yml
-    type: OpenAPI
-  description: Send and manage client communications - SMS, chat, and email
-    messaging with pet parents - for reminder, marketing, and telemedicine
-    workflows.
+  - type: OpenAPI
+    url: openapi/digitail-clinics-api-openapi.yml
+  - type: Documentation
+    url: https://documentation.digitail.io/
+  - type: APIReference
+    url: https://documentation.digitail.io/list-all-pets
+  - type: APIReference
+    url: https://documentation.digitail.io/get-all-appointments
+  - type: APIReference
+    url: https://documentation.digitail.io/retrieve-a-vet
+  - type: APIReference
+    url: https://documentation.digitail.io/retrieve-a-clinic
 - aid: digitail:digitail-files-api
   name: Digitail Files API
+  description: The Files API from Digitail — 1 operation(s) for files.
+  humanURL: https://documentation.digitail.io/list-all-pets
+  baseURL: https://developer.digitail.io/api/v1
   tags:
   - Files
-  - Attachments
-  - Documents
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
-  humanURL: https://documentation.digitail.io/
-  baseURL: https://developer.digitail.io/api/v1
   properties:
-  - url: https://documentation.digitail.io/
-    type: Documentation
-  - url: openapi/digitail-openapi.yml
-    type: OpenAPI
-  description: Upload, attach, and retrieve files and documents - such as imaging,
-    scanned records, and attachments - tied to pets, clients, and records.
+  - type: OpenAPI
+    url: openapi/digitail-files-api-openapi.yml
+  - type: Documentation
+    url: https://documentation.digitail.io/
+  - type: APIReference
+    url: https://documentation.digitail.io/list-all-pets
+  - type: APIReference
+    url: https://documentation.digitail.io/get-all-appointments
+  - type: APIReference
+    url: https://documentation.digitail.io/retrieve-a-vet
+  - type: APIReference
+    url: https://documentation.digitail.io/retrieve-a-clinic
+- aid: digitail:digitail-invoices-api
+  name: Digitail Invoices API
+  description: The Invoices API from Digitail — 1 operation(s) for invoices.
+  humanURL: https://documentation.digitail.io/list-all-pets
+  baseURL: https://developer.digitail.io/api/v1
+  tags:
+  - Invoices
+  properties:
+  - type: OpenAPI
+    url: openapi/digitail-invoices-api-openapi.yml
+  - type: Documentation
+    url: https://documentation.digitail.io/
+  - type: APIReference
+    url: https://documentation.digitail.io/list-all-pets
+  - type: APIReference
+    url: https://documentation.digitail.io/get-all-appointments
+  - type: APIReference
+    url: https://documentation.digitail.io/retrieve-a-vet
+  - type: APIReference
+    url: https://documentation.digitail.io/retrieve-a-clinic
+- aid: digitail:digitail-labs-api
+  name: Digitail Labs API
+  description: The Labs API from Digitail — 1 operation(s) for labs.
+  humanURL: https://documentation.digitail.io/list-all-pets
+  baseURL: https://developer.digitail.io/api/v1
+  tags:
+  - Labs
+  properties:
+  - type: OpenAPI
+    url: openapi/digitail-labs-api-openapi.yml
+  - type: Documentation
+    url: https://documentation.digitail.io/
+  - type: APIReference
+    url: https://documentation.digitail.io/list-all-pets
+  - type: APIReference
+    url: https://documentation.digitail.io/get-all-appointments
+  - type: APIReference
+    url: https://documentation.digitail.io/retrieve-a-vet
+  - type: APIReference
+    url: https://documentation.digitail.io/retrieve-a-clinic
+- aid: digitail:digitail-medication-api
+  name: Digitail Medication API
+  description: The Medication API from Digitail — 1 operation(s) for medication.
+  humanURL: https://documentation.digitail.io/list-all-pets
+  baseURL: https://developer.digitail.io/api/v1
+  tags:
+  - Medication
+  properties:
+  - type: OpenAPI
+    url: openapi/digitail-medication-api-openapi.yml
+  - type: Documentation
+    url: https://documentation.digitail.io/
+  - type: APIReference
+    url: https://documentation.digitail.io/list-all-pets
+  - type: APIReference
+    url: https://documentation.digitail.io/get-all-appointments
+  - type: APIReference
+    url: https://documentation.digitail.io/retrieve-a-vet
+  - type: APIReference
+    url: https://documentation.digitail.io/retrieve-a-clinic
+- aid: digitail:digitail-pet-parents-api
+  name: Digitail Pet Parents API
+  description: The Pet Parents API from Digitail — 1 operation(s) for pet parents.
+  humanURL: https://documentation.digitail.io/list-all-pets
+  baseURL: https://developer.digitail.io/api/v1
+  tags:
+  - Pet Parents
+  properties:
+  - type: OpenAPI
+    url: openapi/digitail-pet-parents-api-openapi.yml
+  - type: Documentation
+    url: https://documentation.digitail.io/
+  - type: APIReference
+    url: https://documentation.digitail.io/list-all-pets
+  - type: APIReference
+    url: https://documentation.digitail.io/get-all-appointments
+  - type: APIReference
+    url: https://documentation.digitail.io/retrieve-a-vet
+  - type: APIReference
+    url: https://documentation.digitail.io/retrieve-a-clinic
+- aid: digitail:digitail-pets-api
+  name: Digitail Pets API
+  description: The Pets API from Digitail — 2 operation(s) for pets.
+  humanURL: https://documentation.digitail.io/list-all-pets
+  baseURL: https://developer.digitail.io/api/v1
+  tags:
+  - Pets
+  properties:
+  - type: OpenAPI
+    url: openapi/digitail-pets-api-openapi.yml
+  - type: Documentation
+    url: https://documentation.digitail.io/
+  - type: APIReference
+    url: https://documentation.digitail.io/list-all-pets
+  - type: APIReference
+    url: https://documentation.digitail.io/get-all-appointments
+  - type: APIReference
+    url: https://documentation.digitail.io/retrieve-a-vet
+  - type: APIReference
+    url: https://documentation.digitail.io/retrieve-a-clinic
+- aid: digitail:digitail-prescriptions-api
+  name: Digitail Prescriptions API
+  description: The Prescriptions API from Digitail — 1 operation(s) for prescriptions.
+  humanURL: https://documentation.digitail.io/list-all-pets
+  baseURL: https://developer.digitail.io/api/v1
+  tags:
+  - Prescriptions
+  properties:
+  - type: OpenAPI
+    url: openapi/digitail-prescriptions-api-openapi.yml
+  - type: Documentation
+    url: https://documentation.digitail.io/
+  - type: APIReference
+    url: https://documentation.digitail.io/list-all-pets
+  - type: APIReference
+    url: https://documentation.digitail.io/get-all-appointments
+  - type: APIReference
+    url: https://documentation.digitail.io/retrieve-a-vet
+  - type: APIReference
+    url: https://documentation.digitail.io/retrieve-a-clinic
+- aid: digitail:digitail-records-api
+  name: Digitail Records API
+  description: The Records API from Digitail — 1 operation(s) for records.
+  humanURL: https://documentation.digitail.io/list-all-pets
+  baseURL: https://developer.digitail.io/api/v1
+  tags:
+  - Records
+  properties:
+  - type: OpenAPI
+    url: openapi/digitail-records-api-openapi.yml
+  - type: Documentation
+    url: https://documentation.digitail.io/
+  - type: APIReference
+    url: https://documentation.digitail.io/list-all-pets
+  - type: APIReference
+    url: https://documentation.digitail.io/get-all-appointments
+  - type: APIReference
+    url: https://documentation.digitail.io/retrieve-a-vet
+  - type: APIReference
+    url: https://documentation.digitail.io/retrieve-a-clinic
 - aid: digitail:digitail-reports-api
   name: Digitail Reports API
+  description: The Reports API from Digitail — 1 operation(s) for reports.
+  humanURL: https://documentation.digitail.io/list-all-pets
+  baseURL: https://developer.digitail.io/api/v1
   tags:
   - Reports
-  - Analytics
-  - Tags
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
-  humanURL: https://documentation.digitail.io/
-  baseURL: https://developer.digitail.io/api/v1
   properties:
-  - url: https://documentation.digitail.io/
-    type: Documentation
-  - url: openapi/digitail-openapi.yml
-    type: OpenAPI
-  description: Retrieve reporting data and tags for building dashboards and
-    financial, operational, and performance analytics on top of clinic data.
+  - type: OpenAPI
+    url: openapi/digitail-reports-api-openapi.yml
+  - type: Documentation
+    url: https://documentation.digitail.io/
+  - type: APIReference
+    url: https://documentation.digitail.io/list-all-pets
+  - type: APIReference
+    url: https://documentation.digitail.io/get-all-appointments
+  - type: APIReference
+    url: https://documentation.digitail.io/retrieve-a-vet
+  - type: APIReference
+    url: https://documentation.digitail.io/retrieve-a-clinic
+- aid: digitail:digitail-sales-api
+  name: Digitail Sales API
+  description: The Sales API from Digitail — 1 operation(s) for sales.
+  humanURL: https://documentation.digitail.io/list-all-pets
+  baseURL: https://developer.digitail.io/api/v1
+  tags:
+  - Sales
+  properties:
+  - type: OpenAPI
+    url: openapi/digitail-sales-api-openapi.yml
+  - type: Documentation
+    url: https://documentation.digitail.io/
+  - type: APIReference
+    url: https://documentation.digitail.io/list-all-pets
+  - type: APIReference
+    url: https://documentation.digitail.io/get-all-appointments
+  - type: APIReference
+    url: https://documentation.digitail.io/retrieve-a-vet
+  - type: APIReference
+    url: https://documentation.digitail.io/retrieve-a-clinic
+- aid: digitail:digitail-species-api
+  name: Digitail Species API
+  description: The Species API from Digitail — 1 operation(s) for species.
+  humanURL: https://documentation.digitail.io/list-all-pets
+  baseURL: https://developer.digitail.io/api/v1
+  tags:
+  - Species
+  properties:
+  - type: OpenAPI
+    url: openapi/digitail-species-api-openapi.yml
+  - type: Documentation
+    url: https://documentation.digitail.io/
+  - type: APIReference
+    url: https://documentation.digitail.io/list-all-pets
+  - type: APIReference
+    url: https://documentation.digitail.io/get-all-appointments
+  - type: APIReference
+    url: https://documentation.digitail.io/retrieve-a-vet
+  - type: APIReference
+    url: https://documentation.digitail.io/retrieve-a-clinic
+- aid: digitail:digitail-vets-api
+  name: Digitail Vets API
+  description: The Vets API from Digitail — 1 operation(s) for vets.
+  humanURL: https://documentation.digitail.io/list-all-pets
+  baseURL: https://developer.digitail.io/api/v1
+  tags:
+  - Vets
+  properties:
+  - type: OpenAPI
+    url: openapi/digitail-vets-api-openapi.yml
+  - type: Documentation
+    url: https://documentation.digitail.io/
+  - type: APIReference
+    url: https://documentation.digitail.io/list-all-pets
+  - type: APIReference
+    url: https://documentation.digitail.io/get-all-appointments
+  - type: APIReference
+    url: https://documentation.digitail.io/retrieve-a-vet
+  - type: APIReference
+    url: https://documentation.digitail.io/retrieve-a-clinic
+- aid: digitail:digitail-visit-types-api
+  name: Digitail Visit Types API
+  description: The Visit Types API from Digitail — 1 operation(s) for visit types.
+  humanURL: https://documentation.digitail.io/list-all-pets
+  baseURL: https://developer.digitail.io/api/v1
+  tags:
+  - Visit Types
+  properties:
+  - type: OpenAPI
+    url: openapi/digitail-visit-types-api-openapi.yml
+  - type: Documentation
+    url: https://documentation.digitail.io/
+  - type: APIReference
+    url: https://documentation.digitail.io/list-all-pets
+  - type: APIReference
+    url: https://documentation.digitail.io/get-all-appointments
+  - type: APIReference
+    url: https://documentation.digitail.io/retrieve-a-vet
+  - type: APIReference
+    url: https://documentation.digitail.io/retrieve-a-clinic
 common:
 - type: AgenticAccess
   url: agentic-access/digitail-agentic-access.yml
