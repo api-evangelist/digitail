@@ -1,0 +1,153 @@
+{
+  "item": [
+    {
+      "id": "c60e8394-8237-4092-bb9e-f6fbcd54f58c",
+      "name": "Clients",
+      "description": {
+        "content": "",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "87b65a36-651f-4d34-b79c-56aa06773917",
+          "name": "List clients",
+          "request": {
+            "name": "List clients",
+            "description": {
+              "content": "List client accounts. Modeled from the documented Clients resource.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "clients"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number (default 1)."
+                },
+                {
+                  "disabled": false,
+                  "key": "per_page",
+                  "value": "15",
+                  "description": "Results per page (default 15)."
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "6d755952-efa3-46a7-a92f-e4c30be84d05",
+              "name": "A paginated list of resources.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "clients"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "per_page",
+                      "value": "15"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"meta\": {\n    \"current_page\": 4236,\n    \"per_page\": 4909,\n    \"total\": 4420\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://developer.digitail.io/api/v1",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "oauth2",
+    "oauth2": [
+      {
+        "key": "redirect_uri",
+        "value": "https://vet.digitail.io/oauth/token"
+      },
+      {
+        "key": "accessTokenUrl",
+        "value": "https://vet.digitail.io/oauth/token"
+      },
+      {
+        "key": "authUrl",
+        "value": "https://vet.digitail.io/oauth/authorize"
+      },
+      {
+        "key": "grant_type",
+        "value": "authorization_code"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "8cadc457-b159-44a9-bea8-d685b267c13f",
+    "name": "Digitail Open Appointments Clients API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "Modeled OpenAPI for the Digitail Open API, a documented REST API for the Digitail cloud veterinary practice management platform (PIMS). The base URL, OAuth 2.0 authorization-code + PKCE authentication, JSON media types, page/per_page pagination, and the 200 requests-per-minute rate limit are taken from the public documentation at https://documentation.digitail.io/. Endpoints marked with x-endpoints-modeled are inferred from the documented resource categories and standard REST conventions rather than verified against per-endpoint reference pages. Confirmed endpoints (pets, appointments, vets, clinics) were verified against the public reference. Obtain OAuth client credentials via the API access registration at https://digitail.com/api/access.\n\nContact Support:\n Name: API Evangelist\n Email: kin@apievangelist.com",
+      "type": "text/plain"
+    }
+  }
+}

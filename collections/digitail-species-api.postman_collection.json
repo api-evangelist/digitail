@@ -1,0 +1,131 @@
+{
+  "item": [
+    {
+      "id": "45dbe3c8-a83f-4f7f-9c9f-54c75b5d4a0e",
+      "name": "Species",
+      "description": {
+        "content": "",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "53c6d7eb-f698-4f78-8cf9-781e0515357b",
+          "name": "List species",
+          "request": {
+            "name": "List species",
+            "description": {
+              "content": "List species reference data. Modeled from the documented Species resource.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "species"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "70403013-75fd-4b4e-b46c-5d8066ae3fa6",
+              "name": "A paginated list of resources.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "species"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: oauth2",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"meta\": {\n    \"current_page\": 8082,\n    \"per_page\": 9558,\n    \"total\": 3598\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://developer.digitail.io/api/v1",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "oauth2",
+    "oauth2": [
+      {
+        "key": "redirect_uri",
+        "value": "https://vet.digitail.io/oauth/token"
+      },
+      {
+        "key": "accessTokenUrl",
+        "value": "https://vet.digitail.io/oauth/token"
+      },
+      {
+        "key": "authUrl",
+        "value": "https://vet.digitail.io/oauth/authorize"
+      },
+      {
+        "key": "grant_type",
+        "value": "authorization_code"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "929f05a6-3063-49c7-8e13-306211727643",
+    "name": "Digitail Open Appointments Species API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "Modeled OpenAPI for the Digitail Open API, a documented REST API for the Digitail cloud veterinary practice management platform (PIMS). The base URL, OAuth 2.0 authorization-code + PKCE authentication, JSON media types, page/per_page pagination, and the 200 requests-per-minute rate limit are taken from the public documentation at https://documentation.digitail.io/. Endpoints marked with x-endpoints-modeled are inferred from the documented resource categories and standard REST conventions rather than verified against per-endpoint reference pages. Confirmed endpoints (pets, appointments, vets, clinics) were verified against the public reference. Obtain OAuth client credentials via the API access registration at https://digitail.com/api/access.\n\nContact Support:\n Name: API Evangelist\n Email: kin@apievangelist.com",
+      "type": "text/plain"
+    }
+  }
+}

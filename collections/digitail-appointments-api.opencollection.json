@@ -1,0 +1,97 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Digitail Open Appointments API",
+    "version": "v1"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "authorization_code",
+      "authorizationUrl": "https://vet.digitail.io/oauth/authorize",
+      "accessTokenUrl": "https://vet.digitail.io/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Appointments",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get all appointments",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://developer.digitail.io/api/v1/appointments",
+            "params": [
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number (default 1)."
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "Results per page (default 15)."
+              }
+            ]
+          },
+          "docs": "List appointments. Confirmed endpoint."
+        },
+        {
+          "info": {
+            "name": "Retrieve an appointment",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://developer.digitail.io/api/v1/appointments/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Resource identifier."
+              }
+            ]
+          },
+          "docs": "Retrieve a single appointment. Confirmed endpoint."
+        },
+        {
+          "info": {
+            "name": "Change appointment status",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://developer.digitail.io/api/v1/appointment/:id/change-status",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Resource identifier."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Change the status of an appointment. Confirmed endpoint."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

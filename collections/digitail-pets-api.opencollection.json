@@ -1,0 +1,80 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Digitail Open Appointments Pets API",
+    "version": "v1"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "authorization_code",
+      "authorizationUrl": "https://vet.digitail.io/oauth/authorize",
+      "accessTokenUrl": "https://vet.digitail.io/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Pets",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List all pets",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://developer.digitail.io/api/v1/pets",
+            "params": [
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number (default 1)."
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "Results per page (default 15)."
+              },
+              {
+                "name": "filter[clinic_id]",
+                "value": "",
+                "type": "query",
+                "description": "Filter results by clinic ID."
+              }
+            ]
+          },
+          "docs": "List patient records (pets). Confirmed endpoint."
+        },
+        {
+          "info": {
+            "name": "Retrieve a pet",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://developer.digitail.io/api/v1/pets/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Resource identifier."
+              }
+            ]
+          },
+          "docs": "Retrieve a single patient record. Confirmed endpoint."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

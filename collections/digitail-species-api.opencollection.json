@@ -1,0 +1,41 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Digitail Open Appointments Species API",
+    "version": "v1"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "authorization_code",
+      "authorizationUrl": "https://vet.digitail.io/oauth/authorize",
+      "accessTokenUrl": "https://vet.digitail.io/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Species",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List species",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://developer.digitail.io/api/v1/species"
+          },
+          "docs": "List species reference data. Modeled from the documented Species resource."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

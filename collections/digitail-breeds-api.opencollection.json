@@ -1,0 +1,41 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Digitail Open Appointments Breeds API",
+    "version": "v1"
+  },
+  "request": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "authorization_code",
+      "authorizationUrl": "https://vet.digitail.io/oauth/authorize",
+      "accessTokenUrl": "https://vet.digitail.io/oauth/token",
+      "credentials": {
+        "clientId": "{{clientId}}",
+        "clientSecret": "{{clientSecret}}"
+      }
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Breeds",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List breeds",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://developer.digitail.io/api/v1/breeds"
+          },
+          "docs": "List breed reference data. Modeled from the documented Breeds resource."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}
