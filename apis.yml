@@ -34,6 +34,15 @@ tags:
 - Healthcare
 - Scheduling
 - Billing
+- Software-as-a-Service
+tags_raw:
+- Veterinary
+- PIMS
+- Practice Management
+- Pets
+- Healthcare
+- Scheduling
+- Billing
 - SaaS
 created: '2026-07-04'
 modified: '2026-07-04'
@@ -145,6 +154,8 @@ apis:
   humanURL: https://documentation.digitail.io/list-all-pets
   baseURL: https://developer.digitail.io/api/v1
   tags:
+  - File
+  tags_raw:
   - Files
   properties:
   - type: OpenAPI
@@ -365,6 +376,8 @@ apis:
   humanURL: https://documentation.digitail.io/list-all-pets
   baseURL: https://developer.digitail.io/api/v1
   tags:
+  - VETS
+  tags_raw:
   - Vets
   properties:
   - type: OpenAPI
