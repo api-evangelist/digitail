@@ -12,6 +12,18 @@ description: Digitail is a cloud-based, AI-native veterinary practice management
   (labs, insurers, pharmacies, telemedicine, analytics) programmatic, real-time
   access to clinic data. API credentials are provisioned via an access
   registration; Open API access is included across Digitail subscription plans.
+deliveryModel:
+  model: saas
+  open_source: false
+  commercial: true
+  callable_host: true
+  label: Hosted service · you call their endpoint
+  confidence: high
+  source:
+  - openapi
+  - pricing
+  generated: '2026-08-28'
+  method: derived
 accessModel:
   pricing: paid
   onboarding: approval
