@@ -388,7 +388,7 @@ apis:
   humanURL: https://documentation.digitail.io/list-all-pets
   baseURL: https://developer.digitail.io/api/v1
   tags:
-  - VETS
+  - Vets
   tags_raw:
   - Vets
   properties:
