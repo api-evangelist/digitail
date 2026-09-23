@@ -1,8 +1,8 @@
-openapi: 3.0.3
+openapi: 3.2.0
 info:
-  title: Digitail Open Appointments Records API
+  title: Digitail Open Records API
   version: v1
-  description: Modeled OpenAPI for the Digitail Open API, a documented REST API for the Digitail cloud veterinary practice management platform (PIMS). The base URL, OAuth 2.0 authorization-code + PKCE authentication, JSON media types, page/per_page pagination, and the 200 requests-per-minute rate limit are taken from the public documentation at https://documentation.digitail.io/. Endpoints marked with x-endpoints-modeled are inferred from the documented resource categories and standard REST conventions rather than verified against per-endpoint reference pages. Confirmed endpoints (pets, appointments, vets, clinics) were verified against the public reference. Obtain OAuth client credentials via the API access registration at https://digitail.com/api/access.
+  description: Modeled OpenAPI for the Digitail Open API, a documented REST API for the Digitail cloud veterinary practice management platform (PIMS).
   contact:
     name: API Evangelist
     email: kin@apievangelist.com
@@ -30,6 +30,25 @@ paths:
         '200':
           $ref: '#/components/responses/Paginated'
 components:
+  parameters:
+    page:
+      name: page
+      in: query
+      description: Page number (default 1).
+      required: false
+      schema:
+        type: integer
+        default: 1
+        minimum: 1
+    perPage:
+      name: per_page
+      in: query
+      description: Results per page (default 15).
+      required: false
+      schema:
+        type: integer
+        default: 15
+        minimum: 1
   responses:
     Paginated:
       description: A paginated list of resources.
@@ -51,25 +70,6 @@ components:
                     type: integer
                   total:
                     type: integer
-  parameters:
-    page:
-      name: page
-      in: query
-      description: Page number (default 1).
-      required: false
-      schema:
-        type: integer
-        default: 1
-        minimum: 1
-    perPage:
-      name: per_page
-      in: query
-      description: Results per page (default 15).
-      required: false
-      schema:
-        type: integer
-        default: 15
-        minimum: 1
   securitySchemes:
     oauth2:
       type: oauth2
