@@ -71,6 +71,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
 components:
   responses:
+    Unauthorized:
+      description: Missing or invalid OAuth 2.0 bearer token.
     Paginated:
       description: A paginated list of resources.
       content:
@@ -91,8 +93,6 @@ components:
                     type: integer
                   total:
                     type: integer
-    Unauthorized:
-      description: Missing or invalid OAuth 2.0 bearer token.
     Resource:
       description: A single resource.
       content:
@@ -109,15 +109,6 @@ components:
       required: true
       schema:
         type: integer
-    page:
-      name: page
-      in: query
-      description: Page number (default 1).
-      required: false
-      schema:
-        type: integer
-        default: 1
-        minimum: 1
     perPage:
       name: per_page
       in: query
@@ -126,6 +117,15 @@ components:
       schema:
         type: integer
         default: 15
+        minimum: 1
+    page:
+      name: page
+      in: query
+      description: Page number (default 1).
+      required: false
+      schema:
+        type: integer
+        default: 1
         minimum: 1
   securitySchemes:
     oauth2:
