@@ -51,6 +51,14 @@ components:
   responses:
     Unauthorized:
       description: Missing or invalid OAuth 2.0 bearer token.
+    Resource:
+      description: A single resource.
+      content:
+        application/json:
+          schema:
+            type: object
+    TooManyRequests:
+      description: Rate limit exceeded (200 requests per minute).
     Paginated:
       description: A paginated list of resources.
       content:
@@ -71,14 +79,6 @@ components:
                     type: integer
                   total:
                     type: integer
-    Resource:
-      description: A single resource.
-      content:
-        application/json:
-          schema:
-            type: object
-    TooManyRequests:
-      description: Rate limit exceeded (200 requests per minute).
   parameters:
     idPath:
       name: id
@@ -96,6 +96,13 @@ components:
         type: integer
         default: 15
         minimum: 1
+    clinicIdFilter:
+      name: filter[clinic_id]
+      in: query
+      description: Filter results by clinic ID.
+      required: false
+      schema:
+        type: integer
     page:
       name: page
       in: query
@@ -105,13 +112,6 @@ components:
         type: integer
         default: 1
         minimum: 1
-    clinicIdFilter:
-      name: filter[clinic_id]
-      in: query
-      description: Filter results by clinic ID.
-      required: false
-      schema:
-        type: integer
   securitySchemes:
     oauth2:
       type: oauth2
