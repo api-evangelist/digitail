@@ -71,16 +71,16 @@ paths:
           $ref: '#/components/responses/Unauthorized'
 components:
   responses:
-    Unauthorized:
-      description: Missing or invalid OAuth 2.0 bearer token.
+    TooManyRequests:
+      description: Rate limit exceeded (200 requests per minute).
     Resource:
       description: A single resource.
       content:
         application/json:
           schema:
             type: object
-    TooManyRequests:
-      description: Rate limit exceeded (200 requests per minute).
+    Unauthorized:
+      description: Missing or invalid OAuth 2.0 bearer token.
     Paginated:
       description: A paginated list of resources.
       content:
@@ -102,13 +102,6 @@ components:
                   total:
                     type: integer
   parameters:
-    idPath:
-      name: id
-      in: path
-      description: Resource identifier.
-      required: true
-      schema:
-        type: integer
     perPage:
       name: per_page
       in: query
@@ -127,6 +120,13 @@ components:
         type: integer
         default: 1
         minimum: 1
+    idPath:
+      name: id
+      in: path
+      description: Resource identifier.
+      required: true
+      schema:
+        type: integer
   securitySchemes:
     oauth2:
       type: oauth2
