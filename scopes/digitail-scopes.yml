@@ -1,13 +1,151 @@
-generated: '2026-07-11'
-method: derived
-source: openapi/digitail-openapi.yml
-docs: https://documentation.digitail.io/authentication
-note: Digitail's OAuth 2.0 authorization-code-with-PKCE flow does not use or document
-  any scopes; access is granted per approved application registration
-  (https://documentation.digitail.io/authentication).
+generated: '2026-10-14'
+method: none
+source: openapi/digitail-appointments-api-openapi.yml, openapi/digitail-breeds-api-openapi.yml,
+  openapi/digitail-charges-api-openapi.yml, openapi/digitail-clients-api-openapi.yml, openapi/digitail-clinics-api-openapi.yml,
+  openapi/digitail-files-api-openapi.yml, openapi/digitail-invoices-api-openapi.yml, openapi/digitail-labs-api-openapi.yml,
+  openapi/digitail-medication-api-openapi.yml, openapi/digitail-pet-parents-api-openapi.yml,
+  openapi/digitail-pets-api-openapi.yml, openapi/digitail-prescriptions-api-openapi.yml, openapi/digitail-records-api-openapi.yml,
+  openapi/digitail-reports-api-openapi.yml, openapi/digitail-sales-api-openapi.yml, openapi/digitail-species-api-openapi.yml,
+  openapi/digitail-vets-api-openapi.yml, openapi/digitail-visit-types-api-openapi.yml
 schemes:
 - name: oauth2
-  source: openapi/digitail-openapi.yml
+  source: openapi/digitail-appointments-api-openapi.yml
+  flows:
+  - flow: authorizationCode
+    authorizationUrl: https://vet.digitail.io/oauth/authorize
+    tokenUrl: https://vet.digitail.io/oauth/token
+  description: OAuth 2.0 authorization-code grant with PKCE. Bearer access token is long-lived;
+    a refresh token is also returned.
+- name: oauth2
+  source: openapi/digitail-breeds-api-openapi.yml
+  flows:
+  - flow: authorizationCode
+    authorizationUrl: https://vet.digitail.io/oauth/authorize
+    tokenUrl: https://vet.digitail.io/oauth/token
+  description: OAuth 2.0 authorization-code grant with PKCE. Bearer access token is long-lived;
+    a refresh token is also returned.
+- name: oauth2
+  source: openapi/digitail-charges-api-openapi.yml
+  flows:
+  - flow: authorizationCode
+    authorizationUrl: https://vet.digitail.io/oauth/authorize
+    tokenUrl: https://vet.digitail.io/oauth/token
+  description: OAuth 2.0 authorization-code grant with PKCE. Bearer access token is long-lived;
+    a refresh token is also returned.
+- name: oauth2
+  source: openapi/digitail-clients-api-openapi.yml
+  flows:
+  - flow: authorizationCode
+    authorizationUrl: https://vet.digitail.io/oauth/authorize
+    tokenUrl: https://vet.digitail.io/oauth/token
+  description: OAuth 2.0 authorization-code grant with PKCE. Bearer access token is long-lived;
+    a refresh token is also returned.
+- name: oauth2
+  source: openapi/digitail-clinics-api-openapi.yml
+  flows:
+  - flow: authorizationCode
+    authorizationUrl: https://vet.digitail.io/oauth/authorize
+    tokenUrl: https://vet.digitail.io/oauth/token
+  description: OAuth 2.0 authorization-code grant with PKCE. Bearer access token is long-lived;
+    a refresh token is also returned.
+- name: oauth2
+  source: openapi/digitail-files-api-openapi.yml
+  flows:
+  - flow: authorizationCode
+    authorizationUrl: https://vet.digitail.io/oauth/authorize
+    tokenUrl: https://vet.digitail.io/oauth/token
+  description: OAuth 2.0 authorization-code grant with PKCE. Bearer access token is long-lived;
+    a refresh token is also returned.
+- name: oauth2
+  source: openapi/digitail-invoices-api-openapi.yml
+  flows:
+  - flow: authorizationCode
+    authorizationUrl: https://vet.digitail.io/oauth/authorize
+    tokenUrl: https://vet.digitail.io/oauth/token
+  description: OAuth 2.0 authorization-code grant with PKCE. Bearer access token is long-lived;
+    a refresh token is also returned.
+- name: oauth2
+  source: openapi/digitail-labs-api-openapi.yml
+  flows:
+  - flow: authorizationCode
+    authorizationUrl: https://vet.digitail.io/oauth/authorize
+    tokenUrl: https://vet.digitail.io/oauth/token
+  description: OAuth 2.0 authorization-code grant with PKCE. Bearer access token is long-lived;
+    a refresh token is also returned.
+- name: oauth2
+  source: openapi/digitail-medication-api-openapi.yml
+  flows:
+  - flow: authorizationCode
+    authorizationUrl: https://vet.digitail.io/oauth/authorize
+    tokenUrl: https://vet.digitail.io/oauth/token
+  description: OAuth 2.0 authorization-code grant with PKCE. Bearer access token is long-lived;
+    a refresh token is also returned.
+- name: oauth2
+  source: openapi/digitail-pet-parents-api-openapi.yml
+  flows:
+  - flow: authorizationCode
+    authorizationUrl: https://vet.digitail.io/oauth/authorize
+    tokenUrl: https://vet.digitail.io/oauth/token
+  description: OAuth 2.0 authorization-code grant with PKCE. Bearer access token is long-lived;
+    a refresh token is also returned.
+- name: oauth2
+  source: openapi/digitail-pets-api-openapi.yml
+  flows:
+  - flow: authorizationCode
+    authorizationUrl: https://vet.digitail.io/oauth/authorize
+    tokenUrl: https://vet.digitail.io/oauth/token
+  description: OAuth 2.0 authorization-code grant with PKCE. Bearer access token is long-lived;
+    a refresh token is also returned.
+- name: oauth2
+  source: openapi/digitail-prescriptions-api-openapi.yml
+  flows:
+  - flow: authorizationCode
+    authorizationUrl: https://vet.digitail.io/oauth/authorize
+    tokenUrl: https://vet.digitail.io/oauth/token
+  description: OAuth 2.0 authorization-code grant with PKCE. Bearer access token is long-lived;
+    a refresh token is also returned.
+- name: oauth2
+  source: openapi/digitail-records-api-openapi.yml
+  flows:
+  - flow: authorizationCode
+    authorizationUrl: https://vet.digitail.io/oauth/authorize
+    tokenUrl: https://vet.digitail.io/oauth/token
+  description: OAuth 2.0 authorization-code grant with PKCE. Bearer access token is long-lived;
+    a refresh token is also returned.
+- name: oauth2
+  source: openapi/digitail-reports-api-openapi.yml
+  flows:
+  - flow: authorizationCode
+    authorizationUrl: https://vet.digitail.io/oauth/authorize
+    tokenUrl: https://vet.digitail.io/oauth/token
+  description: OAuth 2.0 authorization-code grant with PKCE. Bearer access token is long-lived;
+    a refresh token is also returned.
+- name: oauth2
+  source: openapi/digitail-sales-api-openapi.yml
+  flows:
+  - flow: authorizationCode
+    authorizationUrl: https://vet.digitail.io/oauth/authorize
+    tokenUrl: https://vet.digitail.io/oauth/token
+  description: OAuth 2.0 authorization-code grant with PKCE. Bearer access token is long-lived;
+    a refresh token is also returned.
+- name: oauth2
+  source: openapi/digitail-species-api-openapi.yml
+  flows:
+  - flow: authorizationCode
+    authorizationUrl: https://vet.digitail.io/oauth/authorize
+    tokenUrl: https://vet.digitail.io/oauth/token
+  description: OAuth 2.0 authorization-code grant with PKCE. Bearer access token is long-lived;
+    a refresh token is also returned.
+- name: oauth2
+  source: openapi/digitail-vets-api-openapi.yml
+  flows:
+  - flow: authorizationCode
+    authorizationUrl: https://vet.digitail.io/oauth/authorize
+    tokenUrl: https://vet.digitail.io/oauth/token
+  description: OAuth 2.0 authorization-code grant with PKCE. Bearer access token is long-lived;
+    a refresh token is also returned.
+- name: oauth2
+  source: openapi/digitail-visit-types-api-openapi.yml
   flows:
   - flow: authorizationCode
     authorizationUrl: https://vet.digitail.io/oauth/authorize
@@ -15,3 +153,5 @@ schemes:
   description: OAuth 2.0 authorization-code grant with PKCE. Bearer access token is long-lived;
     a refresh token is also returned.
 scopes: []
+note: The OAuth2 security scheme(s) in the OpenAPI declare no scopes, and no security requirement
+  references one.
