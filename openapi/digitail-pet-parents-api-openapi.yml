@@ -31,15 +31,6 @@ paths:
           $ref: '#/components/responses/Paginated'
 components:
   parameters:
-    page:
-      name: page
-      in: query
-      description: Page number (default 1).
-      required: false
-      schema:
-        type: integer
-        default: 1
-        minimum: 1
     perPage:
       name: per_page
       in: query
@@ -48,6 +39,15 @@ components:
       schema:
         type: integer
         default: 15
+        minimum: 1
+    page:
+      name: page
+      in: query
+      description: Page number (default 1).
+      required: false
+      schema:
+        type: integer
+        default: 1
         minimum: 1
   responses:
     Paginated:

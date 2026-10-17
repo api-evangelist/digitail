@@ -30,6 +30,15 @@ paths:
         '401':
           $ref: '#/components/responses/Unauthorized'
 components:
+  responses:
+    Unauthorized:
+      description: Missing or invalid OAuth 2.0 bearer token.
+    Resource:
+      description: A single resource.
+      content:
+        application/json:
+          schema:
+            type: object
   parameters:
     idPath:
       name: id
@@ -38,15 +47,6 @@ components:
       required: true
       schema:
         type: integer
-  responses:
-    Resource:
-      description: A single resource.
-      content:
-        application/json:
-          schema:
-            type: object
-    Unauthorized:
-      description: Missing or invalid OAuth 2.0 bearer token.
   securitySchemes:
     oauth2:
       type: oauth2
