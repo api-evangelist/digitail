@@ -1,0 +1,506 @@
+openapi: 3.2.0
+info:
+  title: Digitail Patient Estimates API
+  description: Digitail API
+  contact:
+    email: developer@digitail.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+- url: https://developer.digitail.io
+  description: Sandbox server (uses test data)
+- url: https://vet.digitail.io
+  description: Production server (uses live data)
+security:
+- passport: []
+- Bearer: []
+tags:
+- name: Patient Estimates
+paths:
+  /api/v1/patients/{id}/estimates/{estimate}:
+    get:
+      tags:
+      - Patient Estimates
+      summary: View Patient Estimate
+      description: Shows a Patient Estimate
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      - name: estimate
+        in: path
+        description: Estimate ID
+        required: true
+        schema:
+          type: integer
+      - name: include
+        in: query
+        description: 'Additional info to include. You can use multiple, comma separated. Options: record, record.responsible, printedFile, printedFile.patient, printedFile.patient.pet, printedFile.patient.pet.owners, printedFile.pet, printedFile.pet.owners'
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                title: Estimate
+                properties:
+                  id:
+                    type: integer
+                    example: 4
+                  clinic_id:
+                    type: integer
+                    example: 2608
+                  record_id:
+                    type: integer
+                    example: 357
+                  record:
+                    description: Only present when `record` is requested via the `include` query parameter.
+                    allOf:
+                    - $ref: '#/paths/~1api~1v1~1records/post/responses/201/content/application~1json/schema/properties/data'
+                  patient_id:
+                    type: integer
+                    example: 411
+                  status:
+                    type: integer
+                    example: 1
+                  title:
+                    type: string
+                    example: Test Title
+                  public_notes:
+                    type: string
+                    example: Optio eos quisquam necessitatibus nihil omnis. Est earum modi rerum delectus. Aut ipsam sapiente eveniet aperiam ex est.
+                  internal_notes:
+                    type: string
+                    example: Tempore eaque ut nihil repellendus beatae. Harum et molestias et dolores quos. Velit omnis quos ex modi tenetur sint. Incidunt omnis cum ad nihil voluptas sint.
+                  low_discount_type:
+                    type: integer
+                    example: 0
+                  low_discount:
+                    type: integer
+                    example: 0
+                  high_discount_type:
+                    type: integer
+                    example: 0
+                  high_discount:
+                    type: integer
+                    example: 0
+                  treatments:
+                    type: array
+                    items:
+                      type: object
+                      title: EstimateTreatment
+                      properties:
+                        id:
+                          type: integer
+                          example: 16
+                        product_id:
+                          type: integer
+                          example: 409
+                        low_quantity:
+                          type: integer
+                          example: 1
+                        high_quantity:
+                          type: integer
+                          example: 5
+                        low_quantity_unit_id:
+                          type: integer
+                          example: 0
+                        high_quantity_unit_id:
+                          type: integer
+                          example: 1
+                        status:
+                          type: integer
+                          example: 2
+                        notes:
+                          type: null
+                        low_end:
+                          type: number
+                          example: 0.19
+                        low_end_without_tax:
+                          type: number
+                          example: 0.16
+                        high_end:
+                          type: number
+                          example: 8.4
+                        high_end_without_tax:
+                          type: number
+                          example: 7
+                        product:
+                          $ref: '#/paths/~1api~1v1~1products~1%7Bid%7D/get/responses/200/content/application~1json/schema/properties/data'
+                  services:
+                    type: array
+                    items:
+                      type: object
+                      title: EstimateService
+                      properties:
+                        id:
+                          type: integer
+                          example: 15
+                        service_package_id:
+                          type: integer
+                          example: 43
+                        status:
+                          type: integer
+                          example: 0
+                        low_quantity:
+                          type: integer
+                          example: 1
+                        high_quantity:
+                          type: integer
+                          example: 1
+                        low_end:
+                          type: number
+                          example: 0
+                        low_end_without_tax:
+                          type: number
+                          example: 0
+                        high_end:
+                          type: number
+                          example: 1
+                        high_end_without_tax:
+                          type: number
+                          example: 0.84
+                        low_end_total:
+                          type: number
+                          example: 0
+                        high_end_total:
+                          type: number
+                          example: 1
+                        notes:
+                          type: string
+                          example: distinctio
+                        products:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: integer
+                                example: 12
+                              product_id:
+                                type: integer
+                                example: 409
+                              low_quantity:
+                                type: number
+                                example: 1
+                              high_quantity:
+                                type: number
+                                example: 2
+                              low_quantity_unit_id:
+                                type: integer
+                                example: 0
+                              high_quantity_unit_id:
+                                type: integer
+                                example: 1
+                              low_end:
+                                type: number
+                                example: 0.19
+                              low_end_without_tax:
+                                type: number
+                                example: 0.16
+                              high_end:
+                                type: number
+                                example: 8.4
+                              high_end_without_tax:
+                                type: number
+                                example: 7
+                              status:
+                                type: integer
+                                example: 0
+                              rejection_reason:
+                                type:
+                                - integer
+                                - 'null'
+                                example: null
+                              notes:
+                                type:
+                                - string
+                                - 'null'
+                                example: null
+                              product:
+                                $ref: '#/paths/~1api~1v1~1products~1%7Bid%7D/get/responses/200/content/application~1json/schema/properties/data'
+                        service:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                              example: 43
+                            name:
+                              type: string
+                              example: 'Service package #et'
+                            category:
+                              type: object
+                              properties:
+                                id:
+                                  type: integer
+                                  example: 544
+                                category_id:
+                                  type: string
+                                  example: '544'
+                                label:
+                                  type: string
+                                  example: General Checkup
+                            price:
+                              type: string
+                              example: '120.500'
+                            discount:
+                              type: integer
+                              example: 0
+                            description:
+                              type: string
+                              example: maiores ut necessitatibus
+                            suggested_products:
+                              type: array
+                              items: []
+                  low_payment_estimation:
+                    type: object
+                    title: PaymentEstimation
+                    properties:
+                      subtotal:
+                        type: integer
+                        example: 0
+                      vat:
+                        type: integer
+                        example: 0
+                      discount:
+                        type: integer
+                        example: 0
+                      total:
+                        type: integer
+                        example: 0
+                  high_payment_estimation:
+                    $ref: '#/paths/~1api~1v1~1patients~1%7Bid%7D~1estimates~1%7Bestimate%7D/get/responses/200/content/application~1json/schema/properties/low_payment_estimation'
+                  created_at:
+                    type: string
+                    format: date-time
+                    example: '2023-06-16T10:47:31.000000Z'
+                  sale_id:
+                    type: integer
+                    example: 1
+                  moved_to_sale:
+                    type: integer
+                    example: 1
+                  printed_file:
+                    type: object
+                    title: PrintedFile
+                    properties:
+                      id:
+                        type: integer
+                        example: 9
+                      name:
+                        type:
+                        - string
+                        - 'null'
+                        example: null
+                      title:
+                        type: string
+                        example: Rabies Certificate For Daisy
+                      real_name:
+                        type: string
+                        example: Rabies Certificate For Daisy.pdf
+                      printable_file_id:
+                        type: string
+                        example: '1086'
+                      vet_id:
+                        type: string
+                        example: '1568'
+                      patient_id:
+                        type: string
+                        example: '316635'
+                      token:
+                        type: string
+                      notified_at:
+                        type: string
+                        example: '2021-11-19T13:40:23.000000Z'
+                      signed_at:
+                        type: string
+                        example: '2021-11-19T13:40:23.000000Z'
+                      confirmed_at:
+                        type: string
+                        example: '2021-11-19T13:40:23.000000Z'
+                      has_signature_shortcode:
+                        type: boolean
+                      has_fillable_inputs:
+                        type: boolean
+                      type:
+                        type: string
+                        enum:
+                        - form
+                        - certificate
+                      created_at:
+                        type: string
+                        example: '2021-11-19T13:40:23.000000Z'
+                      patient:
+                        type:
+                        - object
+                        - 'null'
+                        properties:
+                          id:
+                            type: integer
+                          pet_id:
+                            type: integer
+                          pet:
+                            type:
+                            - object
+                            - 'null'
+                            title: Pet
+                            properties:
+                              id:
+                                type: integer
+                                example: 429
+                              nickname:
+                                type: string
+                                example: Larry
+                              species_id:
+                                type: string
+                                example: '857'
+                              breed_id:
+                                type: string
+                                example: '429'
+                              observations:
+                                type: string
+                                example: ''
+                              gender:
+                                type: string
+                                example: female
+                              microchip:
+                                type: string
+                                example: '311010324'
+                              crossbreed:
+                                type: string
+                                example: '0'
+                              crossbreed_details_id:
+                                type: null
+                              color:
+                                type: string
+                                example: Chocolate
+                              distinctive_marks:
+                                type: string
+                                example: maiores
+                              birthday:
+                                type: string
+                                example: '1979-12-30'
+                              gender_string:
+                                type: null
+                              chip_number:
+                                type: string
+                                example: '311010324'
+                              microchip_location:
+                                type: null
+                              insurance_number:
+                                type: null
+                              passport:
+                                type: string
+                                example: ''
+                              profile_picture:
+                                type: string
+                                example: https://dev-1-public-digitail.s3.eu-central-1.amazonaws.com/mofe/uploads/OVq90HYgJ86f08WHre8w
+                              description:
+                                type: string
+                                example: nR6EMINZn89N8breVBtv
+                              constitution:
+                                type: null
+                              conformation:
+                                type: null
+                              weight:
+                                type: string
+                                example: '21'
+                              allergies:
+                                type: null
+                              nr_recs:
+                                type: null
+                              blood_type:
+                                type: null
+                              hormonal_status:
+                                type: integer
+                                example: 0
+                              owners:
+                                type:
+                                - array
+                                - 'null'
+                                items:
+                                  type: object
+                                  title: PetParent
+                                  properties:
+                                    id:
+                                      type: integer
+                                      example: 705
+                                    name:
+                                      type: string
+                                      example: Emily
+                                    last_name:
+                                      type: string
+                                      example: Oberbrunner
+                                    full_name:
+                                      type: string
+                                      example: Emily Oberbrunner
+                                    email:
+                                      type: string
+                                      example: parent@pet.tail
+                                    phone:
+                                      type: string
+                                      description: Phone number in E.164 format
+                                      example: '+16175551212'
+                                    secondary_phone:
+                                      type: string
+                                      description: Phone number in E.164 format
+                                      example: '+16175551212'
+                                    chatUid:
+                                      type: null
+                                    has_app:
+                                      type: integer
+                                      example: 0
+                                    has_app_date:
+                                      type: null
+                                    enable_chat_without_app:
+                                      type: string
+                                      example: '0'
+                                    created_at:
+                                      type: string
+                                      example: '2023-04-18 11:53:29'
+                                    address:
+                                      type: string
+                                      example: '71936 Dimitri Station Apt. 627
+
+                                        New Britney, NJ 77974-6353'
+                                    address_2:
+                                      type: string
+                                      example: Apt. 422
+                                    city:
+                                      type: string
+                                      example: East Terrenceton
+                                    birthdate:
+                                      type: null
+                                    observations:
+                                      type: string
+                                      example: ''
+                                    cnp:
+                                      type: string
+                                      example: '471221487970'
+                                    chip_number:
+                                      type: string
+                                      example: '619664'
+                                    current_client_id:
+                                      type: null
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+      operationId: getApiV1PatientsByIdEstimatesByEstimate
+      x-operation-id-source: derived
+components:
+  securitySchemes:
+    passport:
+      type: oauth2
+      description: Laravel passport oauth2 security.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://developer.digitail.io/oauth/authorize
+          tokenUrl: https://developer.digitail.io/oauth/token
+          refreshUrl: https://developer.digitail.io/oauth/token
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

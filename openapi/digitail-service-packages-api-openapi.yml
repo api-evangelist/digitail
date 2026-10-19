@@ -1,0 +1,237 @@
+openapi: 3.2.0
+info:
+  title: Digitail Service Packages API
+  description: Digitail API
+  contact:
+    email: developer@digitail.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+- url: https://developer.digitail.io
+  description: Sandbox server (uses test data)
+- url: https://vet.digitail.io
+  description: Production server (uses live data)
+security:
+- passport: []
+- Bearer: []
+tags:
+- name: Service Packages
+  description: Api Endpoints For Service Packages
+paths:
+  /api/v1/service-packages:
+    get:
+      tags:
+      - Service Packages
+      summary: List all ServicePackages
+      description: 'Permissions needed: NONE
+
+        Searches clinic''s service packages by name and returns the result'
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1pets/get/parameters/0'
+      - name: filter[search]
+        in: query
+        description: Service Package's name
+        required: false
+        schema:
+          type: string
+      - name: filter[visit_type_id]
+        in: query
+        description: Visit Type Id
+        explode: false
+        schema:
+          type: array
+          items:
+            type: integer
+      - name: filter[aaha_codes]
+        in: query
+        description: Service Id
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+      - name: pet_id
+        in: query
+        description: Pet Id that is used to check if the service package is within the pet's wellness plan benefits
+        required: false
+        schema:
+          type: integer
+      - name: filter[status]
+        in: query
+        description: 'Status of the service package (ex: ''enabled'', ''disabled'')'
+        required: false
+        schema:
+          type: string
+          enum:
+          - enabled
+          - disabled
+      - name: filter[one_level_services]
+        in: query
+        description: 'Filter by one level services (ex: ''1'')'
+        required: false
+        schema:
+          type: integer
+      - name: include
+        in: query
+        description: 'Additional info to include(ex: ''products'', ''products.product'', ''products.product.stock'', ''taskTemplates'' ''products.product.latestPurchaseOrderItem'', ''servicePackageServices.products.product'', ''labTests'', ''labTests.lab'', ''subServiceOn'', ''taxRates'')'
+        required: false
+        schema:
+          type: string
+      - name: sort
+        in: query
+        description: 'Sorting(ex: ''name'', ''price'', ''aaha_code'')'
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/paths/~1api~1v1~1service-packages~1%7Bid%7D/get/responses/200/content/application~1json/schema/properties/data'
+                  links:
+                    $ref: '#/paths/~1api~1v1~1pets/get/responses/200/content/application~1json/schema/properties/links'
+                  meta:
+                    $ref: '#/paths/~1api~1v1~1pets/get/responses/200/content/application~1json/schema/properties/meta'
+        '400':
+          $reg: ../../../../shared/responses/400.yaml
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: getApiV1ServicePackages
+      x-operation-id-source: derived
+  /api/v1/service-packages/{id}:
+    get:
+      tags:
+      - Service Packages
+      summary: View existing Service Package
+      description: Returns an existing service package and all its details.
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      - name: include
+        in: query
+        description: 'Additional info to include(ex: ''products'', ''products.product'', ''products.product.productCategory'', ''products.product.stock'', ''products.product.latestPurchaseOrderItem'',''servicePackageServices.products.product'', ''labTests'', ''subServiceOn'', ''labTests.lab'', ''aahaCategory'', ''taskTemplates'')'
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    title: ServicePackage
+                    description: ServicePackage = Services. A service package is a collection of services and products that are sold together. It is a way to group multiple lab test/products together to make it easier to sell them. For example, a service package might include a blood test, and a few products. Service packages can also not contain any products or lab tests, for example, a grooming session. A service package appears as an individual line item on the sale/invoice.
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      name:
+                        type: string
+                        example: lorem
+                      client_name:
+                        type:
+                        - string
+                        - 'null'
+                        example: ipsum
+                      staff_description:
+                        type:
+                        - string
+                        - 'null'
+                        example: dolor
+                      description:
+                        type: string
+                        example: ipsum sin dolor
+                      price:
+                        type: string
+                        example: '20.00'
+                      price_includes_tax:
+                        type: boolean
+                        example: true
+                      tax:
+                        type: number
+                        deprecated: true
+                        description: Deprecated. Summed percentage of `tax_rates`. Use `tax_rates` instead.
+                        example: 10
+                      tax_rates:
+                        type: array
+                        description: Tax rates applied to this item. Always present.
+                        items:
+                          $ref: '#/paths/~1api~1v1~1plans~1%7Bid%7D/put/responses/200/content/application~1json/schema/properties/data/properties/tax_rates/items'
+                      unit_price:
+                        type: string
+                        example: '20.00'
+                      clinic_id:
+                        type: integer
+                        example: 1
+                      visit_type_id:
+                        type:
+                        - integer
+                        - 'null'
+                      category:
+                        type: string
+                        example: Ophthalmology
+                      aaha_code:
+                        type: string
+                        example: 5000
+                      barcode:
+                        type: string
+                        example: 123-sku
+                      task_templates:
+                        type:
+                        - array
+                        - 'null'
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                              example: 1
+                            name:
+                              type: string
+                              example: lorem
+                      is_plan_benefit:
+                        type: boolean
+                        example: false
+                      is_deleted:
+                        type: boolean
+                        example: false
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: getApiV1ServicePackagesById
+      x-operation-id-source: derived
+components:
+  securitySchemes:
+    passport:
+      type: oauth2
+      description: Laravel passport oauth2 security.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://developer.digitail.io/oauth/authorize
+          tokenUrl: https://developer.digitail.io/oauth/token
+          refreshUrl: https://developer.digitail.io/oauth/token
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

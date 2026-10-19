@@ -1,85 +1,1544 @@
 openapi: 3.2.0
 info:
-  title: Digitail Open Sales API
-  version: v1
-  description: Modeled OpenAPI for the Digitail Open API, a documented REST API for the Digitail cloud veterinary practice management platform (PIMS).
+  title: Digitail Sales API
+  description: Digitail API
   contact:
-    name: API Evangelist
-    email: kin@apievangelist.com
-  x-endpoints-modeled: true
+    email: developer@digitail.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
 servers:
-- url: https://developer.digitail.io/api/v1
-  description: Digitail Open API v1
+- url: https://developer.digitail.io
+  description: Sandbox server (uses test data)
+- url: https://vet.digitail.io
+  description: Production server (uses live data)
 security:
-- oauth2: []
+- passport: []
+- Bearer: []
 tags:
 - name: Sales
+  description: Get a list of sales, change the state or customer, create a charge, consolidate invoice, dispute items and pay with credit
 paths:
-  /sales:
-    get:
-      operationId: listSales
-      summary: List sales
-      description: List sales. Modeled from the documented Sales resource.
+  /api/v1/sale/consolidate:
+    post:
       tags:
       - Sales
-      x-endpoints-modeled: true
-      parameters:
-      - $ref: '#/components/parameters/page'
-      - $ref: '#/components/parameters/perPage'
+      summary: Create ConsolidatedInvoice
+      description: 'Permissions needed: NONE
+
+        This endpoint is used to create the consolidated invoice for selected sales - all sales must belong to same customer.'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - customer_id
+              - invoice_date
+              properties:
+                customer_id:
+                  type: integer
+                  example: 1
+                invoice_date:
+                  type: string
+                  format: date-time
+                  example: '2020-01-01T00:00:00.000Z'
+                sales_ids:
+                  type: array
+                  items:
+                    type: integer
+                  example:
+                  - 1
+                  - 2
+                  - 3
       responses:
         '200':
-          $ref: '#/components/responses/Paginated'
-components:
-  parameters:
-    perPage:
-      name: per_page
-      in: query
-      description: Results per page (default 15).
-      required: false
-      schema:
-        type: integer
-        default: 15
-        minimum: 1
-    page:
-      name: page
-      in: query
-      description: Page number (default 1).
-      required: false
-      schema:
-        type: integer
-        default: 1
-        minimum: 1
-  responses:
-    Paginated:
-      description: A paginated list of resources.
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              data:
-                type: array
-                items:
-                  type: object
-              meta:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                properties:
+                  consolidatingSaleId:
+                    description: Consolidating sale id
+                    type: integer
+                  invoice:
+                    description: Invoice object details
+                    type: object
+                  invoicePreview:
+                    description: HTML string of consolidated invoice
+                    type: string
+                  selectedSalesDetails:
+                    description: Contains details of selected sales that has been consolidated.
+                    type: array
+                    items:
+                      properties:
+                        date:
+                          description: Sale date
+                          type: string
+                        id:
+                          description: Sale record or counter sale id
+                          type: integer
+                        number:
+                          description: Sale record number, null for counter sale
+                          type: string
+                        pet:
+                          description: Pet details - if sale is from a pet record
+                          type: object
+                        sale:
+                          description: Sale details
+                          type: object
+                        sale_id:
+                          description: Sale id
+                          type: integer
+                      type: object
+                type: object
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '422':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                example:
+                  key: labels.consolidate_invoice.errors.sales_have_payments
+                  message: exceptions.labels.consolidate_invoice.errors.sales_have_payments
+                  meta: []
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: postApiV1SaleConsolidate
+      x-operation-id-source: derived
+  /api/v1/sale/consolidate/{consolidatingSale}/update:
+    put:
+      tags:
+      - Sales
+      summary: Update ConsolidatedInvoice
+      description: 'Permissions needed: NONE
+
+        This end point is used to update a consolidated invoice.'
+      parameters:
+      - name: consolidatingSale
+        in: path
+        description: The consolidating sale id
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - customer_id
+              - invoice_date
+              properties:
+                customer_id:
+                  type: integer
+                  example: 1
+                invoice_date:
+                  type: string
+                  format: date-time
+                  example: '2020-01-01T00:00:00.000Z'
+                sales_ids:
+                  type: array
+                  items:
+                    type: integer
+                  example:
+                  - 1
+                  - 2
+                  - 3
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                properties:
+                  consolidatingSaleId:
+                    description: Consolidating sale id
+                    type: integer
+                  invoice:
+                    description: Invoice object details
+                    type: object
+                  invoicePreview:
+                    description: HTML string of consolidated invoice
+                    type: string
+                  selectedSalesDetails:
+                    description: Contains details of selected sales that has been consolidated.
+                    type: array
+                    items:
+                      properties:
+                        date:
+                          description: Sale date
+                          type: string
+                        id:
+                          description: Sale record or counter sale id
+                          type: integer
+                        number:
+                          description: Sale record number, null for counter sale
+                          type: string
+                        pet:
+                          description: Pet details - if sale is from a pet record
+                          type: object
+                        sale:
+                          description: Sale details
+                          type: object
+                        sale_id:
+                          description: Sale id
+                          type: integer
+                      type: object
+                type: object
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '422':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                example:
+                  key: labels.consolidate_invoice.errors.sales_have_payments
+                  message: exceptions.labels.consolidate_invoice.errors.sales_have_payments
+                  meta: []
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: putApiV1SaleConsolidateByConsolidatingSaleUpdate
+      x-operation-id-source: derived
+  /api/v1/sale/consolidate/preview/{consolidatingSale}:
+    post:
+      tags:
+      - Sales
+      summary: Preview ConsolidatedInvoice
+      description: 'Permissions needed: NONE
+
+
+        This end point is used to preview the consolidated invoice for selected sales, if no sale is selected all customer sales eligible for consolidation are used - create flow.
+
+
+        If ID of a already consoliated sale is provided (in body an in path also!!!)then preview of existing consolidated invoice is returned - update flow.
+
+
+        property notConsolidatedSalesDetails from response Contains details for all customer sales eligibe for consolidation process.
+
+
+        property selectedSalesDetails from response Contains details of selected sales for consolidation process. null - if the request is made with empty sales_ids parameter'
+      parameters:
+      - name: consolidatingSale
+        in: path
+        description: The consolidating sale id
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+              - customer_id
+              - invoice_date
+              properties:
+                customer_id:
+                  type: integer
+                consolidating_sale_id:
+                  description: Required for a existing consolidated invoice preview - on update flow
+                  type: integer
+                invoice_date:
+                  type: string
+                sales_ids:
+                  type: array
+                  items:
+                    type: integer
+              type: object
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                properties:
+                  consolidatingSaleId:
+                    description: Consolidating sale id for existing consolidated invoice preview - on update flow
+                    type: integer
+                  invoicePreview:
+                    description: HTML string of invoice
+                    type: string
+                  notConsolidatedSalesDetails:
+                    description: Contains details for all customer sales eligibe for consolidation process
+                    type: array
+                    items:
+                      properties:
+                        date:
+                          description: Sale date
+                          type: string
+                        id:
+                          description: Sale record or counter sale id
+                          type: integer
+                        number:
+                          description: Sale record number, null for counter sale
+                          type: string
+                        pet:
+                          description: Pet details - if sale is from a pet record
+                          type: object
+                        sale:
+                          description: Sale details
+                          type: object
+                        sale_id:
+                          description: Sale id
+                          type: integer
+                      type: object
+                  selectedSalesDetails:
+                    description: Contains details of selected sales for consolidation process. null - if the request is made with empty sales_ids parameter
+                    type: array
+                    items:
+                      properties:
+                        date:
+                          description: Sale date
+                          type: string
+                        id:
+                          description: Sale record or counter sale id
+                          type: integer
+                        number:
+                          description: Sale record number, null for counter sale
+                          type: string
+                        pet:
+                          description: Pet details - if sale is from a pet record
+                          type: object
+                        sale:
+                          description: Sale details
+                          type: object
+                        sale_id:
+                          description: Sale id
+                          type: integer
+                      type: object
+                type: object
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '422':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                example:
+                  key: labels.consolidate_invoice.errors.sales_have_payments
+                  message: exceptions.labels.consolidate_invoice.errors.sales_have_payments
+                  meta: []
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: postApiV1SaleConsolidatePreviewByConsolidatingSale
+      x-operation-id-source: derived
+  /api/v1/sale/{id}/change-edit-state:
+    put:
+      tags:
+      - Sales
+      summary: Change Sale state
+      description: 'Permissions needed: any of (CREATE_CHECKUPS, EDIT_CHECKUPS, CREATE_EDIT_COUNTER_SALE, SELL_SERVICES); sometimes REOPEN_SALE
+
+        Change just the Sale''s edit state'
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                edit_state:
+                  type: integer
+                  enum:
+                  - 1
+                  - 2
+                  - 3
+                  description: '1 - Open <br> 2 - Ready For Checkout <br> 3 - Closed
+
+                    '
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
                 type: object
                 properties:
-                  current_page:
+                  data:
+                    type: object
+                    properties:
+                      edit_state_details:
+                        type: object
+                        title: EditSaleState
+                        properties:
+                          state:
+                            type: integer
+                            enum:
+                            - 1
+                            - 2
+                            - 3
+                            description: '`1` - Open `2` - Ready For Checkout `3` - Closed
+
+                              '
+                          label:
+                            type: string
+                            description: 'Label of the current state
+
+                              '
+                          can_transit_to:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                label:
+                                  type: string
+                                  example: labels.sale_edit_state.states.open
+                                action:
+                                  type: string
+                                  example: labels.sale_edit_state.actions.open
+                                state:
+                                  type: integer
+                                  enum:
+                                  - 1
+                                  - 2
+                                  - 3
+                                  example: 1
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '422':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                example:
+                  message: The given data was invalid.
+                  errors:
+                    edit_state:
+                    - This value is invalid
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: putApiV1SaleByIdChangeEditState
+      x-operation-id-source: derived
+  /api/v1/sale/{id}/customer:
+    put:
+      tags:
+      - Sales
+      summary: Change SaleCustomer
+      description: 'Permissions needed: any of (CREATE_CHECKUPS, EDIT_CHECKUPS, CREATE_EDIT_COUNTER_SALE, SELL_SERVICES);
+
+        Edit the Sale''s customer'
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                customer_id:
+                  type:
+                  - integer
+                  - 'null'
+                  description: 'Pet parent to attach to the sale. Must be a client of the clinic the sale belongs to; a client of another clinic in the group is rejected. Send null to detach the current customer.
+
+                    '
+                  example: 1
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    title: SaleCustomer
+                    description: Custom information about a PetParent that is related to a sale.
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      name:
+                        type: string
+                        example: John
+                      last_name:
+                        type: string
+                        example: Doe
+                      email:
+                        type: string
+                        example: john@example.com
+                      phone:
+                        type: string
+                        description: Phone number in E.164 format
+                        example: '+16175551212.'
+                      address:
+                        type: string
+                        example: Flowers St. 300, Palo Alto, 123456, USA
+                      city:
+                        type: string
+                        example: Palo Alto
+                      street:
+                        type: string
+                        example: Flowers St.
+                      street_number:
+                        type: string
+                        example: '300'
+                      country:
+                        $ref: '#/paths/~1api~1v1~1public~1clinics~1%7Bslug%7D/get/responses/200/content/application~1json/schema/properties/data/properties/country'
+                      zip:
+                        type: string
+                        example: '123456'
+                      region:
+                        type: string
+                        example: California
+                      timezone:
+                        type: string
+                        example: America/Los_Angeles
+                      has_app:
+                        type: boolean
+                        example: true
+                      chatUid:
+                        type: string
+                        example: e58ed763-928c-4155-bee9-fdbaaadc15f3
+                      vat_number:
+                        type: string
+                        description: present when included legalEntity
+                        example: '123456789'
+                      discounts:
+                        type: array
+                        items:
+                          $ref: '#/paths/~1api~1v1~1pet-parents/post/responses/201/content/application~1json/schema/properties/data/properties/discounts/items'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '422':
+          description: The customer is not a client of the sale's clinic, or the id does not exist
+          content:
+            application/json:
+              schema:
+                example:
+                  message: The client is not registered at the clinic this sale belongs to.
+                  errors:
+                    customer_id:
+                    - The client is not registered at the clinic this sale belongs to.
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: putApiV1SaleByIdCustomer
+      x-operation-id-source: derived
+  /api/v1/sales:
+    post:
+      tags:
+      - Sales
+      summary: Create a Sale
+      description: 'Permissions needed: any of (CREATE_CHECKUPS, EDIT_CHECKUPS, CREATE_EDIT_COUNTER_SALE, SELL_SERVICES)'
+      parameters:
+      - name: new_response
+        in: query
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                discount:
+                  type:
+                  - number
+                  - 'null'
+                  format: float
+                discount_percentage:
+                  type:
+                  - number
+                  - 'null'
+                  format: float
+                discount_type:
+                  type:
+                  - string
+                  - 'null'
+                  enum:
+                  - fixed
+                  - percentage
+                discount_reason:
+                  type:
+                  - object
+                  - 'null'
+                  properties:
+                    reason:
+                      type:
+                      - string
+                      - 'null'
+                    is_private:
+                      type: string
+                      enum:
+                      - public
+                      - private
+                predefined_discounts:
+                  type: array
+                  items:
                     type: integer
-                  per_page:
+                sold_products:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      product_id:
+                        type: integer
+                      vet_id:
+                        type: number
+                        format: float
+                      unit_id:
+                        type: string
+                        enum:
+                        - unit
+                        - subunit
+                      unit:
+                        type: string
+                      quantity:
+                        type: number
+                        format: float
+                      sale_price:
+                        type: number
+                        format: float
+                      sale_price_with_vat:
+                        type: number
+                        format: float
+                      vat:
+                        type: number
+                        format: float
+                        deprecated: true
+                        description: Deprecated for lines referencing a catalog item — use `tax_rate_ids`. Still required on write-in lines (no `product_id` / `service_package_id`).
+                      tax_rate_ids:
+                        type: array
+                        description: Tax rate ids to apply. Takes precedence over `vat` when present. Send at most the clinic's `max_tax_rates` (1 today).
+                        items:
+                          type: integer
+                        example:
+                        - 57
+                      price:
+                        type: number
+                        format: float
+                      sub_price:
+                        type: number
+                        format: float
+                      product_name:
+                        type: string
+                      label:
+                        type: string
+                      recommendations:
+                        type: string
+                      is_checkout_bought:
+                        type: boolean
+                      fixed_fee:
+                        type: number
+                        format: float
+                      include_fixed_fee:
+                        type: boolean
+                      discount_reason:
+                        type:
+                        - object
+                        - 'null'
+                        properties:
+                          reason:
+                            type:
+                            - string
+                            - 'null'
+                          is_private:
+                            type: string
+                            enum:
+                            - public
+                            - private
+                      discount:
+                        type: number
+                        format: float
+                      discount_percentage:
+                        type: number
+                        format: float
+                      discount_type:
+                        type: string
+                        enum:
+                        - fixed
+                        - percentage
+                      price_threshold_type:
+                        type: string
+                        enum:
+                        - minimum
+                        - maximum
+                      purchase_order_items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                            quantity:
+                              type: number
+                              format: float
+                sold_services:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      service_package_id:
+                        type: integer
+                      quantity:
+                        type: number
+                        format: float
+                      price:
+                        type: number
+                        format: float
+                      unit_price:
+                        type: number
+                        format: float
+                      vat:
+                        type: number
+                        format: float
+                        deprecated: true
+                        description: Deprecated for lines referencing a catalog item — use `tax_rate_ids`. Still required on write-in lines (no `product_id` / `service_package_id`).
+                      tax_rate_ids:
+                        type: array
+                        description: Tax rate ids to apply. Takes precedence over `vat` when present. Send at most the clinic's `max_tax_rates` (1 today).
+                        items:
+                          type: integer
+                        example:
+                        - 57
+                      vet_id:
+                        type: number
+                        format: float
+                      name:
+                        type: string
+                      original_price:
+                        type: number
+                        format: float
+                      is_checkout_bought:
+                        type: boolean
+                      discount:
+                        type: number
+                        format: float
+                      discount_percentage:
+                        type: number
+                        format: float
+                      discount_type:
+                        type: string
+                        enum:
+                        - fixed
+                        - percentage
+                      discount_reason:
+                        type:
+                        - object
+                        - 'null'
+                        properties:
+                          reason:
+                            type:
+                            - string
+                            - 'null'
+                          is_private:
+                            type: string
+                            enum:
+                            - public
+                            - private
+                      aaha_code:
+                        type: string
+                      products:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                            product_id:
+                              type: integer
+                            units:
+                              type: array
+                            formula:
+                              type: number
+                              format: float
+                            unit_price_with_vat:
+                              type: number
+                              format: float
+                            subunit_price_with_vat:
+                              type: number
+                              format: float
+                            unit_id:
+                              type: string
+                              enum:
+                              - unit
+                              - subunit
+                            quantity:
+                              type: number
+                              format: float
+                            label:
+                              type: string
+                            recommendations:
+                              type: string
+                            name:
+                              type: string
+                            displayed:
+                              type: boolean
+                            purchase_order_items:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  id:
+                                    type: integer
+                                  quantity:
+                                    type: number
+                                    format: float
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    title: Sale
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      clinic_id:
+                        type: string
+                        example: '1'
+                      customer_id:
+                        type: string
+                        example: '1'
+                      type:
+                        type: integer
+                        example: 1
+                      customer:
+                        $ref: '#/paths/~1api~1v1~1sale~1%7Bid%7D~1customer/put/responses/200/content/application~1json/schema/properties/data'
+                        example: null
+                      file:
+                        $ref: '#/paths/~1api~1v1~1records/post/responses/201/content/application~1json/schema/properties/data'
+                      counter_sale:
+                        type:
+                        - integer
+                        - 'null'
+                        description: Id of the realted counter sale
+                        example: null
+                      amount_paid:
+                        type: string
+                        example: '0.000'
+                      amount_due:
+                        type: string
+                        example: '250.000'
+                      edit_state_details:
+                        $ref: '#/paths/~1api~1v1~1sale~1%7Bid%7D~1change-edit-state/put/responses/200/content/application~1json/schema/properties/data/properties/edit_state_details'
+                      status:
+                        type: integer
+                        enum:
+                        - 0
+                        - 1
+                        - 2
+                        - 3
+                        - 4
+                        description: '`0` - No sale (zero total and no line items) `1` - Pending `2` - Paid `3` - Partially Paid `4` - Paid (Overdraft)
+
+                          '
+                      total:
+                        type: string
+                        example: '250.000'
+                      global_discount_net:
+                        type: string
+                        example: '0.000'
+                      global_discount_tax:
+                        type: string
+                        example: '0.000'
+                      global_discount_gross:
+                        type: string
+                        example: '0.000'
+                      consolidated:
+                        type: boolean
+                        description: A consolidated sale is a group of sale. A consolidated sale can't have direct products or services associated with it.
+                        example: false
+                      created_at:
+                        type: string
+                        format: date-time
+                        example: '2022-07-18T08:58:36.000000Z'
+                      updated_at:
+                        type: string
+                        format: date-time
+                        example: '2022-07-18T08:58:36.000000Z'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '422':
+          $ref: '#/paths/~1api~1v1~1plans/get/responses/422'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: postApiV1Sales
+      x-operation-id-source: derived
+    get:
+      tags:
+      - Sales
+      summary: List all Sales
+      description: 'Permissions needed: any of (CREATE_CHECKUPS, VIEW_COUNTER_SALE)
+
+        Returns list of Sales'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/paths/~1api~1v1~1sales/post/responses/200/content/application~1json/schema/properties/data'
+                  links:
+                    $ref: '#/paths/~1api~1v1~1pets/get/responses/200/content/application~1json/schema/properties/links'
+                  meta:
+                    $ref: '#/paths/~1api~1v1~1pets/get/responses/200/content/application~1json/schema/properties/meta'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1pets/get/parameters/0'
+      - name: filter[id]
+        in: query
+        description: Sale ID
+        required: false
+        schema:
+          type: integer
+      - name: filter[customer_id]
+        in: query
+        description: Client/Owner Id
+        style: form
+        explode: false
+        schema:
+          type: integer
+          example: 1
+      - $ref: '#/paths/~1api~1v1~1invoices/get/parameters/2'
+      - $ref: '#/paths/~1api~1v1~1pets/get/parameters/1'
+      - name: filter[status]
+        in: query
+        description: 'Status (comma separated statuses: <i>0 - No Sale; 1 - Pending, 2 - Paid, 3 - Partial, 4 - Overdraft</i>)'
+        required: false
+        schema:
+          type: string
+      - name: filter[include_consolidated]
+        in: query
+        description: Include consolidated Sales - those with consolidated=1 (default <i>false</i>)
+        required: false
+        schema:
+          type: boolean
+      - name: include
+        in: query
+        description: 'Additional relations to include. Ex.: invoice,file,clientSubscription,clientSubscription.plan,clientSubscription.pet,visit'
+        required: false
+        schema:
+          type: string
+      - name: append
+        in: query
+        description: 'Additional fields to append. Ex.: directChargesCredit,taxAmountsByRate,hasClientSubscription'
+        required: false
+        schema:
+          type: string
+      - name: filter[has_client_subscription]
+        in: query
+        description: Sale has or not a client subscription to a plan
+        required: false
+        schema:
+          type: boolean
+      - name: filter[has_monetization]
+        in: query
+        description: 'Belongs to a Record that has attached a service or treatment (total > 0);Used to include/ignore Draft Records;  Default value: <i>true</i>'
+        required: false
+        schema:
+          type: boolean
+      - name: filter[has_outstanding]
+        in: query
+        description: Sale has or not outstanding balance
+        required: false
+        schema:
+          type: integer
+          enum:
+          - 0
+          - 1
+      - name: filter[taxable_at]
+        in: query
+        description: Dates between when sale was added in the platform
+        required: false
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+            format: date-time
+            example: '2023-07-26T06:39:10.000000Z'
+      - name: filter[created_at]
+        in: query
+        description: Dates between when sale was added in the platform
+        required: false
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+            format: date-time
+            example: '2023-07-26T06:39:10.000000Z'
+      - name: filter[updated_at]
+        in: query
+        description: Dates between when sale was last updated in the platform
+        required: false
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+            format: date-time
+            example: '2023-07-26T06:39:10.000000Z'
+      - $ref: '#/paths/~1api~1v1~1tags/get/parameters/5'
+      - $ref: '#/paths/~1api~1v1~1pets/get/parameters/11'
+      operationId: getApiV1Sales
+      x-operation-id-source: derived
+    delete:
+      tags:
+      - Sales
+      summary: Soft Delete a Sale and associated items
+      description: 'Permissions needed: DELETE_CHECKUPS, DELETE_PAYMENTS_ID, CREATE_INVOICES_CASHING'
+      parameters:
+      - name: id
+        in: path
+        description: The entity id
+        required: true
+        schema:
+          type: integer
+      - name: payments_disposition
+        in: query
+        description: Describe how payments will be treated, possible values, delete or reallocate
+        schema:
+          type: string
+      responses:
+        '204':
+          title: No Content
+          description: The action was successful but there is no content to return.
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: deleteApiV1Sales
+      x-operation-id-source: derived
+  /api/v1/sales/{id}:
+    get:
+      tags:
+      - Sales
+      summary: Retrieve a Sale
+      description: 'Permissions needed: any of (CREATE_CHECKUPS, EDIT_CHECKUPS, CREATE_EDIT_COUNTER_SALE, SELL_SERVICES)'
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      - name: include
+        in: query
+        description: 'Additional info to include: invoice,payments,predefinedDiscounts,customer,treatments.vet,treatments.product,treatments.purchaseOrderItems,treatments.purchaseOrderItems.product,treatments.purchaseOrderItems.nirStocks,soldServices.vet,soldServices.products,soldServices.servicePackageServices,soldServices.servicePackageServices.soldServicePackageProducts,soldServices.servicePackage.products.product,soldServices.products.purchaseOrderItems.nirStocks,visit'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/paths/~1api~1v1~1sales/post/responses/200/content/application~1json/schema/properties/data'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '422':
+          $ref: '#/paths/~1api~1v1~1plans/get/responses/422'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: getApiV1SalesById
+      x-operation-id-source: derived
+    put:
+      tags:
+      - Sales
+      summary: Update a Sale
+      description: 'Permissions needed: any of (CREATE_CHECKUPS, EDIT_CHECKUPS, CREATE_EDIT_COUNTER_SALE, SELL_SERVICES)
+
+
+        **Discontinued product validation (422)**
+
+        The following rules apply when a product is discontinued (soft-deleted):
+
+        - A new `sold_products` entry whose `product_id` refers to a discontinued product is rejected.
+
+        - For an existing treatment whose product is discontinued, `quantity`, `unit_id`, and `purchase_order_items`
+
+        (both the set of IDs and their quantities) must not differ from the stored values.
+
+
+        - For an existing `sold_services[].products` item whose product is discontinued, `quantity`, `unit_id`, and
+
+        `purchase_order_items` (both the set of IDs and their quantities) must not differ from the stored values.
+
+
+        - An existing sold item whose product is discontinued (or whose product no longer exists) may still be
+
+        removed by omitting it from the payload; no stock adjustment is made for it on removal.'
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      - name: new_response
+        in: query
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                remove_irrelevant_tasks:
+                  type: boolean
+                discount:
+                  type:
+                  - number
+                  - 'null'
+                  format: float
+                discount_percentage:
+                  type:
+                  - number
+                  - 'null'
+                  format: float
+                discount_type:
+                  type:
+                  - string
+                  - 'null'
+                  enum:
+                  - fixed
+                  - percentage
+                discount_reason:
+                  type:
+                  - object
+                  - 'null'
+                  properties:
+                    reason:
+                      type:
+                      - string
+                      - 'null'
+                    is_private:
+                      type: string
+                      enum:
+                      - public
+                      - private
+                predefined_discounts:
+                  type: array
+                  items:
                     type: integer
-                  total:
-                    type: integer
+                sold_products:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        description: ID of an existing treatment. Omit or set to null for new treatments.
+                      product_id:
+                        type: integer
+                        description: 'Product to sell. Cannot refer to a discontinued (soft-deleted) product when creating a new treatment.
+
+                          '
+                      vet_id:
+                        type: number
+                        format: float
+                      unit_id:
+                        type: string
+                        enum:
+                        - unit
+                        - subunit
+                        description: Cannot be changed for an existing treatment whose product is discontinued.
+                      unit:
+                        type: string
+                      quantity:
+                        type: number
+                        format: float
+                        description: Cannot be changed for an existing treatment whose product is discontinued.
+                      sale_price:
+                        type: number
+                        format: float
+                      sale_price_with_vat:
+                        type: number
+                        format: float
+                      vat:
+                        type: number
+                        format: float
+                        deprecated: true
+                        description: Deprecated for lines referencing a catalog item — use `tax_rate_ids`. Still required on write-in lines (no `product_id` / `service_package_id`).
+                      tax_rate_ids:
+                        type: array
+                        description: Tax rate ids to apply. Takes precedence over `vat` when present. Send at most the clinic's `max_tax_rates` (1 today).
+                        items:
+                          type: integer
+                        example:
+                        - 57
+                      price:
+                        type: number
+                        format: float
+                      sub_price:
+                        type: number
+                        format: float
+                      product_name:
+                        type: string
+                      label:
+                        type: string
+                      recommendations:
+                        type: string
+                      is_checkout_bought:
+                        type: boolean
+                      fixed_fee:
+                        type: number
+                        format: float
+                      include_fixed_fee:
+                        type: boolean
+                      discount_reason:
+                        type:
+                        - object
+                        - 'null'
+                        properties:
+                          reason:
+                            type:
+                            - string
+                            - 'null'
+                          is_private:
+                            type: string
+                            enum:
+                            - public
+                            - private
+                      discount:
+                        type: number
+                        format: float
+                      discount_percentage:
+                        type: number
+                        format: float
+                      discount_type:
+                        type: string
+                        enum:
+                        - fixed
+                        - percentage
+                      price_threshold_type:
+                        type: string
+                        enum:
+                        - minimum
+                        - maximum
+                      purchase_order_items:
+                        type: array
+                        description: 'For an existing treatment whose product is discontinued, the set of batch IDs and their quantities must exactly match the stored values. Any addition, removal, or quantity change results in a 422.
+
+                          '
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                              description: ID of the purchase order item (batch).
+                            quantity:
+                              type: number
+                              format: float
+                sold_services:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      service_package_id:
+                        type: integer
+                      quantity:
+                        type: number
+                        format: float
+                      price:
+                        type: number
+                        format: float
+                      unit_price:
+                        type: number
+                        format: float
+                      vat:
+                        type: number
+                        format: float
+                        deprecated: true
+                        description: Deprecated for lines referencing a catalog item — use `tax_rate_ids`. Still required on write-in lines (no `product_id` / `service_package_id`).
+                      tax_rate_ids:
+                        type: array
+                        description: Tax rate ids to apply. Takes precedence over `vat` when present. Send at most the clinic's `max_tax_rates` (1 today).
+                        items:
+                          type: integer
+                        example:
+                        - 57
+                      vet_id:
+                        type: number
+                        format: float
+                      name:
+                        type: string
+                      original_price:
+                        type: number
+                        format: float
+                      is_checkout_bought:
+                        type: boolean
+                      discount:
+                        type: number
+                        format: float
+                      discount_percentage:
+                        type: number
+                        format: float
+                      discount_type:
+                        type: string
+                        enum:
+                        - fixed
+                        - percentage
+                      discount_reason:
+                        type:
+                        - object
+                        - 'null'
+                        properties:
+                          reason:
+                            type:
+                            - string
+                            - 'null'
+                          is_private:
+                            type: string
+                            enum:
+                            - public
+                            - private
+                      aaha_code:
+                        type: string
+                      products:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                            product_id:
+                              type: integer
+                            units:
+                              type: array
+                            formula:
+                              type: number
+                              format: float
+                            unit_price_with_vat:
+                              type: number
+                              format: float
+                            subunit_price_with_vat:
+                              type: number
+                              format: float
+                            unit_id:
+                              type: string
+                              enum:
+                              - unit
+                              - subunit
+                              description: Cannot be changed for an existing service product whose product is discontinued.
+                            quantity:
+                              type: number
+                              format: float
+                              description: Cannot be changed for an existing service product whose product is discontinued.
+                            label:
+                              type: string
+                            recommendations:
+                              type: string
+                            name:
+                              type: string
+                            displayed:
+                              type: boolean
+                            purchase_order_items:
+                              type: array
+                              description: 'For an existing service product whose product is discontinued, the set of batch IDs and their quantities must exactly match the stored values. Any addition, removal, or quantity change results in a 422.
+
+                                '
+                              items:
+                                type: object
+                                properties:
+                                  id:
+                                    type: integer
+                                    description: ID of the purchase order item (batch).
+                                  quantity:
+                                    type: number
+                                    format: float
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/paths/~1api~1v1~1sales/post/responses/200/content/application~1json/schema/properties/data'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '422':
+          $ref: '#/paths/~1api~1v1~1plans/get/responses/422'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: putApiV1SalesById
+      x-operation-id-source: derived
+  /api/v1/sales/{id}/pay-with-credit:
+    post:
+      tags:
+      - Sales
+      summary: Pay Sale with client credit
+      description: 'Permissions needed: any of (CREATE_CHECKUPS, VIEW_COUNTER_SALE)
+
+        If amount sent is greater than sale amount due, after the sale is paid, difference between amount sent and sale amount due is used to pay outstanding balance sales.'
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                amount:
+                  type: number
+                  format: double
+                  example: 100,00
+                type:
+                  description: Payment from client credit has type 8
+                  type: integer
+                  default: 8
+                date:
+                  description: Payment date.
+                  type: string
+                  format: date-time
+                notes:
+                  description: Payment notes - if not sent then the notes from the charge will be used
+                  type: string
+                  example: Paid with credit
+      responses:
+        '200':
+          description: Successful operation - return sale's payments
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    title: Payment
+                    description: A payment is the act of allocating a charge to a sale. A payment can be made in full or partially.
+                    properties:
+                      id:
+                        type: integer
+                        example: 6
+                      amount:
+                        type: number
+                        format: double
+                        example: '100.00'
+                      amount_refunded:
+                        type: number
+                        format: double
+                        example: '0.00'
+                      amount_left:
+                        type: number
+                        format: double
+                        example: '0.00'
+                      made_at:
+                        type: string
+                        format: date-time
+                        example: '2023-12-14T11:32:44.000000Z'
+                      notes:
+                        type:
+                        - string
+                        - 'null'
+                        example: ''
+                      type:
+                        type: integer
+                        enum:
+                        - 1
+                        - 2
+                        - 3
+                        - 4
+                        - 5
+                        - 6
+                        - 7
+                        - 8
+                        - 9
+                        - 10
+                        - 11
+                        description: 'Payment method the allocated charge was made with. `1` - Cash `2` - Card `3` - Order `4` - Overdraft `5` - Online `6` - Check `7` - Other `8` - Client Credit `9` - Care Credit `10` - Pet Transfer Acquitted `11` - Credit Note
+
+                          '
+                        example: 2
+                      sale_id:
+                        type: integer
+                        example: 5
+                      sale:
+                        type: object
+                        $ref: '#/paths/~1api~1v1~1sales/post/responses/200/content/application~1json/schema/properties/data'
+                      charge_id:
+                        type: integer
+                        example: 4
+                      charge:
+                        type: object
+                        $ref: '#/paths/~1api~1v1~1charges/post/responses/201/content/application~1json/schema/properties/data'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '422':
+          $ref: '#/paths/~1api~1v1~1plans/get/responses/422'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: postApiV1SalesByIdPayWithCredit
+      x-operation-id-source: derived
+components:
   securitySchemes:
-    oauth2:
+    passport:
       type: oauth2
-      description: OAuth 2.0 authorization-code grant with PKCE. Bearer access token is long-lived; a refresh token is also returned.
+      description: Laravel passport oauth2 security.
       flows:
         authorizationCode:
-          authorizationUrl: https://vet.digitail.io/oauth/authorize
-          tokenUrl: https://vet.digitail.io/oauth/token
-          refreshUrl: https://vet.digitail.io/oauth/token
-          scopes: {}
-externalDocs:
-  description: Digitail API Documentation
-  url: https://documentation.digitail.io/
+          authorizationUrl: https://developer.digitail.io/oauth/authorize
+          tokenUrl: https://developer.digitail.io/oauth/token
+          refreshUrl: https://developer.digitail.io/oauth/token
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

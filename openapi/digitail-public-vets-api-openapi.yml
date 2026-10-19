@@ -1,0 +1,103 @@
+openapi: 3.2.0
+info:
+  title: Digitail Public Vets API
+  description: Digitail API
+  contact:
+    email: developer@digitail.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+- url: https://developer.digitail.io
+  description: Sandbox server (uses test data)
+- url: https://vet.digitail.io
+  description: Production server (uses live data)
+security:
+- passport: []
+- Bearer: []
+tags:
+- name: Public Vets
+paths:
+  /api/v1/public/vets:
+    get:
+      tags:
+      - Public Vets
+      summary: List all Public Vets
+      description: 'Permissions needed: NONE
+
+        Returns the list of clinic vets.'
+      security: []
+      parameters:
+      - name: filter[clinic_slug]
+        in: query
+        description: Clinic slug
+        required: true
+        schema:
+          type: string
+      - name: sort
+        in: query
+        description: Order by field(s) (first_name) Use a minus before for descending order -first_name
+        required: false
+        schema:
+          type: string
+      - $ref: '#/paths/~1api~1v1~1tags/get/parameters/5'
+      - $ref: '#/paths/~1api~1v1~1pets/get/parameters/11'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      title: Vet
+                      properties:
+                        id:
+                          type: integer
+                          example: 1
+                        first_name:
+                          type: string
+                          example: John
+                        last_name:
+                          type: string
+                          example: Doe
+                        full_name:
+                          type: string
+                          example: John Doe
+                        avatar:
+                          type: string
+                          example: https://vet.digitail.io/images/profilepic.jpg
+                        job_title:
+                          type:
+                          - string
+                          - 'null'
+                          example: Dr.
+                  links:
+                    $ref: '#/paths/~1api~1v1~1pets/get/responses/200/content/application~1json/schema/properties/links'
+                  meta:
+                    $ref: '#/paths/~1api~1v1~1pets/get/responses/200/content/application~1json/schema/properties/meta'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: getApiV1PublicVets
+      x-operation-id-source: derived
+components:
+  securitySchemes:
+    passport:
+      type: oauth2
+      description: Laravel passport oauth2 security.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://developer.digitail.io/oauth/authorize
+          tokenUrl: https://developer.digitail.io/oauth/token
+          refreshUrl: https://developer.digitail.io/oauth/token
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

@@ -1,62 +1,676 @@
 openapi: 3.2.0
 info:
-  title: Digitail Open Vets API
-  version: v1
-  description: Modeled OpenAPI for the Digitail Open API, a documented REST API for the Digitail cloud veterinary practice management platform (PIMS).
+  title: Digitail Vets API
+  description: Digitail API
   contact:
-    name: API Evangelist
-    email: kin@apievangelist.com
-  x-endpoints-modeled: true
+    email: developer@digitail.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
 servers:
-- url: https://developer.digitail.io/api/v1
-  description: Digitail Open API v1
+- url: https://developer.digitail.io
+  description: Sandbox server (uses test data)
+- url: https://vet.digitail.io
+  description: Production server (uses live data)
 security:
-- oauth2: []
+- passport: []
+- Bearer: []
 tags:
 - name: Vets
+  description: Api Endpoints For Vets
 paths:
-  /vets/{id}:
+  /api/v1/vets:
     get:
-      operationId: retrieveVet
-      summary: Retrieve a vet
-      description: Retrieve a single veterinarian record. Confirmed endpoint.
       tags:
       - Vets
+      summary: List all Vets
+      description: 'Permissions needed: ACCESS_PATIENTS
+
+        Returns the Vet list from a clinic'
       parameters:
-      - $ref: '#/components/parameters/idPath'
+      - name: filter[clinic_id]
+        in: query
+        description: Clinic IDs (comma separated)
+        required: true
+        schema:
+          type: string
+      - $ref: '#/paths/~1api~1v1~1pets/get/parameters/1'
+      - name: filter[id]
+        in: query
+        description: Ids of the entities that are related to the endpoint
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: integer
+      - name: filter[query]
+        description: Search query string
+        required: false
+        in: query
+        schema:
+          type: string
+      - name: filter[email]
+        in: query
+        description: Vet email
+        required: false
+        schema:
+          type: string
+      - name: filter[active]
+        in: query
+        description: Filter only by vets that are active. Exclude to get all vets.
+        required: false
+        schema:
+          type: boolean
+          enum:
+          - active
+      - name: filter[status]
+        in: query
+        description: '`0` - Inactive `1` - Active
+
+          '
+        required: false
+        schema:
+          type: integer
+          enum:
+          - 0
+          - 1
+      - name: filter[is_available_for_appointments]
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: filter[is_visible_on_calendar]
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - $ref: '#/paths/~1api~1v1~1tags/get/parameters/4'
+      - name: filter[vet_role_id]
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: filter[available_between]
+        in: query
+        description: 'Filter by availability. Format: YYYY-MM-DD,YYYY-MM-DD or YYYY-MM-DD'
+        required: false
+        schema:
+          type: string
+      - name: filter[type]
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - veterinarian
+          - technician
+          - groomer
+          - practice_manager
+          - receptionist
+          - support_staff
+      - name: filter[visit_type_id]
+        in: query
+        description: Filter by visit type ID
+        required: false
+        schema:
+          type: string
+      - name: filter[booking_status]
+        in: query
+        description: Filter by booking status
+        required: false
+        schema:
+          type: string
+          enum:
+          - inactive
+          - staffing_only
+          - internal_needs_setup
+          - internal_ready
+          - online_needs_setup
+          - online_ready
+      - name: filter[team_id]
+        in: query
+        description: Filter by team ID
+        required: false
+        schema:
+          type: string
+      - name: include
+        in: query
+        description: 'Additional info to include. You can use multiple, comma separated.  Options: multipleClinic, multipleClinic.rooms, vetRolesAll, services, visitTypes, employee.chatUser, employees.teams, colleague_order, shifts, employees.vet.visitTypes, employees.vet.shifts, employees.clinic. employee.chatUser manages has_chat_user attribute, true if chatUser is active, false if non-existent or inactive'
+        required: false
+        schema:
+          type: string
+      - name: sort
+        in: query
+        description: Order by field(s) (status, first_name, last_name, colleague_order) Use a minus before for descending order -status
+        required: false
+        schema:
+          type: string
+      - $ref: '#/paths/~1api~1v1~1tags/get/parameters/5'
+      - $ref: '#/paths/~1api~1v1~1pets/get/parameters/11'
       responses:
         '200':
-          $ref: '#/components/responses/Resource'
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/paths/~1api~1v1~1vets~1%7Bid%7D/get/responses/200/content/application~1json/schema/properties/data'
+                  links:
+                    $ref: '#/paths/~1api~1v1~1pets/get/responses/200/content/application~1json/schema/properties/links'
+                  meta:
+                    $ref: '#/paths/~1api~1v1~1pets/get/responses/200/content/application~1json/schema/properties/meta'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
         '401':
-          $ref: '#/components/responses/Unauthorized'
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: getApiV1Vets
+      x-operation-id-source: derived
+  /api/v1/vets/{id}:
+    get:
+      tags:
+      - Vets
+      summary: Retrieve a Vet
+      description: 'Permissions needed: ACCESS_PATIENTS
+
+        Returns a Vet entity'
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      - name: include
+        in: query
+        description: 'Additional relations to include(Ex.: multipleClinic, multipleClinic.rooms, vetRolesAll, services, visitTypes, employees.teams)'
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    title: Vet
+                    description: A vet is the user of the system. A vet is any member of the animal hospital staff that has an account in Digitail. Each user has a specific role in the system and can be associated with multiple clinics.
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      first_name:
+                        type: string
+                        example: John
+                      last_name:
+                        type: string
+                        example: Doe
+                      full_name:
+                        type: string
+                        example: John Doe
+                      name_with_title:
+                        type: string
+                        example: Dr. John Doe
+                      email:
+                        type: string
+                        example: vet@example.com
+                      phone:
+                        type: string
+                        example: '123456789'
+                      avatar:
+                        type: string
+                        example: https://vet.digitail.io/images/profilepic.jpg
+                      stamp:
+                        type:
+                        - string
+                        - 'null'
+                        example: https://vet.digitail.io/images/signature.jpg
+                      license_number:
+                        type:
+                        - string
+                        - 'null'
+                        example: '123456789'
+                      job_title:
+                        type: string
+                        example: Dr.
+                      deleted_at:
+                        type:
+                        - string
+                        - 'null'
+                        format: date-time
+                        example: null
+                      active:
+                        type: boolean
+                        example: true
+                      video_link:
+                        type:
+                        - string
+                        - 'null'
+                        example: https://digitail.com/video
+                      public_appointment_link:
+                        type: string
+                        example: https://digitail.com/clinics/clinic-slug/vet-slug
+                      type:
+                        type:
+                        - string
+                        - 'null'
+                        enum:
+                        - veterinarian
+                        - technician
+                        - groomer
+                        - practice_manager
+                        - receptionist
+                        - support_staff
+                      two_factor_enabled:
+                        type: boolean
+                        example: true
+                      has_chat_user:
+                        description: true if chatUser is active, false if non-existent or inactive
+                        type: boolean
+                        example: true
+                      colleague_order:
+                        type:
+                        - integer
+                        - 'null'
+                        example: 1
+                      is_visible_on_calendar:
+                        type:
+                        - boolean
+                        - 'null'
+                      employees:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            clinic_id:
+                              type: integer
+                            vet_role_id:
+                              type: integer
+                            is_available_for_appointments:
+                              type: boolean
+                            is_visible_on_calendar:
+                              type: boolean
+                            type:
+                              type: string
+                            teams:
+                              type:
+                              - array
+                              - 'null'
+                              items:
+                                $ref: '#/paths/~1api~1v1~1vets~1%7Bid%7D/get/responses/200/content/application~1json/schema/properties/data/properties/teams/items'
+                      teams:
+                        type:
+                        - array
+                        - 'null'
+                        items:
+                          type:
+                          - object
+                          - 'null'
+                          title: Team
+                          properties:
+                            id:
+                              type: integer
+                            name:
+                              type: string
+                            handle:
+                              type: string
+                            clinic_id:
+                              type: integer
+                            description:
+                              type:
+                              - string
+                              - 'null'
+                            type:
+                              type: string
+                              enum:
+                              - by_vet
+                              - by_vet_type
+                            status:
+                              type: string
+                              enum:
+                              - active
+                              - inactive
+                            color:
+                              type:
+                              - string
+                              - 'null'
+                            vet_types:
+                              type:
+                              - array
+                              - 'null'
+                              items:
+                                type: string
+                                enum:
+                                - veterinarian
+                                - technician
+                                - groomer
+                                - practice_manager
+                                - receptionist
+                                - support_staff
+                            vets:
+                              type: array
+                              items:
+                                $ref: '#/paths/~1api~1v1~1vets~1%7Bid%7D~1colleagues-calendar-order/get/responses/200/content/application~1json/schema/properties/data/items'
+                            vets_count:
+                              type:
+                              - integer
+                              - 'null'
+                      visit_types:
+                        type: array
+                        items:
+                          $ref: '#/paths/~1api~1v1~1records/post/responses/201/content/application~1json/schema/properties/data/properties/visit_types/items'
+                      booking_status:
+                        type:
+                        - string
+                        - 'null'
+                        enum:
+                        - inactive
+                        - staffing_only
+                        - internal_needs_setup
+                        - internal_ready
+                        - online_needs_setup
+                        - online_ready
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: getApiV1VetsById
+      x-operation-id-source: derived
+  /api/v1/vets/{id}/colleagues-calendar-order:
+    get:
+      tags:
+      - Vets
+      summary: List colleagues calendar order for Vet
+      description: 'Permissions needed: NONE
+
+        Vet get colleagues calendar order'
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      title: OldVet
+                      properties:
+                        id:
+                          type: integer
+                          example: 1
+                        first_name:
+                          type: integer
+                          example: John
+                        last_name:
+                          type: string
+                          example: Doe
+                        full_name:
+                          type: string
+                          example: John Doe
+                        name_with_title:
+                          type: string
+                          example: Dr. John Doe
+                        avatar:
+                          type: string
+                          example: http://digitail.test/images/profilepic.jpg
+                        job_title:
+                          type: string
+                          example: Dr.
+                        active:
+                          type: boolean
+                          example: true
+                        clinic:
+                          type: array
+                          items:
+                            type: integer
+                          example:
+                          - 1
+                          - 2
+                        listing_index:
+                          type: integer
+                          example: 1
+                        video_link:
+                          type:
+                          - string
+                          - 'null'
+                          example: https://digitail.com/video
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: getApiV1VetsByIdColleaguesCalendarOrder
+      x-operation-id-source: derived
+    post:
+      tags:
+      - Vets
+      summary: Update colleagues calendar order for Vet
+      description: 'Permissions needed: NONE
+
+        Vet change colleagues calendar order'
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      vet_colleague_id:
+                        type: integer
+                        example: 1
+                      vet_colleague_index:
+                        type: integer
+                        example: 1
+                return_vets:
+                  type: boolean
+                  example: true
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/paths/~1api~1v1~1vets~1%7Bid%7D~1colleagues-calendar-order/get/responses/200/content/application~1json/schema/properties/data/items'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '422':
+          $ref: '#/paths/~1api~1v1~1plans/get/responses/422'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: postApiV1VetsByIdColleaguesCalendarOrder
+      x-operation-id-source: derived
+  /api/v1/vets/{id}/schedule:
+    get:
+      tags:
+      - Vets
+      summary: Retrieve Vet Schedule
+      description: 'Permissions needed: NONE
+
+        Get Schedule by Clinic id and Vet id'
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      - name: filter[clinic_id]
+        in: query
+        description: clinic id
+        required: true
+        schema:
+          type: integer
+      - name: filter[start_date]
+        in: query
+        description: Date
+        required: true
+        schema:
+          type: string
+          format: date
+          example: '2023-07-01'
+      - name: filter[end_date]
+        in: query
+        description: Date, can be skipped for one day schedule
+        required: false
+        schema:
+          type: string
+          format: date
+          example: '2023-07-04'
+      - name: visit_type_id
+        in: query
+        description: visit_type_id for calc available slots, required one of service_id, visit_type_id or duration
+        required: false
+        schema:
+          type: integer
+      - name: duration
+        in: query
+        description: duration in minutes for calc available slots, required one of visit_type_id or duration
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      title: VetSchedule
+                      properties:
+                        weekday:
+                          type: integer
+                          example: 1
+                        is_open:
+                          type: boolean
+                          example: true
+                        date:
+                          type: string
+                          format: date
+                          example: '2022-02-22'
+                        intervals:
+                          type: array
+                          items:
+                            properties:
+                              start_time:
+                                type: string
+                                format: date-time
+                                example: '2022-02-22T10:00:00.000000Z'
+                              end_time:
+                                type: string
+                                format: date-time
+                                example: '2022-02-22T10:30:00.000000Z'
+                        appointments:
+                          type: array
+                          items:
+                            properties:
+                              id:
+                                type: integer
+                              start_time:
+                                type: string
+                                format: date-time
+                                example: '2022-02-22T10:00:00.000000Z'
+                              end_time:
+                                type: string
+                                format: date-time
+                                example: '2022-02-22T10:30:00.000000Z'
+                        events:
+                          type: array
+                          items:
+                            properties:
+                              start_time:
+                                type: string
+                                format: date-time
+                                example: '2022-02-22T10:00:00.000000Z'
+                              end_time:
+                                type: string
+                                format: date-time
+                                example: '2022-02-22T10:30:00.000000Z'
+                        shift_rules:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: integer
+                              name:
+                                type:
+                                - string
+                                - 'null'
+                              time_start:
+                                type: string
+                                example: '11:00:00'
+                              time_end:
+                                type: string
+                                example: '12:00:00'
+                              color:
+                                type:
+                                - string
+                                - 'null'
+                                example: '#FF0000'
+                              type:
+                                type: string
+                                enum:
+                                - available
+                                - unbookable
+                              visit_types:
+                                type:
+                                - array
+                                - 'null'
+                                items:
+                                  $ref: '#/paths/~1api~1v1~1records/post/responses/201/content/application~1json/schema/properties/data/properties/visit_types/items'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: getApiV1VetsByIdSchedule
+      x-operation-id-source: derived
 components:
-  responses:
-    Unauthorized:
-      description: Missing or invalid OAuth 2.0 bearer token.
-    Resource:
-      description: A single resource.
-      content:
-        application/json:
-          schema:
-            type: object
-  parameters:
-    idPath:
-      name: id
-      in: path
-      description: Resource identifier.
-      required: true
-      schema:
-        type: integer
   securitySchemes:
-    oauth2:
+    passport:
       type: oauth2
-      description: OAuth 2.0 authorization-code grant with PKCE. Bearer access token is long-lived; a refresh token is also returned.
+      description: Laravel passport oauth2 security.
       flows:
         authorizationCode:
-          authorizationUrl: https://vet.digitail.io/oauth/authorize
-          tokenUrl: https://vet.digitail.io/oauth/token
-          refreshUrl: https://vet.digitail.io/oauth/token
-          scopes: {}
-externalDocs:
-  description: Digitail API Documentation
-  url: https://documentation.digitail.io/
+          authorizationUrl: https://developer.digitail.io/oauth/authorize
+          tokenUrl: https://developer.digitail.io/oauth/token
+          refreshUrl: https://developer.digitail.io/oauth/token
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

@@ -424,6 +424,167 @@ apis:
     url: https://documentation.digitail.io/retrieve-a-vet
   - type: APIReference
     url: https://documentation.digitail.io/retrieve-a-clinic
+- aid: digitail:digitail-authentication-api
+  name: Digitail Authentication API
+  description: Current User information
+  humanURL: https://documentation.digitail.io/list-all-pets
+  baseURL: https://developer.digitail.io/api/v1
+  tags:
+  - Authentication
+  properties:
+  - type: OpenAPI
+    url: openapi/digitail-authentication-api-openapi.yml
+- aid: digitail:digitail-bloodtypes-api
+  name: Digitail Blood Types API
+  description: Get list of blood types per species
+  humanURL: https://documentation.digitail.io/list-all-pets
+  baseURL: https://developer.digitail.io/api/v1
+  tags:
+  - BloodTypes
+  properties:
+  - type: OpenAPI
+    url: openapi/digitail-bloodtypes-api-openapi.yml
+- aid: digitail:digitail-client-communication-api
+  name: Digitail Client Communication API
+  description: Api Endpoints related to communications between a Clinic and a PetParent
+  humanURL: https://documentation.digitail.io/list-all-pets
+  baseURL: https://developer.digitail.io/api/v1
+  tags:
+  - Client Communication
+  properties:
+  - type: OpenAPI
+    url: openapi/digitail-client-communication-api-openapi.yml
+- aid: digitail:digitail-credit-notes-api
+  name: Digitail Credit Notes API
+  description: Api Endpoints For Credit Notes
+  humanURL: https://documentation.digitail.io/list-all-pets
+  baseURL: https://developer.digitail.io/api/v1
+  tags:
+  - Credit Notes
+  properties:
+  - type: OpenAPI
+    url: openapi/digitail-credit-notes-api-openapi.yml
+- aid: digitail:digitail-patient-estimates-api
+  name: Digitail Patient Estimates API
+  description: The Patient Estimates API from Digitail — 1 operation(s) for patient estimates.
+  humanURL: https://documentation.digitail.io/list-all-pets
+  baseURL: https://developer.digitail.io/api/v1
+  tags:
+  - Patient Estimates
+  properties:
+  - type: OpenAPI
+    url: openapi/digitail-patient-estimates-api-openapi.yml
+- aid: digitail:digitail-periodical-treatments-api
+  name: Digitail Periodical Treatments API
+  description: Api Endpoints For Pet's Preventive Care
+  humanURL: https://documentation.digitail.io/list-all-pets
+  baseURL: https://developer.digitail.io/api/v1
+  tags:
+  - Periodical Treatments
+  properties:
+  - type: OpenAPI
+    url: openapi/digitail-periodical-treatments-api-openapi.yml
+- aid: digitail:digitail-pets-archive-api
+  name: Digitail Pets Archive API
+  description: The Pets Archive API from Digitail — 3 operation(s) for pets archive.
+  humanURL: https://documentation.digitail.io/list-all-pets
+  baseURL: https://developer.digitail.io/api/v1
+  tags:
+  - Pets Archive
+  properties:
+  - type: OpenAPI
+    url: openapi/digitail-pets-archive-api-openapi.yml
+- aid: digitail:digitail-product-api
+  name: Digitail Product API
+  description: The Product API from Digitail — 2 operation(s) for product.
+  humanURL: https://documentation.digitail.io/list-all-pets
+  baseURL: https://developer.digitail.io/api/v1
+  tags:
+  - Product
+  properties:
+  - type: OpenAPI
+    url: openapi/digitail-product-api-openapi.yml
+- aid: digitail:digitail-public-clinics-api
+  name: Digitail Public Clinics API
+  description: The Public Clinics API from Digitail — 4 operation(s) for public clinics.
+  humanURL: https://documentation.digitail.io/list-all-pets
+  baseURL: https://developer.digitail.io/api/v1
+  tags:
+  - Public Clinics
+  properties:
+  - type: OpenAPI
+    url: openapi/digitail-public-clinics-api-openapi.yml
+- aid: digitail:digitail-public-vets-api
+  name: Digitail Public Vets API
+  description: The Public Vets API from Digitail — 1 operation(s) for public vets.
+  humanURL: https://documentation.digitail.io/list-all-pets
+  baseURL: https://developer.digitail.io/api/v1
+  tags:
+  - Public Vets
+  properties:
+  - type: OpenAPI
+    url: openapi/digitail-public-vets-api-openapi.yml
+- aid: digitail:digitail-reminder-protocol-usages-api
+  name: Digitail Reminder Protocol Usages API
+  description: >-
+    The Reminder Protocol Usages API from Digitail — 4 operation(s) for reminder protocol usages.
+  humanURL: https://documentation.digitail.io/list-all-pets
+  baseURL: https://developer.digitail.io/api/v1
+  tags:
+  - Reminder Protocol Usages
+  properties:
+  - type: OpenAPI
+    url: openapi/digitail-reminder-protocol-usages-api-openapi.yml
+- aid: digitail:digitail-roles-api
+  name: Digitail Roles API
+  description: The Roles API from Digitail — 4 operation(s) for roles.
+  humanURL: https://documentation.digitail.io/list-all-pets
+  baseURL: https://developer.digitail.io/api/v1
+  tags:
+  - Roles
+  properties:
+  - type: OpenAPI
+    url: openapi/digitail-roles-api-openapi.yml
+- aid: digitail:digitail-service-packages-api
+  name: Digitail Service Packages API
+  description: Api Endpoints For Service Packages
+  humanURL: https://documentation.digitail.io/list-all-pets
+  baseURL: https://developer.digitail.io/api/v1
+  tags:
+  - Service Packages
+  properties:
+  - type: OpenAPI
+    url: openapi/digitail-service-packages-api-openapi.yml
+- aid: digitail:digitail-tags-api
+  name: Digitail Tags API
+  description: Api Endpoints For Tags and Taggables management(for Pet;Owner)
+  humanURL: https://documentation.digitail.io/list-all-pets
+  baseURL: https://developer.digitail.io/api/v1
+  tags:
+  - Tags
+  properties:
+  - type: OpenAPI
+    url: openapi/digitail-tags-api-openapi.yml
+- aid: digitail:digitail-wellness-plans-api
+  name: Digitail Wellness Plans API
+  description: The Wellness Plans API from Digitail — 3 operation(s) for wellness plans.
+  humanURL: https://documentation.digitail.io/list-all-pets
+  baseURL: https://developer.digitail.io/api/v1
+  tags:
+  - Wellness Plans
+  properties:
+  - type: OpenAPI
+    url: openapi/digitail-wellness-plans-api-openapi.yml
+- aid: digitail:digitail-purchase-orders-api
+  name: Digitail Purchase Orders API
+  description: Api Endpoints For Purchase Orders
+  humanURL: https://documentation.digitail.io/list-all-pets
+  baseURL: https://developer.digitail.io/api/v1
+  tags:
+  - Purchase Orders
+  properties:
+  - type: OpenAPI
+    url: openapi/digitail-purchase-orders-api-openapi.yml
 common:
 - type: AgenticAccess
   url: agentic-access/digitail-agentic-access.yml

@@ -1,0 +1,443 @@
+openapi: 3.2.0
+info:
+  title: Digitail Tags API
+  description: Digitail API
+  contact:
+    email: developer@digitail.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+- url: https://developer.digitail.io
+  description: Sandbox server (uses test data)
+- url: https://vet.digitail.io
+  description: Production server (uses live data)
+security:
+- passport: []
+- Bearer: []
+tags:
+- name: Tags
+  description: Api Endpoints For Tags and Taggables management(for Pet;Owner)
+paths:
+  /api/v1/tags:
+    get:
+      tags:
+      - Tags
+      summary: List all tags
+      description: 'Permissions needed: NONE
+
+        Returns list of Tags'
+      parameters:
+      - name: filter[entity_type]
+        in: query
+        description: Entity Type (Ex. <i>App\\Models\\Pet<i>, <i>App\\Models\\User<i>)
+        required: true
+        schema:
+          type: string
+          enum:
+          - App\\Models\\Pet
+          - App\\Models\\User
+      - name: filter[color_level]
+        in: query
+        description: Tag Color (any hex color, ex:<i>#FF0000</i>)
+        required: false
+        schema:
+          type: integer
+      - name: filter[value]
+        in: query
+        description: Tag name
+        required: false
+        schema:
+          type: string
+      - $ref: '#/paths/~1api~1v1~1pets/get/parameters/0'
+      - name: filter[trashed]
+        in: query
+        description: 'Allow to include soft-deleted items (<i>with</i>: include soft-deleted records to the result set; <i>only</i>: return only ''trashed'' records at the result set)'
+        required: false
+        schema:
+          type: string
+      - name: page
+        in: query
+        description: Page (on pagination, default 1)
+        required: false
+        schema:
+          type: integer
+          default: 1
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/paths/~1api~1v1~1tags/post/responses/201/content/application~1json/schema/properties/data'
+                  links:
+                    $ref: '#/paths/~1api~1v1~1pets/get/responses/200/content/application~1json/schema/properties/links'
+                  meta:
+                    $ref: '#/paths/~1api~1v1~1pets/get/responses/200/content/application~1json/schema/properties/meta'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: getApiV1Tags
+      x-operation-id-source: derived
+    post:
+      tags:
+      - Tags
+      summary: Create a Tag
+      description: 'Permissions needed: NONE
+
+        Create a new Tag record'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                entity_type:
+                  description: Tag type (on what entities it can be used)
+                  type: string
+                  enum:
+                  - pet
+                  - user
+                  example: pet
+                clinic_id:
+                  description: Clinic Id.
+                  type: integer
+                  example: 766
+                color_level:
+                  description: Tag Color (any hex color, ex:<i>#FF0000</i>)
+                  type: string
+                  example: '#FF0000'
+                value:
+                  description: Tag value
+                  type: string
+                  example: Happy
+      responses:
+        '201':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    title: Tag
+                    description: Tags are purely informative and can be used to categorize pets or petParents in the system.
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      entity_type:
+                        type: string
+                        enum:
+                        - App\\Models\\Pet
+                        - App\\Models\\User
+                        example: App\\Models\\Pet
+                      clinic_id:
+                        type: integer
+                        example: 766
+                      color_level:
+                        type: string
+                        example: '#FF0000'
+                      value:
+                        type: string
+                        example: Happy
+                      created_at:
+                        type: string
+                        format: date-time
+                        example: '2021-10-05T12:52:53.000000Z'
+                      deleted_at:
+                        type:
+                        - string
+                        - 'null'
+                        format: date-time
+                        example: null
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: postApiV1Tags
+      x-operation-id-source: derived
+  /api/v1/tags/{id}:
+    get:
+      tags:
+      - Tags
+      summary: Update a Tag
+      description: 'Permissions needed: NONE
+
+        Returns a Tag record'
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/paths/~1api~1v1~1tags/post/responses/201/content/application~1json/schema/properties/data'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: getApiV1TagsById
+      x-operation-id-source: derived
+    delete:
+      tags:
+      - Tags
+      summary: Delete a Tag
+      description: 'Permissions needed: NONE
+
+        Soft Delete a Tag'
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      responses:
+        '204':
+          $ref: '#/paths/~1api~1v1~1sales/delete/responses/204'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: deleteApiV1TagsById
+      x-operation-id-source: derived
+  /api/v1/taggables:
+    get:
+      tags:
+      - Tags
+      summary: list all Taggables
+      description: 'Permissions needed: NONE
+
+        Returns list of Taggables'
+      parameters:
+      - name: filter[entity_type]
+        in: query
+        description: Entity Type (Ex. <i>App\Models\Pet<i>, <i>Pet<i>, <i>pet<i>; <i>user<i>)
+        required: true
+        schema:
+          type: string
+      - name: filter[entity_id]
+        in: query
+        description: Entity ID (<font color='red'>required</font> if filter[tag_id] is not set)
+        required: false
+        schema:
+          type: integer
+      - name: filter[tag_id]
+        in: query
+        description: Tag Id
+        required: false
+        schema:
+          type: integer
+      - name: filter[color_level]
+        in: query
+        description: Tag Color (any hex color, ex:<i>#FF0000</i>)
+        required: false
+        schema:
+          type: integer
+      - $ref: '#/paths/~1api~1v1~1pets/get/parameters/0'
+      - $ref: '#/paths/~1api~1v1~1tags/get/parameters/4'
+      - name: include
+        in: query
+        description: Additional relation to include(ex:<i>tag</i>)
+        required: false
+        schema:
+          type: string
+          default: tag
+      - $ref: '#/paths/~1api~1v1~1tags/get/parameters/5'
+      - $ref: '#/paths/~1api~1v1~1pets/get/parameters/11'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/paths/~1api~1v1~1taggables/post/responses/201/content/application~1json/schema/properties/data'
+                  links:
+                    $ref: '#/paths/~1api~1v1~1pets/get/responses/200/content/application~1json/schema/properties/links'
+                  meta:
+                    $ref: '#/paths/~1api~1v1~1pets/get/responses/200/content/application~1json/schema/properties/meta'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: getApiV1Taggables
+      x-operation-id-source: derived
+    post:
+      tags:
+      - Tags
+      summary: Create a Taggable
+      description: 'Permissions needed: NONE
+
+        Store Taggable record'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                entity_type:
+                  description: Entity type.
+                  type: string
+                  enum:
+                  - pet
+                  - user
+                  example: pet
+                entity_id:
+                  description: Entity Id.
+                  type: integer
+                  example: 1
+                tag_id:
+                  description: Tag Id.
+                  type: integer
+                  example: 1
+      responses:
+        '201':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    title: Taggable
+                    description: Taggable is the pivot in the many-to-many relationship between a tag and an entity (petParent or pet)
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      entity_type:
+                        type: string
+                        enum:
+                        - App\\Models\\Pet
+                        - App\\Models\\User
+                        example: App\\Models\\Pet
+                      entity_id:
+                        type: integer
+                        example: 1
+                      tag_id:
+                        type: integer
+                        example: 1
+                      created_at:
+                        type: string
+                        format: date-time
+                        example: '2021-11-15T11:37:46.000000Z'
+                      deleted_at:
+                        type:
+                        - string
+                        - 'null'
+                        format: date-time
+                        example: null
+                      tag:
+                        $ref: '#/paths/~1api~1v1~1tags/post/responses/201/content/application~1json/schema/properties/data'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: postApiV1Taggables
+      x-operation-id-source: derived
+  /api/v1/taggables/{id}:
+    get:
+      tags:
+      - Tags
+      summary: Retrieve a Taggable
+      description: 'Permissions needed: NONE
+
+        Returns a Taggable record by id'
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/paths/~1api~1v1~1taggables/post/responses/201/content/application~1json/schema/properties/data'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: getApiV1TaggablesById
+      x-operation-id-source: derived
+    delete:
+      tags:
+      - Tags
+      summary: Delete a Taggable
+      description: 'Permissions needed: NONE
+
+        Soft Delete a Taggable record'
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      responses:
+        '204':
+          $ref: '#/paths/~1api~1v1~1sales/delete/responses/204'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: deleteApiV1TaggablesById
+      x-operation-id-source: derived
+components:
+  securitySchemes:
+    passport:
+      type: oauth2
+      description: Laravel passport oauth2 security.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://developer.digitail.io/oauth/authorize
+          tokenUrl: https://developer.digitail.io/oauth/token
+          refreshUrl: https://developer.digitail.io/oauth/token
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

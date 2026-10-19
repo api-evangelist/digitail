@@ -1,0 +1,725 @@
+openapi: 3.2.0
+info:
+  title: Digitail Purchase Orders API
+  description: Digitail API
+  contact:
+    email: developer@digitail.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+- url: https://developer.digitail.io
+  description: Sandbox server (uses test data)
+- url: https://vet.digitail.io
+  description: Production server (uses live data)
+security:
+- passport: []
+- Bearer: []
+tags:
+- name: Purchase Orders
+  description: Api Endpoints For Purchase Orders
+paths:
+  /api/v1/external-purchase-orders:
+    post:
+      tags:
+      - Purchase Orders
+      summary: Create a purchase order from an external provider payload
+      description: 'Permissions needed: `CREATE_ORDERS`.
+
+
+        Imports a purchase order from an external provider payload (the same payload shape consumed by the Vetcove webhook), under standard API authentication.
+
+
+        The authenticated vet becomes the purchase order''s vet. The target clinic is resolved from the auth context via the `X-ClinicId` header; when omitted it falls back to the authenticated vet''s active clinic. The clinic is never read from the request body.
+
+
+        For each item the importer finds or creates the product (and its manufacturer/producer), computes `cogs` from `unit_price` and `units`, and creates the purchase order line. The supplier is matched or created from `supplier.name`. The created purchase order is returned synchronously with status `PENDING`, document type `INVOICE`, and series `EXTERNAL`.'
+      parameters:
+      - name: X-ClinicId
+        in: header
+        required: false
+        description: 'Id of the clinic to create the purchase order for. Must be a clinic the authenticated vet is employed by. Defaults to the vet''s active clinic.
+
+          '
+        schema:
+          type: integer
+          example: 605
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - timestamp
+              - id
+              - supplier
+              - items
+              properties:
+                timestamp:
+                  type: string
+                  format: date-time
+                  description: 'Purchase order timestamp. Used for both the purchase order date and the document date.
+
+                    '
+                  example: '2025-06-11T10:00:00.000Z'
+                id:
+                  description: Provider purchase order id, stored as the document number.
+                  oneOf:
+                  - type: integer
+                  - type: string
+                  example: HF-TEST-001
+                supplier:
+                  type: object
+                  required:
+                  - name
+                  description: 'Supplier matched or created from `supplier.name` before the purchase order is created. `supplier.id` is ignored.
+
+                    '
+                  properties:
+                    id:
+                      type:
+                      - integer
+                      - 'null'
+                      example: null
+                    name:
+                      type: string
+                      example: Covetrus
+                user:
+                  type:
+                  - object
+                  - 'null'
+                  description: 'Optional provider user info. Stored on the purchase order metadata; does NOT determine the purchase order''s vet (the authenticated vet is always used).
+
+                    '
+                  properties:
+                    id:
+                      type:
+                      - integer
+                      - 'null'
+                      example: 1
+                    first_name:
+                      type:
+                      - string
+                      - 'null'
+                      example: Kat
+                    last_name:
+                      type:
+                      - string
+                      - 'null'
+                      example: Stevens
+                items:
+                  type: array
+                  minItems: 1
+                  maxItems: 100
+                  description: 'Purchase order line items. Each item is used to find or create a product, compute cogs, and create a purchase order item.
+
+                    '
+                  items:
+                    type: object
+                    required:
+                    - id
+                    - is_linked
+                    - provider_item_id
+                    - sku
+                    - name
+                    - quantity
+                    - unit_price
+                    - units
+                    - unit_measurement
+                    - manufacturer_name
+                    properties:
+                      id:
+                        description: 'Digitail product id, or an empty string when the provider item is not linked to an existing product.
+
+                          '
+                        oneOf:
+                        - type: integer
+                        - type: string
+                        example: 148
+                      is_linked:
+                        type: boolean
+                        description: 'Whether the provider item is already linked to a Digitail product. When false a new product is always created.
+
+                          '
+                        example: true
+                      provider_item_id:
+                        description: 'External provider item id. Stored on the product as its external id and used to match previously imported products.
+
+                          '
+                        oneOf:
+                        - type: integer
+                        - type: string
+                        example: 64002
+                      sku:
+                        type: string
+                        description: Product barcode / SKU used when finding or creating a product.
+                        example: '026143'
+                      name:
+                        type: string
+                        description: Product name used when finding or creating a product.
+                        example: 'GlycoFlex 3 Bite-Sized Chews: 120 Count'
+                      quantity:
+                        type: integer
+                        minimum: 1
+                        description: Number of packs ordered.
+                        example: 4
+                      unit_price:
+                        type: integer
+                        minimum: 0
+                        description: 'Pack price in minor currency units (cents). The importer divides this by 100 and then by `units` to compute cogs per stock unit.
+
+                          '
+                        example: 2000
+                      total_price:
+                        type:
+                        - integer
+                        - 'null'
+                        description: Line total in minor currency units. Currently ignored.
+                        example: 8000
+                      units:
+                        type: integer
+                        minimum: 1
+                        description: 'Number of stock units inside one ordered pack. The line quantity is `quantity * units`.
+
+                          '
+                        example: 120
+                      unit_measurement:
+                        type:
+                        - string
+                        - 'null'
+                        description: 'Unit label used when creating a new product. `null` falls back to `Unit`.
+
+                          '
+                        example: chew
+                      pack_type:
+                        type:
+                        - string
+                        - 'null'
+                        description: Provider pack type. Currently ignored.
+                        example: Bag
+                      manufacturer_name:
+                        type: string
+                        description: Manufacturer name used to find or create the producer.
+                        example: Vetri-Science
+                      client_name:
+                        type:
+                        - string
+                        - 'null'
+                        description: Optional client-facing product name used when creating a new product.
+                        example: GlycoFlex 3
+                      staff_description:
+                        type:
+                        - string
+                        - 'null'
+                        description: Optional staff description used when creating a new product.
+                        example: Joint support chew
+                      batch_no:
+                        type:
+                        - string
+                        - 'null'
+                        description: Accepted by the payload format but currently not persisted.
+                        example: BATCH-001
+                      expiration_date:
+                        type:
+                        - string
+                        - 'null'
+                        format: date-time
+                        description: Accepted by the payload format but currently not persisted.
+                        example: '2027-01-01T00:00:00Z'
+            example:
+              timestamp: '2025-06-11T10:00:00.000Z'
+              id: HF-TEST-001
+              supplier:
+                id: null
+                name: Covetrus
+              user:
+                id: 1
+                first_name: Kat
+                last_name: Stevens
+              items:
+              - id: 148
+                is_linked: true
+                provider_item_id: 64002
+                sku: '026143'
+                name: 'GlycoFlex 3 Bite-Sized Chews: 120 Count'
+                quantity: 4
+                unit_price: 2000
+                total_price: 8000
+                units: 120
+                unit_measurement: chew
+                pack_type: Bag
+                manufacturer_name: Vetri-Science
+              - id: ''
+                is_linked: false
+                provider_item_id: 191172
+                sku: '606029'
+                name: 'PVC Cuffed Endotracheal Tube: 5.5mm'
+                quantity: 2
+                unit_price: 160
+                total_price: 320
+                units: 1
+                unit_measurement: tube
+                pack_type: ''
+                manufacturer_name: VetOne
+      responses:
+        '201':
+          description: Purchase order created successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/paths/~1api~1v1~1purchase-orders~1%7Bid%7D/get/responses/200/content/application~1json/schema/properties/data'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '422':
+          $ref: '#/paths/~1api~1v1~1plans/get/responses/422'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: postApiV1ExternalPurchaseOrders
+      x-operation-id-source: derived
+  /api/v1/purchase-orders/{id}:
+    get:
+      tags:
+      - Purchase Orders
+      summary: Retrieve a Purchase Order
+      description: 'Permissions needed: `VIEW_ORDERS`.
+
+
+        Returns the purchase order with its items; each item carries `is_received`. The clinic is resolved from the `X-ClinicId` header and must match the order''s clinic.'
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    title: PurchaseOrder
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      clinic_id:
+                        type: integer
+                        example: 1
+                      supplier_id:
+                        type: integer
+                        example: 1
+                      supplier:
+                        type: object
+                        title: Supplier
+                        properties:
+                          id:
+                            type: integer
+                            example: 1
+                          cif:
+                            type: string
+                            example: RO123456
+                          register_no:
+                            type: string
+                            example: J22/12345/2025
+                          name:
+                            type: string
+                            example: Supplier A
+                          address:
+                            type: string
+                            example: 123 Main Street, Anytown, USA, 12345
+                          subsidiary_address:
+                            type: string
+                            example: 123 Supply Chain Way, Logistics City, CA 90210
+                          administrator:
+                            type: string
+                            example: John Doe
+                          is_vat_payer:
+                            type: boolean
+                            example: true
+                          bank_name:
+                            type: string
+                            example: ING BANK
+                          bank_account:
+                            type: string
+                            example: RO66BACX0000001234567890
+                          bank_address:
+                            type: string
+                            example: 123 Main Street, Anytown, USA, 12345
+                          bank_swift:
+                            type: string
+                            example: INGBROBUXXX
+                          external_source:
+                            type:
+                            - string
+                            - 'null'
+                          external_id:
+                            type:
+                            - string
+                            - 'null'
+                      status:
+                        type: string
+                        enum:
+                        - draft
+                        - pending
+                        - backorder
+                        - completed
+                        example: completed
+                      purchase_order_number:
+                        type: integer
+                        description: Unique purchase order number. Automatically generated by the system. Can be used to search for the purchase order.
+                        example: 1
+                      date:
+                        type: string
+                        format: date-time
+                        example: '2021-08-01T00:00:00.000Z'
+                      reception_committee:
+                        type: array
+                        items:
+                          type: string
+                        example:
+                        - Jane
+                        - John
+                      order_type:
+                        type:
+                        - string
+                        - 'null'
+                        enum:
+                        - original
+                        - backorder
+                      document_type:
+                        type: string
+                        description: 'empty: NO_DOCUMENT, 1: INVOICE, 2: RECEIPT, 3: BILL, 4: NOTICE, 5: TRANSFER_NOTE, 6: CASH_REGISTER_RECEIPT'
+                        enum:
+                        - ''
+                        - '1'
+                        - '2'
+                        - '3'
+                        - '4'
+                        - '5'
+                        - '6'
+                        example: 1
+                      document_date:
+                        type: string
+                        format: date-time
+                        example: '2021-08-01T00:00:00.000Z'
+                      document_number:
+                        type: string
+                        example: '123'
+                      document_series:
+                        type: string
+                        example: DGT
+                      document_due_date:
+                        type: string
+                        format: date-time
+                        example: '2021-08-01T00:00:00.000Z'
+                      global_discount:
+                        type: number
+                        example: 10
+                      updated_at:
+                        type: string
+                        format: date-time
+                        example: '2021-08-01T00:00:00.000Z'
+                      cogs_subtotal:
+                        type: number
+                        description: Visible only when viewing individual purchase order.
+                        example: 10
+                      cogs_tax:
+                        type: number
+                        description: Visible only when viewing individual purchase order.
+                        example: 1
+                      cogs_total:
+                        type: number
+                        description: Visible only when viewing individual purchase order.
+                        example: 11
+                      selling_price_subtotal:
+                        type: number
+                        description: Visible only when viewing individual purchase order.
+                        example: 10
+                      selling_price_tax:
+                        type: number
+                        description: Visible only when viewing individual purchase order.
+                        example: 1
+                      selling_price_total:
+                        type: number
+                        description: Visible only when viewing individual purchase order.
+                        example: 11
+                      goods_subtotal:
+                        type: number
+                        description: Visible only when viewing multiple purchase orders.
+                        example: 7
+                      consumables_subtotal:
+                        type: number
+                        description: Visible only when viewing multiple purchase orders.
+                        example: 3
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          title: PurchaseOrderItem
+                          description: Individual line item on Purchase Order. Link with existing product.
+                          properties:
+                            id:
+                              type: integer
+                              example: 1
+                            product_id:
+                              type: integer
+                              example: 1
+                            product:
+                              type: object
+                              title: PurchaseOrderItemProduct
+                              description: Details related to the product the Purchase Order Item is linked to. Included only when receiving a single purchase order.
+                              properties:
+                                name:
+                                  type: string
+                                  example: Product Name
+                                fixed_fee:
+                                  type: number
+                                  format: float
+                                  example: 0
+                                unit:
+                                  type: string
+                                  example: Box
+                                last_cogs:
+                                  type: object
+                                  description: Last cost of goods sold for the product, per unit and per sub-unit. COGS doesnt include tax.
+                                  properties:
+                                    unit:
+                                      type:
+                                      - number
+                                      - 'null'
+                                      format: float
+                                      example: 10
+                                    subunit:
+                                      type: number
+                                      format: float
+                                      example: 2.5
+                                last_price:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  description: Last selling price recorded for the product, as a decimal string.
+                                  example: '10.00'
+                                last_price_includes_tax:
+                                  type: boolean
+                                  example: false
+                                price:
+                                  type: number
+                                  description: Current selling price of the product.
+                                  format: float
+                                  example: 25
+                                price_includes_tax:
+                                  type: boolean
+                                  example: true
+                                is_newly_auto_created:
+                                  type: boolean
+                                  example: true
+                                is_disabled:
+                                  type: boolean
+                                  example: false
+                                is_deleted:
+                                  type: boolean
+                                  example: false
+                                external_source:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  description: Provider the product was imported from (e.g. vetcove, external), if any.
+                                  example: external
+                            batch:
+                              type: string
+                              example: '123'
+                            expiration_date:
+                              type:
+                              - string
+                              - 'null'
+                              format: date-time
+                              example: '2027-01-01T00:00:00.000000Z'
+                            quantity:
+                              type: number
+                              format: float
+                              example: 1
+                            cogs:
+                              type: string
+                              description: Unit cost of goods sold, as a decimal string. Does not include tax.
+                              example: '658.73'
+                            cogs_discount_value:
+                              type: number
+                              format: float
+                              example: 0
+                            cogs_discount_is_fixed:
+                              type: boolean
+                              description: True if discount is fixed amount, false if discount is percentage.
+                              example: false
+                            supplier_tax:
+                              type: number
+                              format: float
+                              example: 1
+                            price:
+                              type: string
+                              description: Unit selling price, as a decimal string.
+                              example: '295.20'
+                            selling_tax:
+                              type: number
+                              format: float
+                              example: 1
+                            markup:
+                              type: number
+                              description: Markup of the product. calculated on cogs and selling price
+                              format: float
+                              example: 50.473
+                            consumed:
+                              type: boolean
+                              description: True if current batch of product was consumed. Product data non-editable if true
+                              example: false
+                            unit_cogs_post_discount_net:
+                              type: number
+                              format: float
+                              example: 10
+                            cogs_post_discount_gross:
+                              type: number
+                              format: float
+                              example: 10
+                            consumable:
+                              type: boolean
+                              example: false
+                            sub_unit_cogs:
+                              type: number
+                              format: float
+                              description: Unit cost divided by the product formula (cost per sub-unit).
+                              example: 329.36
+                            is_received:
+                              type: boolean
+                              description: Whether the line was received. Set when the order is completed.
+                              example: true
+                            override_sale_price:
+                              type: boolean
+                              example: false
+                      unreceived_disabled_items:
+                        type: array
+                        items:
+                          $ref: '#/paths/~1api~1v1~1purchase-orders~1%7Bid%7D/get/responses/200/content/application~1json/schema/properties/data/properties/items/items'
+                      related_order:
+                        type:
+                        - object
+                        - 'null'
+                        description: 'Included on request. The backorder created for this order''s unreceived lines, or the original order this backorder was split from. Carries the same fields as a purchase order except `items` and `related_order`.
+
+                          '
+                      items_count:
+                        type: number
+                        description: Visible only when viewing multiple purchase orders.
+                        example: 3
+                      has_consumed_items:
+                        type: boolean
+                        description: Visible only when viewing multiple purchase orders.
+                        example: true
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '422':
+          $ref: '#/paths/~1api~1v1~1plans/get/responses/422'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: getApiV1PurchaseOrdersById
+      x-operation-id-source: derived
+  /api/v1/purchase-orders/{id}/receive:
+    post:
+      tags:
+      - Purchase Orders
+      summary: Confirm receipt of a Purchase Order
+      description: 'Permissions needed: `EDIT_ORDERS`.
+
+
+        Marks a pending, draft or backorder purchase order as completed and adds its lines to the clinic''s stock, exactly as completing the order in the app does. Quantities, costs and prices are never changed by this call; only the order status and each line''s `is_received` flag.
+
+
+        Omit `items` (or send an empty body) to receive every line. To receive only some lines, list the ones that did not arrive with `is_received: false`; lines that are not listed count as received. A `finalization_strategy` is then required: `create_backorder` moves the unreceived lines to a new backorder purchase order (returned as `related_order`), `keep_unreceived` drops them from this order.
+
+
+        An order that is already completed is rejected with 422.'
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                items:
+                  type: array
+                  maxItems: 100
+                  description: Lines to flag explicitly. Unlisted lines are treated as received.
+                  items:
+                    type: object
+                    required:
+                    - id
+                    - is_received
+                    properties:
+                      id:
+                        type: integer
+                        description: Purchase order item id, as returned by the order detail.
+                        example: 1201
+                      is_received:
+                        type: boolean
+                        example: false
+                finalization_strategy:
+                  type: string
+                  enum:
+                  - create_backorder
+                  - keep_unreceived
+                  description: 'Required when any listed line has `is_received: false`.'
+                  example: create_backorder
+            example:
+              items:
+              - id: 1201
+                is_received: false
+              finalization_strategy: create_backorder
+      responses:
+        '200':
+          description: The completed purchase order, with its received items and the backorder (if one was created) under `related_order`.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/paths/~1api~1v1~1purchase-orders~1%7Bid%7D/get/responses/200/content/application~1json/schema/properties/data'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '422':
+          $ref: '#/paths/~1api~1v1~1plans/get/responses/422'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: postApiV1PurchaseOrdersByIdReceive
+      x-operation-id-source: derived
+components:
+  securitySchemes:
+    passport:
+      type: oauth2
+      description: Laravel passport oauth2 security.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://developer.digitail.io/oauth/authorize
+          tokenUrl: https://developer.digitail.io/oauth/token
+          refreshUrl: https://developer.digitail.io/oauth/token
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

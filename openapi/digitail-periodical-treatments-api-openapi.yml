@@ -1,0 +1,253 @@
+openapi: 3.2.0
+info:
+  title: Digitail Periodical Treatments API
+  description: Digitail API
+  contact:
+    email: developer@digitail.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+- url: https://developer.digitail.io
+  description: Sandbox server (uses test data)
+- url: https://vet.digitail.io
+  description: Production server (uses live data)
+security:
+- passport: []
+- Bearer: []
+tags:
+- name: Periodical Treatments
+  description: Api Endpoints For Pet's Preventive Care
+paths:
+  /api/v1/pets/{id}/periodical-treatments:
+    get:
+      tags:
+      - Periodical Treatments
+      summary: List all PeriodicalTreatments
+      description: 'Permissions needed: ACCESS_PATIENTS
+
+        Returns the list of PeriodicalTreatments for Pet
+
+        Use `api/v1/reminder-protocol-usages` instead'
+      deprecated: true
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      - $ref: '#/paths/~1api~1v1~1files/get/parameters/6'
+      - name: filter[type]
+        in: query
+        description: '`1` - Vaccination `2` - Rabies Vaccination `3` - Worm Treatment `4` - Flea Treatment `5` - Diet Treatment `6` - Hormonal Change (neuter/spay) `7` - Heartworm Treatment `See full ist of treatment types at api/v1/treatment-types`
+
+          '
+        required: false
+        schema:
+          type: integer
+          enum:
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+          - 6
+        example: 1
+      - name: include
+        in: query
+        description: 'Additional info to include. You can use multiple, comma separated. Options: caseFile,printedFilesCertificates.printed_file,therapy'
+        required: false
+        schema:
+          type: string
+        example: caseFile,therapy,printedFilesCertificates.printed_file
+      - $ref: '#/paths/~1api~1v1~1tags/get/parameters/5'
+      - $ref: '#/paths/~1api~1v1~1pets/get/parameters/11'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      title: PeriodicalTreatment
+                      properties:
+                        id:
+                          type: integer
+                          example: 1
+                        pet_id:
+                          type: integer
+                          example: 1
+                        file_id:
+                          type: integer
+                          example: 1
+                        product_id:
+                          type: integer
+                          example: 1
+                        treatment_mapping_id:
+                          type: integer
+                          example: 1
+                        fileCase:
+                          $ref: '#/paths/~1api~1v1~1records/post/responses/201/content/application~1json/schema/properties/data'
+                        treatment:
+                          type: object
+                          title: TherapyData
+                          properties:
+                            id:
+                              type: integer
+                              example: 1
+                            type:
+                              type: string
+                              enum:
+                              - Treatment
+                              - SoldServicePackageProduct
+                              - SoldServicePackage
+                              - HistoricalTreatment
+                              example: Treatment
+                            product_name:
+                              type: string
+                              example: Nobivac Rabies
+                            tag_number:
+                              type: string
+                              example: '123456789'
+                            batch_no:
+                              type: string
+                              example: tr22
+                            expiration_date:
+                              type: string
+                              example: '2022-01-01'
+                            product_manufacturer:
+                              type: string
+                              example: ''
+                            administration_date:
+                              type: string
+                              example: '2021-11-19'
+                            due_date:
+                              type: string
+                              example: '2022-11-19'
+                            product_category_id:
+                              type: integer
+                              example: 1
+                        certificates:
+                          type: array
+                          items:
+                            $ref: '#/paths/~1api~1v1~1pets~1%7Bid%7D~1periodical-treatments~1hormonal-change-certificate/get/responses/200/content/application~1json/schema/properties/data'
+                  links:
+                    $ref: '#/paths/~1api~1v1~1pets/get/responses/200/content/application~1json/schema/properties/links'
+                  meta:
+                    $ref: '#/paths/~1api~1v1~1pets/get/responses/200/content/application~1json/schema/properties/meta'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: getApiV1PetsByIdPeriodicalTreatments
+      x-operation-id-source: derived
+  /api/v1/pets/{id}/periodical-treatments/hormonal-change-certificate:
+    get:
+      tags:
+      - Periodical Treatments
+      summary: Retrieve hormonal change Certificate
+      description: 'Permissions needed: ACCESS_PATIENTS
+
+        Get Hormonal Change (Spay/Neuter) Certificate'
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      - name: clinic_id
+        in: query
+        description: Id of the clinic from where the entity was created
+        style: form
+        explode: false
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    title: PrintedFile
+                    description: A PrintedFile represents either a form or a certificate that has been created for a patient.
+                    properties:
+                      id:
+                        type: integer
+                        example: 9
+                      name:
+                        type:
+                        - string
+                        - 'null'
+                        example: null
+                      title:
+                        type: string
+                        example: Rabies Certificate For Daisy
+                      real_name:
+                        type: string
+                        example: Rabies Certificate For Daisy.pdf
+                      printable_file_id:
+                        type: string
+                        example: '1086'
+                      vet_id:
+                        type: string
+                        example: '1568'
+                      patient_id:
+                        type: string
+                        example: '316635'
+                      pet_id:
+                        type: string
+                        example: '316635'
+                      token:
+                        type: string
+                      notified_at:
+                        type: string
+                        example: '2021-11-19T13:40:23.000000Z'
+                      signed_at:
+                        type: string
+                        example: '2021-11-19T13:40:23.000000Z'
+                      confirmed_at:
+                        type: string
+                        example: '2021-11-19T13:40:23.000000Z'
+                      has_signature_shortcode:
+                        type: boolean
+                      has_fillable_inputs:
+                        type: boolean
+                      type:
+                        type: string
+                        enum:
+                        - form
+                        - certificate
+                      created_at:
+                        type: string
+                        example: '2021-11-19T13:40:23.000000Z'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: getApiV1PetsByIdPeriodicalTreatmentsHormonalChangeCertificate
+      x-operation-id-source: derived
+components:
+  securitySchemes:
+    passport:
+      type: oauth2
+      description: Laravel passport oauth2 security.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://developer.digitail.io/oauth/authorize
+          tokenUrl: https://developer.digitail.io/oauth/token
+          refreshUrl: https://developer.digitail.io/oauth/token
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

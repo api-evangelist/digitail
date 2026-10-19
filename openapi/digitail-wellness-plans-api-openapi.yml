@@ -1,0 +1,494 @@
+openapi: 3.2.0
+info:
+  title: Digitail Wellness Plans API
+  description: Digitail API
+  contact:
+    email: developer@digitail.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+- url: https://developer.digitail.io
+  description: Sandbox server (uses test data)
+- url: https://vet.digitail.io
+  description: Production server (uses live data)
+security:
+- passport: []
+- Bearer: []
+tags:
+- name: Wellness Plans
+paths:
+  /api/v1/plans:
+    get:
+      tags:
+      - Wellness Plans
+      summary: Get a list of Plans
+      description: Returns a filtered & ordered list of all plans defined for a clinic
+      parameters:
+      - name: filter[clinic_ids][]
+        in: query
+        required: true
+        schema:
+          type: array
+          items:
+            type: integer
+      - name: filter[name]
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: filter[status]
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - active
+          - inactive
+      - name: filter[is_public]
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: include
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Include related resources: subscriptionsCount,activeSubscriptionsCount,benefits,benefits.benefitable,benefitsExclusions,printableFiles,taxRates'
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 1
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 10
+      - name: sort
+        in: query
+        required: false
+        schema:
+          type: string
+          default: name
+        description: 'Sort by a column. Possible values (comma separated): name, status, id, created_at, updated_at
+
+          '
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/paths/~1api~1v1~1plans~1%7Bid%7D/put/responses/200/content/application~1json/schema/properties/data'
+                  links:
+                    type: array
+                    title: SpatiePaginationLinks
+                    items:
+                      type: object
+                      properties:
+                        url:
+                          type:
+                          - string
+                          - 'null'
+                          example: '&laquo; Previous'
+                    example:
+                    - url: null
+                      label: '&laquo; Previous'
+                      active: false
+                    - url: https://developer.digitail.io/api/v1/entities?page=1
+                      label: '1'
+                      active: true
+                    - url: https://developer.digitail.io/api/v1/entities?page=2
+                      label: Next &raquo;
+                      active: true
+                  meta:
+                    $ref: '#/paths/~1api~1v1~1pets/get/responses/200/content/application~1json/schema/properties/meta'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '422':
+          title: Unprocessable Content
+          description: This response is sent when a request fails validation. The format is identical on all endpoints.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: The name field is required. (and 1 more error)
+                  errors:
+                    type: object
+                    properties:
+                      field1:
+                        type: array
+                        items:
+                          type: string
+                      field2:
+                        type: array
+                        items:
+                          type: string
+                    example:
+                      name:
+                      - The name field is required.
+                      email:
+                      - The email field is required.
+                      - The email field must be a valid email address.
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: getApiV1Plans
+      x-operation-id-source: derived
+  /api/v1/plans/{id}:
+    put:
+      tags:
+      - Wellness Plans
+      summary: Update a Wellness Plan
+      description: Update a Wellness Plan. Fields you leave out keep their current value, except `tax`, which is recomputed from `tax_rate_ids` when those are sent.
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Basic
+                description:
+                  type: string
+                  example: Basic subscription plan
+                price:
+                  type: number
+                  example: 20
+                tax:
+                  type: number
+                  example: 0
+                  deprecated: true
+                  description: Deprecated. Use `tax_rate_ids` instead.
+                tax_rate_ids:
+                  type: array
+                  description: Tax rate ids to apply. Takes precedence over `tax` when present. Send at most the clinic's `max_tax_rates` (1 today).
+                  items:
+                    type: integer
+                  example:
+                  - 57
+                upfront_fee:
+                  type: number
+                  example: 0
+                periodicity:
+                  type: integer
+                  example: 1
+                periodicity_type:
+                  type: string
+                  enum:
+                  - month
+                  - quarter
+                  - year
+                status:
+                  type: string
+                  enum:
+                  - active
+                  - inactive
+                  example: active
+                is_public:
+                  type: boolean
+                  description: Shows the plan on the pet portal, the mobile app and `GET /api/v1/public/clinics/{slug}/plans`. Omit to keep the current value.
+                  example: false
+                plan_duration:
+                  type: string
+                  description: '`indefinite` keeps subscriptions running until cancelled; `1-year` ends each new subscription one year after it starts. Applies to new enrollments only. Omit to keep the current value.'
+                  enum:
+                  - indefinite
+                  - 1-year
+                benefits_exclusions:
+                  type: object
+                  properties:
+                    product_categories:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          product_category_id:
+                            type: integer
+                            example: 12
+                benefits:
+                  type: object
+                  title: Benefits
+                  properties:
+                    services:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                            example: 1
+                          service_package_id:
+                            type: integer
+                            example: 1
+                          limit:
+                            type: integer
+                            example: 1
+                          discount:
+                            type: number
+                            example: 0
+                    service_aaha_codes:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                            example: 1
+                          aaha_code:
+                            type: string
+                            example: AHA123
+                          discount:
+                            type: number
+                            example: 0
+                          limit:
+                            type: integer
+                            example: 1
+                    products:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                            example: 1
+                          product_id:
+                            type: integer
+                            example: 1
+                          limit:
+                            type: integer
+                            example: 1
+                          limit_unit_type_id:
+                            type: integer
+                            example: 0
+                          limit_unit_type:
+                            type: string
+                            example: subunit
+                          discount:
+                            type: number
+                            example: 0
+                    product_categories:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                            example: 1
+                          product_category_id:
+                            type: integer
+                            example: 1
+                          discount:
+                            type: number
+                            example: 0
+                    product_aaha_codes:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                            example: 1
+                          aaha_code:
+                            type: string
+                            example: AHA123
+                          discount:
+                            type: number
+                            example: 0
+                          limit:
+                            type: integer
+                            example: 1
+                          limit_unit_type_id:
+                            type: integer
+                            example: 0
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    title: Plan
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      clinic_id:
+                        type: integer
+                        example: 1
+                      name:
+                        type: string
+                        example: Basic
+                      description:
+                        type: string
+                        example: Basic subscription plan
+                      price:
+                        type: number
+                        example: 10
+                      price_without_tax:
+                        type: number
+                        example: 10
+                      tax:
+                        type: number
+                        deprecated: true
+                        description: Deprecated. Summed percentage of `tax_rates`. Use `tax_rates` instead.
+                        example: 0
+                      tax_rates:
+                        type: array
+                        description: Tax rates applied to this item. Always present.
+                        items:
+                          type: object
+                          title: TaxRate
+                          properties:
+                            id:
+                              type: integer
+                              example: 1
+                            clinic_id:
+                              type:
+                              - integer
+                              - 'null'
+                              description: Owning clinic. Null for group-level (enterprise) tax rates.
+                              example: 1
+                            group_id:
+                              type:
+                              - integer
+                              - 'null'
+                              description: Owning clinic group. Set for all tax rates that belong to a group; null for standalone clinics.
+                              example: 1
+                            name:
+                              type:
+                              - string
+                              - 'null'
+                              example: Standard
+                            percentage:
+                              type: string
+                              example: '19.0000'
+                            applicable_to:
+                              type: string
+                              enum:
+                              - products
+                              - services
+                              - all
+                              example: services
+                            is_archived:
+                              type: boolean
+                              example: false
+                      upfront_fee:
+                        type: number
+                        example: 0
+                      upfront_fee_without_tax:
+                        type: number
+                        example: 0
+                      periodicity:
+                        type: integer
+                        example: 1
+                      periodicity_type:
+                        type: string
+                        enum:
+                        - day
+                        - week
+                        - month
+                        - quarter
+                        - year
+                      status:
+                        type: string
+                        enum:
+                        - active
+                        - inactive
+                        example: active
+                      is_public:
+                        type: boolean
+                        example: false
+                      plan_duration:
+                        type: string
+                        enum:
+                        - indefinite
+                        - 1-year
+                        default: indefinite
+                      benefits:
+                        $ref: '#/paths/~1api~1v1~1plans~1%7Bid%7D/put/requestBody/content/application~1json/schema/properties/benefits'
+                      benefits_exclusions:
+                        type: object
+                        title: Benefits Exclusions
+                        properties:
+                          product_categories:
+                            type: array
+                            description: List of product categories excluded from global product discounts for this plan.
+                            items:
+                              type: object
+                              properties:
+                                id:
+                                  type: integer
+                                  example: 101
+                                product_category_id:
+                                  type: integer
+                                  example: 12
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '422':
+          $ref: '#/paths/~1api~1v1~1plans/get/responses/422'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: putApiV1PlansById
+      x-operation-id-source: derived
+  /api/v1/client-subscriptions/{id}:
+    delete:
+      tags:
+      - Wellness Plans
+      summary: Cancel a pet parent Subscription
+      description: Cancel a Pet Parent Subscription. The cancellation takes effect immediately and the client is notified by email or in the app, depending on the clinic's message settings.
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      responses:
+        '204':
+          $ref: '#/paths/~1api~1v1~1sales/delete/responses/204'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: deleteApiV1ClientSubscriptionsById
+      x-operation-id-source: derived
+components:
+  securitySchemes:
+    passport:
+      type: oauth2
+      description: Laravel passport oauth2 security.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://developer.digitail.io/oauth/authorize
+          tokenUrl: https://developer.digitail.io/oauth/token
+          refreshUrl: https://developer.digitail.io/oauth/token
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

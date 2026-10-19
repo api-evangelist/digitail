@@ -1,0 +1,350 @@
+openapi: 3.2.0
+info:
+  title: Digitail Roles API
+  description: Digitail API
+  contact:
+    email: developer@digitail.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+- url: https://developer.digitail.io
+  description: Sandbox server (uses test data)
+- url: https://vet.digitail.io
+  description: Production server (uses live data)
+security:
+- passport: []
+- Bearer: []
+tags:
+- name: Roles
+paths:
+  /api/v1/roles:
+    get:
+      tags:
+      - Roles
+      summary: List all Roles
+      description: 'Permissions needed: ACCESS_ADMINISTRATION_SETTINGS
+
+        Returns the Role list. Filter by clinic_id or group_id.
+
+        When filtering by clinic_id for an enterprise clinic, the response automatically includes both clinic-local roles AND enterprise group-level roles. Non-enterprise clinics see only their own clinic-local roles (unchanged behavior).
+
+        When filtering by group_id, the response includes both group-level roles and the clinic-local roles of every clinic in the group (requires enterprise admin permissions).'
+      parameters:
+      - name: filter[clinic_id]
+        in: query
+        description: Clinic ID. Returns clinic-local roles. For enterprise clinics, also includes group-level roles automatically. Required if filter[group_id] is not provided.
+        required: false
+        schema:
+          type: integer
+      - name: filter[group_id]
+        in: query
+        description: Enterprise group ID. Returns group-level roles plus clinic-local roles for every clinic in the group. Required if filter[clinic_id] is not provided. Requires enterprise admin permissions.
+        required: false
+        schema:
+          type: integer
+      - name: include
+        in: query
+        description: 'Additional info to include. You can use multiple, comma separated. Options: vetPermissions,vetPermissions.permissionGroup,vetPermissions.permissionSubGroup.'
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/paths/~1api~1v1~1roles~1%7Bid%7D/get/responses/200/content/application~1json/schema/properties/data'
+                  links:
+                    $ref: '#/paths/~1api~1v1~1pets/get/responses/200/content/application~1json/schema/properties/links'
+                  meta:
+                    $ref: '#/paths/~1api~1v1~1pets/get/responses/200/content/application~1json/schema/properties/meta'
+                  permissions_groups:
+                    type: object
+                    title: PermissionGroup
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      title:
+                        type: string
+                        example: Patients
+                      weight:
+                        type: integer
+                        example: 1
+                      permissions:
+                        type: object
+                        title: Permission
+                        properties:
+                          id:
+                            type: integer
+                            example: 1
+                          title:
+                            type: string
+                            example: view_patients
+                          weight:
+                            type: integer
+                            example: 1
+                          depends_on:
+                            $ref: '#/paths/~1api~1v1~1roles/get/responses/200/content/application~1json/schema/properties/permissions_groups/properties/permissions'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: getApiV1Roles
+      x-operation-id-source: derived
+    post:
+      tags:
+      - Roles
+      summary: Create a Role
+      description: 'Permissions needed: ACCESS_ADMINISTRATION_SETTINGS
+
+        Store Role for a clinic'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              title: RoleBodyStore
+              description: 'Role Store Request Body. Provide either clinic_id or group_id (mutually exclusive). Use group_id for enterprise group-level roles (requires enterprise admin). Use clinic_id for clinic-local roles.
+
+                '
+              properties:
+                title:
+                  type: string
+                  example: Doctor
+                clinic_id:
+                  type: integer
+                  description: The clinic to create the role for. Required if group_id is not provided. Mutually exclusive with group_id.
+                  example: 1
+                group_id:
+                  type: integer
+                  description: The enterprise group to create the role for. Required if clinic_id is not provided. Mutually exclusive with clinic_id. Requires enterprise admin permissions.
+                  example: null
+                permissions_ids:
+                  type: array
+                  items:
+                    type: integer
+      responses:
+        '201':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: integer
+                description: Role Id
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: postApiV1Roles
+      x-operation-id-source: derived
+  /api/v1/roles/{id}:
+    get:
+      tags:
+      - Roles
+      summary: Retrieve a Role
+      description: 'Permissions needed: ACCESS_ADMINISTRATION_SETTINGS
+
+        Returns a Role entity'
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    title: Role
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      clinic_id:
+                        type:
+                        - integer
+                        - 'null'
+                        description: The clinic this role belongs to. Null for enterprise (group-level) roles.
+                        example: 1
+                      group_id:
+                        type:
+                        - integer
+                        - 'null'
+                        description: The enterprise group this role belongs to. Null for clinic-local roles.
+                        example: null
+                      title:
+                        type: string
+                        example: Doctor
+                      immutable:
+                        type: boolean
+                        example: false
+                      permissions_categories:
+                        type: object
+                        description: Keys are permissions groups ids.
+                        additionalProperties:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: integer
+                              title:
+                                type: string
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: getApiV1RolesById
+      x-operation-id-source: derived
+    patch:
+      tags:
+      - Roles
+      summary: Update a Role
+      description: 'Permissions needed: ACCESS_ADMINISTRATION_SETTINGS
+
+        Update a specific Role'
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              title: RoleBodyUpdate
+              description: Role Update Request Body
+              properties:
+                title:
+                  type: string
+                  example: Doctor
+                permissions_ids:
+                  type: array
+                  items:
+                    type: integer
+      responses:
+        '204':
+          $ref: '#/paths/~1api~1v1~1sales/delete/responses/204'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+      operationId: patchApiV1RolesById
+      x-operation-id-source: derived
+    delete:
+      tags:
+      - Roles
+      summary: Delete a Role
+      description: 'Permissions needed: ACCESS_ADMINISTRATION_SETTINGS
+
+        Delete a Role by ID'
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      responses:
+        '204':
+          $ref: '#/paths/~1api~1v1~1sales/delete/responses/204'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+      operationId: deleteApiV1RolesById
+      x-operation-id-source: derived
+  /api/v1/roles/{id}/vets:
+    get:
+      tags:
+      - Roles
+      summary: List all Vets of Role
+      description: 'Permissions needed: ACCESS_ADMINISTRATION_SETTINGS
+
+        Return Vets associated with Role'
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/paths/~1api~1v1~1vets~1%7Bid%7D/get/responses/200/content/application~1json/schema/properties/data'
+                  links:
+                    $ref: '#/paths/~1api~1v1~1pets/get/responses/200/content/application~1json/schema/properties/links'
+                  meta:
+                    $ref: '#/paths/~1api~1v1~1pets/get/responses/200/content/application~1json/schema/properties/meta'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: getApiV1RolesByIdVets
+      x-operation-id-source: derived
+  /api/v1/permissions:
+    get:
+      tags:
+      - Roles
+      summary: List all Permissions
+      description: 'Permissions needed: NONE
+
+        Returns the Permission list'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/paths/~1api~1v1~1roles/get/responses/200/content/application~1json/schema/properties/permissions_groups'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: getApiV1Permissions
+      x-operation-id-source: derived
+components:
+  securitySchemes:
+    passport:
+      type: oauth2
+      description: Laravel passport oauth2 security.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://developer.digitail.io/oauth/authorize
+          tokenUrl: https://developer.digitail.io/oauth/token
+          refreshUrl: https://developer.digitail.io/oauth/token
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

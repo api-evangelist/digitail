@@ -1,85 +1,719 @@
 openapi: 3.2.0
 info:
-  title: Digitail Open Pet Parents API
-  version: v1
-  description: Modeled OpenAPI for the Digitail Open API, a documented REST API for the Digitail cloud veterinary practice management platform (PIMS).
+  title: Digitail Pet Parents API
+  description: Digitail API
   contact:
-    name: API Evangelist
-    email: kin@apievangelist.com
-  x-endpoints-modeled: true
+    email: developer@digitail.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
 servers:
-- url: https://developer.digitail.io/api/v1
-  description: Digitail Open API v1
+- url: https://developer.digitail.io
+  description: Sandbox server (uses test data)
+- url: https://vet.digitail.io
+  description: Production server (uses live data)
 security:
-- oauth2: []
+- passport: []
+- Bearer: []
 tags:
 - name: Pet Parents
+  description: Api Endpoints For Pet Parents
 paths:
-  /pet-parents:
+  /api/v1/pet-parents:
     get:
-      operationId: listPetParents
-      summary: List pet parents
-      description: List pet parents (owners). Modeled from the documented Pet Parents resource.
       tags:
       - Pet Parents
-      x-endpoints-modeled: true
+      summary: List all PetParents
+      description: 'Permissions needed: NONE
+
+        Returns a filtered & ordered list of all pet parents'
       parameters:
-      - $ref: '#/components/parameters/page'
-      - $ref: '#/components/parameters/perPage'
+      - name: include
+        in: query
+        description: Additional relations to include
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - chatUser
+            - clients
+      - name: filter[has_app]
+        in: query
+        description: If the pet parent has the app downloaded or not
+        required: false
+        schema:
+          type: boolean
+      - name: filter[phone]
+        in: query
+        description: Partial phone filter
+        required: false
+        schema:
+          type: string
+      - name: filter[email]
+        in: query
+        description: Filter by email address
+        required: false
+        schema:
+          type: string
+      - name: filter[belongs_to_clinic]
+        in: query
+        description: Filter only by the pet parent that are associated to specific clinics. Default to current active clinic if omitted
+        required: false
+        schema:
+          type: array
+          items:
+            type: integer
+          example:
+          - 1
+      - name: add_address_metadata
+        in: query
+        description: Set to 1 to get the full address details
+        required: false
+        schema:
+          type: integer
+      - name: filter[updated_from]
+        in: query
+        description: Returns only the pet parents updated after this datetime (exclusive). The value must be a UTC ISO 8601 timestamp with a Z suffix, for example 2020-08-16T08:56:44.000000Z. Timezone offsets such as +02:00 are not accepted. Updated at and created at are returned in UTC in the response.
+        required: false
+        schema:
+          type: string
+          format: date-time
+      - name: filter[updated_to]
+        in: query
+        description: Returns only the pet parents updated at or before this datetime (inclusive). The value must be a UTC ISO 8601 timestamp with a Z suffix, for example 2020-08-16T08:56:44.000000Z. Timezone offsets such as +02:00 are not accepted. Updated at and created at are returned in UTC in the response.
+        required: false
+        schema:
+          type: string
+          format: date-time
+      - name: filter[query]
+        in: query
+        description: Search by name, last name, email.
+        required: false
+        schema:
+          type: string
+      - $ref: '#/paths/~1api~1v1~1tags/get/parameters/5'
       responses:
         '200':
-          $ref: '#/components/responses/Paginated'
-components:
-  parameters:
-    perPage:
-      name: per_page
-      in: query
-      description: Results per page (default 15).
-      required: false
-      schema:
-        type: integer
-        default: 15
-        minimum: 1
-    page:
-      name: page
-      in: query
-      description: Page number (default 1).
-      required: false
-      schema:
-        type: integer
-        default: 1
-        minimum: 1
-  responses:
-    Paginated:
-      description: A paginated list of resources.
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              data:
-                type: array
-                items:
-                  type: object
-              meta:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
                 type: object
                 properties:
-                  current_page:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/paths/~1api~1v1~1pet-parents/post/responses/201/content/application~1json/schema/properties/data'
+                  links:
+                    $ref: '#/paths/~1api~1v1~1pets/get/responses/200/content/application~1json/schema/properties/links'
+                  meta:
+                    $ref: '#/paths/~1api~1v1~1pets/get/responses/200/content/application~1json/schema/properties/meta'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: getApiV1PetParents
+      x-operation-id-source: derived
+    post:
+      tags:
+      - Pet Parents
+      summary: Create a PetParent
+      description: 'Permissions needed: CREATE_PATIENTS
+
+        Create a new pet parent. If the cross-clinic account validation feature is enabled, the email must be unique globally. If an existing account is found with the same email, and the feature is active, validation will fail.'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              - last_name
+              - terms_and_conditions
+              properties:
+                clinic_id:
+                  description: Clinic id.
+                  type: integer
+                  example: 1
+                name:
+                  type: string
+                  example: John
+                last_name:
+                  type: string
+                  example: Doe
+                email:
+                  type: string
+                  example: john@example.com
+                password:
+                  type: string
+                  description: If omitted, a random password will be generated and sent to the user  on creation and the old one will be kept on update.
+                  example: password
+                phone:
+                  type: string
+                  description: Phone number in E.164 format
+                  example: '+16175551212'
+                secondary_phone:
+                  type:
+                  - string
+                  - 'null'
+                  description: Phone number in E.164 format
+                  example: '+16175551212'
+                google_place_id:
+                  type:
+                  - string
+                  - 'null'
+                address:
+                  type:
+                  - string
+                  - 'null'
+                  example: Flowers St. 300, Palo Alto, 123456, USA
+                address2:
+                  type:
+                  - string
+                  - 'null'
+                  example: Flowers St 123
+                city:
+                  type:
+                  - string
+                  - 'null'
+                  example: Palo Alto
+                birthdate:
+                  type:
+                  - string
+                  - 'null'
+                  example: '1990-01-01'
+                zip_code:
+                  type:
+                  - string
+                  - 'null'
+                  example: '123456'
+                street:
+                  type:
+                  - string
+                  - 'null'
+                  example: Flowers St.
+                street_number:
+                  type:
+                  - string
+                  - 'null'
+                  example: '123'
+                region:
+                  type:
+                  - string
+                  - 'null'
+                  example: California
+                region_short_code:
+                  type:
+                  - string
+                  - 'null'
+                  example: CA
+                country_id:
+                  type:
+                  - string
+                  - 'null'
+                  example: US
+                latitude:
+                  type:
+                  - string
+                  - 'null'
+                  example: '37.4419'
+                longitude:
+                  type:
+                  - string
+                  - 'null'
+                  example: '122.1430'
+                cnp:
+                  type:
+                  - string
+                  - 'null'
+                  example: '1234567890123'
+                terms_and_conditions:
+                  type: boolean
+                  example: true
+                observations:
+                  type:
+                  - string
+                  - 'null'
+                  example: happy
+                tag_ids:
+                  type:
+                  - array
+                  - 'null'
+                  items:
                     type: integer
-                  per_page:
-                    type: integer
-                  total:
-                    type: integer
+                enable_chat_without_app:
+                  type:
+                  - boolean
+                  - 'null'
+                  example: false
+                referral_source_type:
+                  type:
+                  - string
+                  - 'null'
+                  enum:
+                  - google_search
+                  - social_media
+                  - referral
+                  - walk_in
+                  - local_event
+                  - paid_ad
+                  - blog
+                  - signage
+                  - walk_by
+                  - online_reviews
+                  - vet_referral
+                  - other
+                referral_source_details:
+                  type:
+                  - string
+                  - 'null'
+                avatar:
+                  type: string
+                  format: binary
+      responses:
+        '201':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    title: PetParent
+                    description: PetParent = User = Customer = Owner. PetParent is the preferred term.
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      name:
+                        type: string
+                        example: John
+                      last_name:
+                        type: string
+                        example: Doe
+                      email:
+                        type:
+                        - string
+                        - 'null'
+                        example: john@example.com
+                      phone:
+                        type: string
+                        description: In E164 format
+                        example: '+19772480544'
+                      secondary_phone:
+                        type:
+                        - string
+                        - 'null'
+                        description: In E164 format
+                        example: '+19772480544'
+                      chatUid:
+                        type:
+                        - string
+                        - 'null'
+                        example: cjfiem-c9hg-apzm-23sod
+                      has_app:
+                        type: integer
+                        example: 1
+                      has_app_date:
+                        type:
+                        - string
+                        - 'null'
+                        example: '2020-06-12 15:45:43'
+                      enable_chat_without_app:
+                        type: integer
+                        example: 1
+                      created_at:
+                        type: string
+                        example: '2020-06-12 15:45:43'
+                      updated_at:
+                        type: string
+                        example: '2020-06-12 15:45:43'
+                      address:
+                        type:
+                        - string
+                        - 'null'
+                        example: Flowers St. 300, Palo Alto, 123456, USA
+                      address_2:
+                        type:
+                        - string
+                        - 'null'
+                        example: ''
+                      city:
+                        type:
+                        - string
+                        - 'null'
+                        example: Buenos Aires
+                      birthdate:
+                        type:
+                        - string
+                        - 'null'
+                        format: date-time
+                        example: '1990-04-04'
+                      observations:
+                        type:
+                        - string
+                        - 'null'
+                        example: happy
+                      cnp:
+                        type:
+                        - string
+                        - 'null'
+                        example: '1234567890123'
+                      chip_number:
+                        type:
+                        - string
+                        - 'null'
+                        example: '99281028'
+                      discounts:
+                        type: array
+                        items:
+                          type: object
+                          title: Discount
+                          properties:
+                            id:
+                              type: integer
+                              example: 10
+                            name:
+                              type: string
+                              example: digitail disc10
+                            description:
+                              type:
+                              - string
+                              - 'null'
+                              example: digitail disc10
+                            discount:
+                              type:
+                              - integer
+                              - 'null'
+                              example: 10
+                            discount_type:
+                              type: integer
+                              enum:
+                              - 0
+                              - 1
+                              description: '`0` - fixed  `1` - percentage
+
+                                '
+                            apply_on_cogs:
+                              type: boolean
+                              example: false
+                            discount_products:
+                              type:
+                              - number
+                              - 'null'
+                              example: 10
+                            discount_type_products:
+                              type: integer
+                              enum:
+                              - 0
+                              - 1
+                              description: '`0` - fixed  `1` - percentage
+
+                                '
+                            discount_services:
+                              type:
+                              - number
+                              - 'null'
+                              example: 10
+                            discount_type_services:
+                              type: integer
+                              enum:
+                              - 0
+                              - 1
+                              description: '`0` - fixed  `1` - percentage
+
+                                '
+                            enabled:
+                              type: boolean
+                              example: true
+                      address_meta_data:
+                        type: object
+                        properties:
+                          zip_code:
+                            type: string
+                            example: '123456'
+                          city:
+                            type: string
+                            example: Palo Alto
+                          street:
+                            type: string
+                            example: Flowers St.
+                          street_number:
+                            type: string
+                            example: '1990'
+                          region:
+                            type: string
+                            example: California
+                          region_short_code:
+                            type: string
+                            example: CA
+                          country_id:
+                            type: integer
+                            example: 6
+                          latitude:
+                            type: string
+                            example: '37.4419'
+                          longitude:
+                            type: string
+                            example: '122.1430'
+                          address_2:
+                            type: string
+                            example: ''
+                      current_client_id:
+                        type:
+                        - integer
+                        - 'null'
+                        example: 30
+                      clients:
+                        type: array
+                        items:
+                          type: object
+                          title: Client
+                          description: relationship between pet parent and clinic
+                          properties:
+                            id:
+                              type: integer
+                              example: 1
+                            clinic_id:
+                              type: integer
+                              example: 1
+                            referral_source_type:
+                              type:
+                              - string
+                              - 'null'
+                              enum:
+                              - google_search
+                              - social_media
+                              - referral
+                              - walk_in
+                              - local_event
+                              - paid_ad
+                              - blog
+                              - signage
+                              - walk_by
+                              - online_reviews
+                              - vet_referral
+                              - other
+                            referral_source_details:
+                              type:
+                              - string
+                              - 'null'
+                      preferences:
+                        type:
+                        - object
+                        - 'null'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '422':
+          $ref: '#/paths/~1api~1v1~1plans/get/responses/422'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: postApiV1PetParents
+      x-operation-id-source: derived
+  /api/v1/pet-parents/{id}:
+    get:
+      tags:
+      - Pet Parents
+      summary: Retrieve a PetParent
+      description: 'Permissions needed: NONE
+
+        Returns a pet parent record'
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      - name: include
+        in: query
+        description: 'Include Additional info (ex: ''discounts'', ''preferences'')'
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/paths/~1api~1v1~1pet-parents/post/responses/201/content/application~1json/schema/properties/data'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: getApiV1PetParentsById
+      x-operation-id-source: derived
+    patch:
+      tags:
+      - Pet Parents
+      summary: Update a PetParent
+      description: 'Permissions needed: UPDATE_PATIENTS
+
+        Update pet parent info'
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/paths/~1api~1v1~1pet-parents/post/requestBody/content/application~1json/schema'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/paths/~1api~1v1~1pet-parents/post/responses/201/content/application~1json/schema/properties/data'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: patchApiV1PetParentsById
+      x-operation-id-source: derived
+  /api/v1/for-pet-parents/health-checks:
+    get:
+      tags:
+      - Pet Parents
+      summary: List the pet parent's Health Checks
+      description: Paginated list of the authenticated pet parent's Health Checks across every pet they own, newest first. Health Checks belonging to clinics that do not have the Health Checks feature enabled are excluded. Filter with `filter[status]=open` to return only the pending or in-progress conversations the app can still reopen.
+      parameters:
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 25
+      - name: filter[status]
+        in: query
+        description: '`open` returns the pending or in-progress checks a conversation can still be reopened in. Omit to return all of the pet parent''s checks.'
+        required: false
+        schema:
+          type: string
+          enum:
+          - open
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      required:
+                      - id
+                      - pet_id
+                      - cometchat_group_guid
+                      - status
+                      properties:
+                        id:
+                          type: integer
+                          example: 1024
+                        pet_id:
+                          type: integer
+                          example: 552
+                        cometchat_group_guid:
+                          type:
+                          - string
+                          - 'null'
+                          description: GUID of the CometChat group carrying this Health Check conversation.
+                          example: health-check-1024
+                        status:
+                          type: string
+                          enum:
+                          - pending
+                          - in-progress
+                          - completed
+                          - expired
+                          - not-answered
+                          example: pending
+                  links:
+                    $ref: '#/paths/~1api~1v1~1pets/get/responses/200/content/application~1json/schema/properties/links'
+                  meta:
+                    $ref: '#/paths/~1api~1v1~1pets/get/responses/200/content/application~1json/schema/properties/meta'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '422':
+          $ref: '#/paths/~1api~1v1~1plans/get/responses/422'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: getApiV1ForPetParentsHealthChecks
+      x-operation-id-source: derived
+  /api/v1/pet-parents/{pet_parent}/save-internal-notes:
+    patch:
+      tags:
+      - Pet Parents
+      summary: Update pet parent internal notes
+      operationId: petParentSaveInternalNotes
+      parameters:
+      - name: pet_parent
+        in: path
+        description: Pet parent id
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                observations:
+                  description: Observations / Internal Notes
+                  type: string
+              type: object
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json: {}
+        '204':
+          description: No Content
+          content: {}
+        '400':
+          description: Bad request
+          content:
+            application/json: {}
+components:
   securitySchemes:
-    oauth2:
+    passport:
       type: oauth2
-      description: OAuth 2.0 authorization-code grant with PKCE. Bearer access token is long-lived; a refresh token is also returned.
+      description: Laravel passport oauth2 security.
       flows:
         authorizationCode:
-          authorizationUrl: https://vet.digitail.io/oauth/authorize
-          tokenUrl: https://vet.digitail.io/oauth/token
-          refreshUrl: https://vet.digitail.io/oauth/token
-          scopes: {}
-externalDocs:
-  description: Digitail API Documentation
-  url: https://documentation.digitail.io/
+          authorizationUrl: https://developer.digitail.io/oauth/authorize
+          tokenUrl: https://developer.digitail.io/oauth/token
+          refreshUrl: https://developer.digitail.io/oauth/token
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

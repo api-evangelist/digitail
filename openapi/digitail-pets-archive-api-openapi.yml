@@ -1,0 +1,252 @@
+openapi: 3.2.0
+info:
+  title: Digitail Pets Archive API
+  description: Digitail API
+  contact:
+    email: developer@digitail.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+- url: https://developer.digitail.io
+  description: Sandbox server (uses test data)
+- url: https://vet.digitail.io
+  description: Production server (uses live data)
+security:
+- passport: []
+- Bearer: []
+tags:
+- name: Pets Archive
+paths:
+  /api/v1/pet-archive-types:
+    get:
+      tags:
+      - Pets Archive
+      summary: List all ArchiveTypes
+      description: 'Permissions needed: NONE
+
+        Get the list of Pets Archive Types'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      title: PetArchiveType
+                      description: The reason why a pet was archived
+                      properties:
+                        id:
+                          type: integer
+                          example: 1
+                        name:
+                          type: string
+                          example: Deceased
+                        translation_slug:
+                          type: string
+                          example: strings.deceased
+                        translation_label:
+                          type: string
+                          example: Deceased
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: getApiV1PetArchiveTypes
+      x-operation-id-source: derived
+  /api/v1/pets/{id}/archive:
+    get:
+      tags:
+      - Pets Archive
+      summary: Check Pet Archive
+      description: 'Permissions needed: ACCESS_PATIENTS
+
+        Returns the list of Archive info for Pet'
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      - $ref: '#/paths/~1api~1v1~1pets/get/parameters/0'
+      - $ref: '#/paths/~1api~1v1~1pets/get/parameters/1'
+      - name: filter[archive_type_id]
+        in: query
+        description: 'Archive type ID '
+        required: false
+        schema:
+          type: integer
+          enum:
+          - 1
+          - 2
+          - 3
+          - 4
+          description: '`1` - Deceased `2` - Moved away `3` - Change of owner `4` - Other
+
+            '
+      - $ref: '#/paths/~1api~1v1~1tags/get/parameters/5'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      title: PetArchive
+                      description: The record of a pet being archived. Larger version of the simple Archive
+                      properties:
+                        id:
+                          type: integer
+                          example: 1
+                        pet_id:
+                          type: integer
+                          example: 1
+                        vet_id:
+                          type: integer
+                          example: 1
+                        clinic_id:
+                          type: integer
+                          example: 1
+                        archive_type_id:
+                          type: integer
+                          enum:
+                          - 1
+                          - 2
+                          - 3
+                          - 4
+                          description: '`1` - Deceased `2` - Moved away `3` - Change of owner `4` - Other
+
+                            '
+                          example: 1
+                        reason:
+                          type: string
+                          example: The patient was archived because...
+                        created_at:
+                          type: string
+                          example: '2023-06-21T10:30:07.000000Z'
+                  links:
+                    $ref: '#/paths/~1api~1v1~1pets/get/responses/200/content/application~1json/schema/properties/links'
+                  meta:
+                    $ref: '#/paths/~1api~1v1~1pets/get/responses/200/content/application~1json/schema/properties/meta'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: getApiV1PetsByIdArchive
+      x-operation-id-source: derived
+    post:
+      tags:
+      - Pets Archive
+      summary: Archive Pet
+      description: 'Permissions needed: ACCESS_PATIENTS
+
+        Archive a Pet'
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                clinic_id:
+                  description: Clinic ID
+                  type: integer
+                  example: 766
+                vet_id:
+                  description: Vet ID
+                  type:
+                  - integer
+                  - 'null'
+                  example: null
+                archive_type_id:
+                  type: integer
+                  enum:
+                  - 1
+                  - 2
+                  - 3
+                  - 4
+                  description: '`1` - Deceased `2` - Moved away `3` - Change of owner `4` - Other
+
+                    '
+                reason:
+                  description: Reason/Comment
+                  type: string
+                  example: We archived Daisy because she moved away.
+              type: object
+      responses:
+        '204':
+          $ref: '#/paths/~1api~1v1~1sales/delete/responses/204'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: postApiV1PetsByIdArchive
+      x-operation-id-source: derived
+  /api/v1/pets/{id}/un-archive:
+    post:
+      tags:
+      - Pets Archive
+      summary: UnArchive Pet
+      description: 'Permissions needed: ACCESS_PATIENTS
+
+        UnArchive a Pet'
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                clinic_id:
+                  description: Clinic ID
+                  type: integer
+                  example: 766
+      responses:
+        '204':
+          $ref: '#/paths/~1api~1v1~1sales/delete/responses/204'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: postApiV1PetsByIdUnArchive
+      x-operation-id-source: derived
+components:
+  securitySchemes:
+    passport:
+      type: oauth2
+      description: Laravel passport oauth2 security.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://developer.digitail.io/oauth/authorize
+          tokenUrl: https://developer.digitail.io/oauth/token
+          refreshUrl: https://developer.digitail.io/oauth/token
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

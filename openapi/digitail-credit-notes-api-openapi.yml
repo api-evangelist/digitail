@@ -1,0 +1,295 @@
+openapi: 3.2.0
+info:
+  title: Digitail Credit Notes API
+  description: Digitail API
+  contact:
+    email: developer@digitail.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+- url: https://developer.digitail.io
+  description: Sandbox server (uses test data)
+- url: https://vet.digitail.io
+  description: Production server (uses live data)
+security:
+- passport: []
+- Bearer: []
+tags:
+- name: Credit Notes
+  description: Api Endpoints For Credit Notes
+paths:
+  /api/v1/credit-notes:
+    get:
+      tags:
+      - Credit Notes
+      summary: Get a list of Credit notes
+      description: Returns list of Credit notes
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/paths/~1api~1v1~1credit-notes/post/responses/201/content/application~1json/schema/properties/data'
+                  links:
+                    $ref: '#/paths/~1api~1v1~1pets/get/responses/200/content/application~1json/schema/properties/links'
+                  meta:
+                    $ref: '#/paths/~1api~1v1~1pets/get/responses/200/content/application~1json/schema/properties/meta'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1pets/get/parameters/0'
+      - $ref: '#/paths/~1api~1v1~1sales/get/parameters/2'
+      - $ref: '#/paths/~1api~1v1~1pets/get/parameters/1'
+      - name: filter[status]
+        in: query
+        description: 'Status (array: <i>opened, closed, partially_applied</i>)'
+        required: false
+        schema:
+          type: array
+          items:
+            type: integer
+            enum:
+            - opened
+            - closed
+            - partially_applied
+      - name: filter[type]
+        in: query
+        description: 'Type (array: <i>product_return, ad_hoc</i>)'
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - product_return
+            - ad_hoc
+      - name: include
+        in: query
+        description: 'Additional relations to include(comma separated attributes. Ex.: customer,customer.chatUser,sale,vet,charge,charge.sales,charge.sales.file)'
+        required: false
+        schema:
+          type: string
+      - name: append
+        in: query
+        description: 'Additional attributes to include(comma separated attributes. Ex: <i>credit_applied,tax_amounts_by_rate<i/>)'
+        required: false
+        schema:
+          type: string
+      - name: filter[made_at]
+        in: query
+        description: Dates between when credit note was added in the platform
+        required: false
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+            format: date-time
+            example: 2024-04-26T06:39:10.000000Z,2024-04-30T06:39:10.000000Z
+      - name: sort
+        in: query
+        schema:
+          type: string
+          enum:
+          - made_at
+          - total
+          - credit
+      - $ref: '#/paths/~1api~1v1~1tags/get/parameters/5'
+      - $ref: '#/paths/~1api~1v1~1pets/get/parameters/11'
+      operationId: getApiV1CreditNotes
+      x-operation-id-source: derived
+    post:
+      tags:
+      - Credit Notes
+      summary: Create a new Credit Note
+      description: Create a Credit Note
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              title: CreditNote
+              required:
+              - clinic_id
+              - customer_id
+              - amount
+              - date
+              - reason
+              properties:
+                clinic_id:
+                  type: integer
+                  example: 1
+                sale_id:
+                  type: integer
+                  example: 1
+                customer_id:
+                  type: integer
+                  example: 1
+                amount:
+                  type: number
+                  format: float
+                  example: 100
+                reason:
+                  type: string
+                  example: Reason for CreditNote
+                date:
+                  type: string
+                  format: date-time
+                  description: Creation date and time in UTC as Zulu ISO8601
+                  example: '2021-01-30T08:30:00Z'
+                description:
+                  type: string
+                  description: Credit note description
+                  example: Short description
+      responses:
+        '201':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    title: CreditNote
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      clinic_id:
+                        type: integer
+                        example: 1
+                      vet_id:
+                        type: integer
+                        example: 1
+                      sale_id:
+                        type: integer
+                        example: 1
+                      customer_id:
+                        type: integer
+                        example: 1
+                      status:
+                        type: string
+                        example: opened
+                      type:
+                        type: string
+                        example: product_return
+                      series:
+                        type: string
+                        example: DGT
+                      number:
+                        type: string
+                        example: '1'
+                      tax_amount:
+                        type: string
+                        example: '250.00'
+                      subtotal:
+                        type: string
+                        example: '250.00'
+                      total:
+                        type: string
+                        example: '250.00'
+                      description:
+                        type: string
+                        example: Short description
+                      made_at:
+                        type: string
+                        format: date-time
+                        example: '2021-01-30T08:30:00Z'
+                      voided_at:
+                        type: string
+                        format: date-time
+                        example: '2021-01-30T08:30:00Z'
+                      created_at:
+                        type: string
+                        example: '2022-07-18T08:58:36.000000Z'
+                      updated_at:
+                        type: string
+                        example: '2022-07-18T08:58:36.000000Z'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '422':
+          $ref: '#/paths/~1api~1v1~1plans/get/responses/422'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: postApiV1CreditNotes
+      x-operation-id-source: derived
+  /api/v1/credit-notes/{id}:
+    get:
+      tags:
+      - Credit Notes
+      summary: Get Credit Note details by ID
+      description: Returns a Credit Note entity
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      - name: include
+        in: query
+        description: 'Additional info to include. You can use multiple, comma separated. Options: clinic,vet,customer,sale,sale.record,sale.record.pet,charge,charge.sales'
+        required: false
+        schema:
+          type: string
+      - name: append
+        in: query
+        description: 'Additional attributes to include(comma separated attributes. Ex: <i>credit_applied,tax_amounts_by_rate,does_refund_require_terminal<i/>)'
+        required: false
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/paths/~1api~1v1~1credit-notes/post/responses/201/content/application~1json/schema/properties/data'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '404':
+          title: Not Found
+          description: The specified resource was not found.
+          content:
+            application/json: {}
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: getApiV1CreditNotesById
+      x-operation-id-source: derived
+components:
+  securitySchemes:
+    passport:
+      type: oauth2
+      description: Laravel passport oauth2 security.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://developer.digitail.io/oauth/authorize
+          tokenUrl: https://developer.digitail.io/oauth/token
+          refreshUrl: https://developer.digitail.io/oauth/token
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

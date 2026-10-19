@@ -1,0 +1,377 @@
+openapi: 3.2.0
+info:
+  title: Digitail Client Communication API
+  description: Digitail API
+  contact:
+    email: developer@digitail.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+- url: https://developer.digitail.io
+  description: Sandbox server (uses test data)
+- url: https://vet.digitail.io
+  description: Production server (uses live data)
+security:
+- passport: []
+- Bearer: []
+tags:
+- name: Client Communication
+  description: Api Endpoints related to communications between a Clinic and a PetParent
+paths:
+  /api/v1/client-communications:
+    get:
+      tags:
+      - Client Communication
+      summary: Get a list of all Communications with a specific PetParent
+      description: Get all appointments
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1pets/get/parameters/0'
+      - name: filter[user_id]
+        in: query
+        description: Id of the related PetParent
+        style: form
+        explode: false
+        schema:
+          type: integer
+      - name: filter[patient_ids]
+        in: query
+        description: Ids of the patients that are related to the entity
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: integer
+      - name: filter[date_between]
+        in: query
+        description: Dates between when the entity was created
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+      - name: filter[content]
+        in: query
+        description: Filter subject and content
+        schema:
+          type: string
+      - name: filter[email]
+        in: query
+        description: Destination email or users email
+        style: form
+        explode: false
+        schema:
+          type: string
+      - name: filter[phone]
+        in: query
+        description: Destination phone or users phone
+        required: false
+        style: form
+        explode: false
+        schema: null
+      - name: filter[channels]
+        in: query
+        description: The channels of the Client Communcations, array of values from CommunicationChannelEnum (e.g. phone, other, email, sms)
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - phone
+            - other
+            - email
+            - sms
+      - name: filter[types]
+        in: query
+        description: 'The types of the Client Communcations, array of values from CommunicationTypeEnum.
+
+
+          `inbound` additionally returns threads whose replies contain an inbound
+
+          message. Results are thread roots, and an inbound email only ever exists as a
+
+          reply, so it would otherwise be unreachable through this filter.
+
+          '
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - direct
+            - reminder
+            - notification
+            - inbound
+            - client_statement_notification
+      - name: filter[statuses]
+        in: query
+        description: The statuses of the Client Communcations, array of values from CommunicationStatusEnum
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - processing
+            - delivered
+            - undelivered
+            - skipped
+            - opened
+            - clicked
+            - unknown
+      - name: filter[is_attached]
+        in: query
+        description: '- `true` - return only communications that are associated with a record.
+
+
+          - `false` - return only communications that are not associated with a record.
+
+          '
+        schema:
+          type: boolean
+      - name: include
+        in: query
+        description: Additional info to include. You can use multiple, comma separated.
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - user
+            - user.chatUser
+            - contactPerson
+            - clinic
+            - record
+            - record.visitTypes
+            - vet
+            - patients.pet
+            - replies
+            - replies.vet
+            - replies.record.visitTypes
+      - name: slim_resource
+        in: query
+        description: Return a slim version for related record
+        schema:
+          type: boolean
+      - $ref: '#/paths/~1api~1v1~1tags/get/parameters/5'
+      - $ref: '#/paths/~1api~1v1~1pets/get/parameters/11'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/paths/~1api~1v1~1client-communications/post/responses/201/content/application~1json/schema/properties/data'
+                  links:
+                    $ref: '#/paths/~1api~1v1~1pets/get/responses/200/content/application~1json/schema/properties/links'
+                  meta:
+                    $ref: '#/paths/~1api~1v1~1pets/get/responses/200/content/application~1json/schema/properties/meta'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '422':
+          $ref: '#/paths/~1api~1v1~1plans/get/responses/422'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: getApiV1ClientCommunications
+      x-operation-id-source: derived
+    post:
+      tags:
+      - Client Communication
+      summary: Log a new Client Communication history
+      description: Manually register a new communication between a Clinic and a PetParent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                user_id:
+                  description: Id of the PetParent the communication was with. Must be a parent of every patient in patient_ids. Mutually exclusive with contact_person_id. Set when the communication is recorded and not editable afterwards.
+                  type: integer
+                contact_person_id:
+                  description: Id of the contact person the communication was with, when it was not the PetParent. Must be linked to every patient in patient_ids. Mutually exclusive with user_id. Set when the communication is recorded and not editable afterwards.
+                  type: integer
+                patient_ids:
+                  description: Id of the patients related to the communication.
+                  type: array
+                  items:
+                    type: integer
+                clinic_id:
+                  description: Id of the Clinic from where the communication is made from.
+                  type: integer
+                channel:
+                  description: The channel of the communication. Enum. One of phone, other, sms, email. API limited only to phone & other.
+                  enum:
+                  - phone
+                  - other
+                  type: string
+                subject:
+                  description: The subject of communication.
+                  type: string
+                content:
+                  description: The content of communication. (required for email)
+                  type: string
+                destination:
+                  description: Where the communication is sent to ( only for sms/email/phone ).
+                  type: string
+                communicated_at:
+                  description: The communicated_at when the communication was made.
+                  type: string
+                message_id:
+                  description: The id used for identifying attachments when channel is mail.
+                  type: string
+              type: object
+      responses:
+        '201':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    title: ClientCommunication
+                    properties:
+                      type:
+                        type: string
+                        example: Phone
+                      subject:
+                        type: string
+                        example: Subject
+                      content:
+                        type:
+                        - string
+                        - 'null'
+                        example: Longer content related to the communication
+                      communicated_at:
+                        type: string
+                        example: '2022-07-21T14:18:33.258907Z'
+                      failure_code:
+                        type:
+                        - string
+                        - 'null'
+                        description: 'The delivery provider''s own machine code for a failed delivery, stored verbatim. Vocabularies differ per provider: a Twilio error code (`30003`), a SendGrid enhanced SMTP status (`5.1.1`) falling back to the event type (`dropped`), a Sinch delivery-report code (`412`), or a Twilio Voice dial outcome (`busy`). Codes prefixed `digitail-` mean the message never reached a provider. Null when the delivery did not fail.'
+                        example: '30003'
+                      failure_reason:
+                        type:
+                        - string
+                        - 'null'
+                        description: The provider's own human-readable explanation for a failed delivery, stored verbatim and untranslated. Frequently null even when `failure_code` is set — most providers send a code without accompanying text.
+                        example: Unreachable destination handset
+                      replied_to_id:
+                        type:
+                        - integer
+                        - 'null'
+                        description: Id of the root communication this is a reply to.
+                        example: 123
+                      last_reply_at:
+                        type:
+                        - string
+                        - 'null'
+                        description: Timestamp of the last reply in the thread (only on root communications).
+                        example: '2022-07-21T15:30:00.000000Z'
+                      is_seen:
+                        type: boolean
+                        description: Whether the clinic has opened this message on the pet timeline. Only inbound email replies are ever created unseen; everything else is seen from the start.
+                        example: true
+                      unseen_replies_count:
+                        type: integer
+                        description: Number of unseen replies in this thread (only when the replies relation is included).
+                        example: 2
+                      record_id:
+                        type:
+                        - integer
+                        - 'null'
+                        description: Id of the record this communication is linked to, if any.
+                        example: 77
+                      record:
+                        allOf:
+                        - type: object
+                          title: LinkedRecord
+                          description: The record a communication is linked to, reduced to what a listing surface needs to label it and open it. Not the full record — use the records endpoints for that.
+                          properties:
+                            id:
+                              type: integer
+                              example: 77
+                            number:
+                              type: integer
+                              description: 0 while the record is still an unnumbered draft.
+                              example: 1234
+                            status:
+                              type: integer
+                              description: 0 draft, 1 saved, 2 closed, 3 hospitalized.
+                              example: 1
+                            date:
+                              type: string
+                              example: '2026-07-12'
+                            pet_id:
+                              type: integer
+                              example: 55
+                            sale_id:
+                              type: integer
+                              description: 0 when the record has no sale.
+                              example: 811
+                            responsible_id:
+                              type:
+                              - integer
+                              - 'null'
+                              example: 24
+                            visit_types:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  id:
+                                    type: integer
+                                    example: 3
+                                  name:
+                                    type: string
+                                    example: Wellness
+                        description: The linked record itself (when included).
+                      replies:
+                        type: array
+                        description: List of replies to this communication (when included).
+                        items:
+                          $ref: '#/paths/~1api~1v1~1client-communications/post/responses/201/content/application~1json/schema/properties/data'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '422':
+          $ref: '#/paths/~1api~1v1~1plans/get/responses/422'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: postApiV1ClientCommunications
+      x-operation-id-source: derived
+components:
+  securitySchemes:
+    passport:
+      type: oauth2
+      description: Laravel passport oauth2 security.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://developer.digitail.io/oauth/authorize
+          tokenUrl: https://developer.digitail.io/oauth/token
+          refreshUrl: https://developer.digitail.io/oauth/token
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

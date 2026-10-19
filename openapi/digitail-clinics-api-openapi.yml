@@ -1,62 +1,425 @@
 openapi: 3.2.0
 info:
-  title: Digitail Open Clinics API
-  version: v1
-  description: Modeled OpenAPI for the Digitail Open API, a documented REST API for the Digitail cloud veterinary practice management platform (PIMS).
+  title: Digitail Clinics API
+  description: Digitail API
   contact:
-    name: API Evangelist
-    email: kin@apievangelist.com
-  x-endpoints-modeled: true
+    email: developer@digitail.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
 servers:
-- url: https://developer.digitail.io/api/v1
-  description: Digitail Open API v1
+- url: https://developer.digitail.io
+  description: Sandbox server (uses test data)
+- url: https://vet.digitail.io
+  description: Production server (uses live data)
 security:
-- oauth2: []
+- passport: []
+- Bearer: []
 tags:
 - name: Clinics
+  description: Get clinic details
 paths:
-  /clinic/{id}:
+  /api/v1/clinic/{id}:
     get:
-      operationId: retrieveClinic
-      summary: Retrieve a clinic
-      description: Retrieve a single clinic record. Confirmed endpoint.
       tags:
       - Clinics
+      summary: Retrieve a Clinic
+      description: 'Permissions needed: NONE
+
+        ENDPOINT: api/v1/clinic/{id} to be deprecated in favor of api/v1/clinics/{id}
+
+        Get all details associated with a specific clinic.'
       parameters:
-      - $ref: '#/components/parameters/idPath'
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      - name: include
+        in: query
+        description: 'Additional info to include. You can use multiple, comma separated. Options: country,owner, reminderPeriods'
+        required: false
+        schema:
+          type: string
       responses:
         '200':
-          $ref: '#/components/responses/Resource'
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    title: Clinic
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      name:
+                        type: string
+                        example: Animal Hospital of All Pets
+                      address:
+                        type: string
+                        example: Yigal Alon St 126, Tel Aviv-Yafo, 6744332, Israel
+                      phone:
+                        type: string
+                        example: 555-555 5555
+                      email:
+                        type: string
+                        example: clinic@example.com
+                      street:
+                        type: string
+                        example: Yigal Alon Street
+                      street_number:
+                        type: string
+                        example: 126
+                      region:
+                        type: string
+                        example: Tel Aviv District
+                      timezone:
+                        type: string
+                        example: Asia/Jerusalem
+                      zip:
+                        type: string
+                        example: 6744332
+                      country:
+                        $ref: '#/paths/~1api~1v1~1public~1clinics~1%7Bslug%7D/get/responses/200/content/application~1json/schema/properties/data/properties/country'
+                      owner:
+                        $ref: '#/paths/~1api~1v1~1vets~1%7Bid%7D/get/responses/200/content/application~1json/schema/properties/data'
+                        example: null
+                      vets:
+                        type: array
+                        items:
+                          $ref: '#/paths/~1api~1v1~1vets~1%7Bid%7D/get/responses/200/content/application~1json/schema/properties/data'
+                        example: []
+                      hasGroup:
+                        type: boolean
+                        example: false
+                      group_id:
+                        type:
+                        - integer
+                        - 'null'
+                        example: null
+                      rooms:
+                        type: array
+                        items:
+                          type:
+                          - object
+                          - 'null'
+                          title: Room
+                          description: A room in a clinic where appointments can be made. Used for organizational purposes.
+                          properties:
+                            id:
+                              type: integer
+                              example: 1
+                            clinic_id:
+                              type: integer
+                              example: 1
+                            name:
+                              type: string
+                              example: Consultation Room 1
+                        example: []
+                      reminders:
+                        type: array
+                        items:
+                          $ref: '#/paths/~1api~1v1~1appointments/post/requestBody/content/application~1json/schema/properties/reminder_notifications/items'
+                        example: []
+                      meetings_link:
+                        type:
+                        - string
+                        - 'null'
+                        example: https://meetings.example.com
+                      token:
+                        type:
+                        - string
+                        - 'null'
+                        example: null
+                      cash_register_notes:
+                        type:
+                        - string
+                        - 'null'
+                        example: null
+                      sms_enabled:
+                        type: integer
+                      appointment_sms:
+                        type: integer
+                      appointment_email:
+                        type: integer
+                      reminder_appointment_sms:
+                        type: integer
+                      reminder_appointment_email:
+                        type: integer
+                      reminder_health_plan_sms:
+                        type: integer
+                      reminder_health_plan_email:
+                        type: integer
+                      first_availability_not_before:
+                        type: integer
+                      has_intake:
+                        type: integer
+                      website:
+                        type:
+                        - string
+                        - 'null'
+                      gtm_id:
+                        type:
+                        - string
+                        - 'null'
+                      public_notice:
+                        type:
+                        - string
+                        - 'null'
+                      latitude:
+                        type:
+                        - number
+                        - 'null'
+                        format: float
+                      longitude:
+                        type:
+                        - number
+                        - 'null'
+                        format: float
+                      logo:
+                        type:
+                        - string
+                        - 'null'
+                      slug:
+                        type:
+                        - string
+                        - 'null'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
         '401':
-          $ref: '#/components/responses/Unauthorized'
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: getApiV1ClinicById
+      x-operation-id-source: derived
+  /api/v1/clinics:
+    get:
+      tags:
+      - Clinics
+      summary: Get Clinics list by ids
+      description: Returns a Clinics list by ids
+      parameters:
+      - name: filter[clinic_id]
+        in: query
+        description: Clinic IDs (comma separated), if not provided, will return all current vet clinics
+        required: false
+        schema:
+          type: string
+      - name: filter[is_admin]
+        in: query
+        description: If true, will filter only clinics where user is admin
+        required: false
+        schema:
+          type: integer
+          enum:
+          - 1
+      - name: filter[group_id]
+        in: query
+        description: Group ID
+        required: false
+        schema:
+          type: integer
+      - name: include
+        in: query
+        description: 'Additional info to include. You can use multiple, comma separated. Options: vets,rooms,reminderPeriods'
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/paths/~1api~1v1~1clinic~1%7Bid%7D/get/responses/200/content/application~1json/schema/properties/data'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: getApiV1Clinics
+      x-operation-id-source: derived
+  /api/v1/clinics/schedules:
+    get:
+      tags:
+      - Clinics
+      summary: Get clinics schedules
+      description: Returns clinics schedules.
+      parameters:
+      - name: filter[clinic_ids][]
+        in: query
+        description: Ids of the clinics
+        required: true
+        schema:
+          type: array
+          items:
+            type: integer
+      - name: filter[vet_ids][]
+        in: query
+        description: Ids of the vets
+        required: false
+        schema:
+          type: array
+          items:
+            type: integer
+      - name: filter[clinic_schedules]
+        in: query
+        description: if it is true, then clinic schedules will be returned
+        required: false
+        schema:
+          type: boolean
+      - name: filter[start_date]
+        in: query
+        description: Date
+        required: true
+        schema:
+          type: string
+          format: date
+          example: '2024-02-01'
+      - name: filter[end_date]
+        in: query
+        description: Date, can be skipped for one day schedule
+        required: false
+        schema:
+          type: string
+          format: date
+          example: '2024-02-28'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      clinic_schedules:
+                        type: array
+                        items:
+                          type: object
+                          additionalProperties:
+                            type: array
+                            items:
+                              type: object
+                              title: Clinic Schedule
+                              properties:
+                                clinic_id:
+                                  type: integer
+                                  example: 1
+                                weekday:
+                                  type: integer
+                                  example: 1
+                                is_open:
+                                  type: boolean
+                                  example: true
+                                date:
+                                  type: string
+                                  format: date
+                                  example: '2022-02-22'
+                                intervals:
+                                  type: array
+                                  items:
+                                    properties:
+                                      start_time:
+                                        type: string
+                                        format: date-time
+                                        example: '2022-02-22T10:00:00.000000Z'
+                                      end_time:
+                                        type: string
+                                        format: date-time
+                                        example: '2022-02-22T10:30:00.000000Z'
+                      vet_schedules:
+                        type: array
+                        items:
+                          type: object
+                          additionalProperties:
+                            type: object
+                            additionalProperties:
+                              type: array
+                              items:
+                                type: object
+                                title: Vet Schedule
+                                properties:
+                                  vet_id:
+                                    type: integer
+                                    example: 1
+                                  clinic_id:
+                                    type: integer
+                                    example: 1
+                                  weekday:
+                                    type: integer
+                                    example: 1
+                                  is_open:
+                                    type: boolean
+                                    example: true
+                                  date:
+                                    type: string
+                                    format: date
+                                    example: '2022-02-22'
+                                  intervals:
+                                    type: array
+                                    items:
+                                      properties:
+                                        start_time:
+                                          type: string
+                                          format: date-time
+                                          example: '2022-02-22T10:00:00.000000Z'
+                                        end_time:
+                                          type: string
+                                          format: date-time
+                                          example: '2022-02-22T10:30:00.000000Z'
+                                  breaks:
+                                    type: array
+                                    items:
+                                      properties:
+                                        start_time:
+                                          type: string
+                                          format: date-time
+                                          example: '2022-02-22T10:00:00.000000Z'
+                                        end_time:
+                                          type: string
+                                          format: date-time
+                                          example: '2022-02-22T10:30:00.000000Z'
+                                  scheduled_count:
+                                    type: integer
+                                    example: 1
+                                  free_percent:
+                                    type: integer
+                                    example: 100
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: getApiV1ClinicsSchedules
+      x-operation-id-source: derived
 components:
-  responses:
-    Unauthorized:
-      description: Missing or invalid OAuth 2.0 bearer token.
-    Resource:
-      description: A single resource.
-      content:
-        application/json:
-          schema:
-            type: object
-  parameters:
-    idPath:
-      name: id
-      in: path
-      description: Resource identifier.
-      required: true
-      schema:
-        type: integer
   securitySchemes:
-    oauth2:
+    passport:
       type: oauth2
-      description: OAuth 2.0 authorization-code grant with PKCE. Bearer access token is long-lived; a refresh token is also returned.
+      description: Laravel passport oauth2 security.
       flows:
         authorizationCode:
-          authorizationUrl: https://vet.digitail.io/oauth/authorize
-          tokenUrl: https://vet.digitail.io/oauth/token
-          refreshUrl: https://vet.digitail.io/oauth/token
-          scopes: {}
-externalDocs:
-  description: Digitail API Documentation
-  url: https://documentation.digitail.io/
+          authorizationUrl: https://developer.digitail.io/oauth/authorize
+          tokenUrl: https://developer.digitail.io/oauth/token
+          refreshUrl: https://developer.digitail.io/oauth/token
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

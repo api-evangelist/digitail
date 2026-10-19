@@ -1,0 +1,566 @@
+openapi: 3.2.0
+info:
+  title: Digitail Public Clinics API
+  description: Digitail API
+  contact:
+    email: developer@digitail.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+- url: https://developer.digitail.io
+  description: Sandbox server (uses test data)
+- url: https://vet.digitail.io
+  description: Production server (uses live data)
+security:
+- passport: []
+- Bearer: []
+tags:
+- name: Public Clinics
+paths:
+  /api/v1/public/clinics/{slug}/available-dates:
+    get:
+      tags:
+      - Public Clinics
+      summary: List Clinic available dates
+      description: 'Permissions needed: NONE
+
+        Returns clinic available dates based on vets'' available intervals, vets'' appointments, vets'' tasks, vets'' services and service duration.'
+      security: []
+      parameters:
+      - name: slug
+        in: path
+        description: The Clinic slug
+        required: true
+        schema:
+          type: string
+      - name: filter[start_date]
+        in: query
+        description: Date
+        required: true
+        schema:
+          type: string
+          format: date
+          example: '2024-02-01'
+      - name: filter[end_date]
+        in: query
+        description: Date, can be skipped for one day schedule
+        required: false
+        schema:
+          type: string
+          format: date
+          example: '2024-02-28'
+      - name: filter[visit_type_id]
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: filter[duration]
+        in: query
+        description: duration in minutes for calc available slots, required one of visit_type_id or duration
+        required: false
+        schema:
+          type: integer
+      - name: filter[vet_slug]
+        in: query
+        description: The Vet slug
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: string
+                      format: date
+                      example: '2023-07-01'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: getApiV1PublicClinicsBySlugAvailableDates
+      x-operation-id-source: derived
+  /api/v1/public/clinics/{slug}/vets-timeslots:
+    get:
+      tags:
+      - Public Clinics
+      summary: List clinic vets available timeslots
+      description: 'Permissions needed: NONE
+
+        Returns clinic vets'' available timeslots based on their vets'' available intervals, vets'' appointments, vets'' tasks, vets'' services and service duration.'
+      security: []
+      parameters:
+      - name: slug
+        in: path
+        description: The Clinic slug
+        required: true
+        schema:
+          type: string
+      - name: filter[start_date]
+        in: query
+        description: Date, if not provided, the first week with available slots within the next two months will be returned
+        required: false
+        schema:
+          type: string
+          format: date
+          example: '2024-02-01'
+      - name: filter[end_date]
+        in: query
+        description: Date, can be skipped for one day schedule
+        required: false
+        schema:
+          type: string
+          format: date
+          example: '2024-02-28'
+      - name: filter[visit_type_id]
+        in: query
+        description: visit_type_id for calc available slots, required one of visit_type_id or duration
+        required: false
+        schema:
+          type: integer
+      - name: filter[duration]
+        in: query
+        description: duration in minutes for calc available slots, required one of visit_type_id or duration
+        required: false
+        schema:
+          type: integer
+      - name: filter[vet_slug]
+        in: query
+        description: The Vet slug
+        required: false
+        schema:
+          type: string
+      - name: any_staff
+        in: query
+        description: Return only available slots without staff details
+        required: false
+        schema:
+          type: boolean
+      - name: grouped
+        in: query
+        required: false
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      oneOf:
+                      - type: object
+                        properties:
+                          id:
+                            type: integer
+                          first_name:
+                            type: string
+                          last_name:
+                            type: string
+                          job_title:
+                            type: string
+                          avatar:
+                            type: string
+                          schedule:
+                            type: object
+                            properties:
+                              date:
+                                type: string
+                                example: '2024-02-06'
+                              slots:
+                                type: array
+                                items:
+                                  type: object
+                                  properties:
+                                    start_time:
+                                      type: string
+                                      example: '2024-02-06T14:00:00.000000Z'
+                                    end_time:
+                                      type: string
+                                      example: '2024-02-06T14:30:00.000000Z'
+                      - type: object
+                        properties:
+                          date:
+                            type: string
+                            example: '2024-02-06'
+                          slots:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                start_time:
+                                  type: string
+                                  example: '2024-02-06T14:00:00.000000Z'
+                                end_time:
+                                  type: string
+                                  example: '2024-02-06T14:30:00.000000Z'
+                      - type: object
+                        properties:
+                          vets:
+                            type: object
+                          slots_by_date_by_vet:
+                            type: object
+                          slots_by_date_by_slot:
+                            type: object
+                        example:
+                          vets:
+                            '349':
+                              id: 349
+                              first_name: Marc
+                              last_name: Bednar
+                              full_name: Marc Bednar
+                              avatar: https://digitail.test/images/profilepic.jpg
+                              job_title: null
+                          slots_by_date_by_vet:
+                            '2024-01-01':
+                              '349':
+                              - start_time: '2024-01-01T08:00:00.000000Z'
+                                end_time: '2024-01-01T08:30:00.000000Z'
+                          slots_by_date_by_slot:
+                            '2024-01-01':
+                              '2024-01-01T08:00:00.000000Z':
+                                start_time: '2024-01-01T08:00:00.000000Z'
+                                end_time: '2024-01-01T08:30:00.000000Z'
+                                vet_ids:
+                                - 349
+                  meta:
+                    type: object
+                    properties:
+                      start_date:
+                        type: string
+                        example: '2024-02-06'
+                      end_date:
+                        type: string
+                        example: '2024-02-12'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: getApiV1PublicClinicsBySlugVetsTimeslots
+      x-operation-id-source: derived
+  /api/v1/public/clinics/{slug}:
+    get:
+      tags:
+      - Public Clinics
+      summary: Retrieve Clinic by slug
+      description: 'Permissions needed: NONE
+
+        Returns Clinic details.'
+      security: []
+      parameters:
+      - name: slug
+        in: path
+        description: The Clinic slug
+        required: true
+        schema:
+          type: string
+      - name: include
+        in: query
+        description: 'Additional info to include. You can use multiple, comma separated. Options: country, country.language, schedules, schedules.intervals, visit_types.'
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    title: Clinic
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      name:
+                        type: string
+                        example: Animal Hospital of All Pets
+                      address:
+                        type:
+                        - string
+                        - 'null'
+                        example: Yigal Alon St 126, Tel Aviv-Yafo, 6744332, Israel
+                      phone:
+                        type:
+                        - string
+                        - 'null'
+                        example: 555-555 5555
+                      email:
+                        type: string
+                        example: clinic@example.com
+                      city:
+                        type:
+                        - string
+                        - 'null'
+                      street:
+                        type:
+                        - string
+                        - 'null'
+                        example: Yigal Alon Street
+                      street_number:
+                        type:
+                        - string
+                        - 'null'
+                        example: 126
+                      region:
+                        type:
+                        - string
+                        - 'null'
+                        example: Tel Aviv District
+                      timezone:
+                        type: string
+                        example: Asia/Jerusalem
+                      zip:
+                        type: string
+                        example: 6744332
+                      country:
+                        type: object
+                        title: Country
+                        properties:
+                          id:
+                            type: integer
+                            example: 6
+                          name:
+                            type: string
+                            example: United States
+                          iso_code:
+                            type: string
+                            example: us
+                          code:
+                            type: string
+                            example: usa
+                          language:
+                            type:
+                            - object
+                            - 'null'
+                            title: Language
+                            properties:
+                              id:
+                                type: integer
+                                example: 6
+                              name:
+                                type: string
+                                example: English (US)
+                              short_name:
+                                type: string
+                                example: en-us
+                              code:
+                                type: string
+                                example: en-us
+                      preferences:
+                        type: object
+                        title: ClinicPublicPreferences
+                        description: The subset of clinic settings exposed on public and pet-parent payloads. The numeric toggles are 0 or 1.
+                        properties:
+                          currency:
+                            type:
+                            - string
+                            - 'null'
+                            example: CAD
+                          locale:
+                            type:
+                            - string
+                            - 'null'
+                            example: en
+                          shop_enabled:
+                            type:
+                            - number
+                            - 'null'
+                            example: 0
+                          chat_app_integration:
+                            type:
+                            - number
+                            - 'null'
+                            example: 1
+                          require_client_address:
+                            type:
+                            - number
+                            - 'null'
+                            example: 0
+                          clinic_share_case_file:
+                            type:
+                            - number
+                            - 'null'
+                            example: 0
+                          any_staff_option_disabled:
+                            type:
+                            - number
+                            - 'null'
+                            example: 0
+                          auto_approve_online_appointments:
+                            type:
+                            - number
+                            - 'null'
+                            example: 0
+                          appointment_reason_required:
+                            type:
+                            - number
+                            - 'null'
+                            example: 1
+                          selling_price_includes_tax:
+                            type:
+                            - boolean
+                            - 'null'
+                            example: false
+                      visit_types:
+                        type: array
+                        items:
+                          $ref: '#/paths/~1api~1v1~1records/post/responses/201/content/application~1json/schema/properties/data/properties/visit_types/items'
+                      visit_type_categories:
+                        type: array
+                        items:
+                          type: object
+                          title: Visit Type
+                          properties:
+                            category:
+                              type: string
+                            label:
+                              type: string
+                            visit_types:
+                              type: array
+                              items:
+                                $ref: '#/paths/~1api~1v1~1records/post/responses/201/content/application~1json/schema/properties/data/properties/visit_types/items'
+                      public_notice:
+                        type:
+                        - string
+                        - 'null'
+                      logo:
+                        type:
+                        - string
+                        - 'null'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: getApiV1PublicClinicsBySlug
+      x-operation-id-source: derived
+  /api/v1/public/clinics/{slug}/plans:
+    get:
+      tags:
+      - Public Clinics
+      summary: List clinic plans by clinic slug
+      description: 'Permissions needed: NONE
+
+        Returns the clinic''s plans that Pet Parents can sign up for on their own: plans with `status` `active` and `is_public` true (the "Visible on pet portal & mobile app" setting). `is_public` is false by default. The clinic app does not let a family plan (`allows_multiple_pets`) be made public. To list every plan of a clinic, including hidden ones, use the authenticated `GET /api/v1/plans`.'
+      security: []
+      parameters:
+      - name: slug
+        in: path
+        description: The Clinic slug
+        required: true
+        schema:
+          type: string
+      - name: include
+        in: query
+        description: 'Additional info to include. You can use multiple, comma separated. Options: benefits, benefits.benefitable.'
+        required: false
+        schema:
+          type: string
+      - $ref: '#/paths/~1api~1v1~1tags/get/parameters/5'
+      - $ref: '#/paths/~1api~1v1~1pets/get/parameters/11'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      title: Plan
+                      properties:
+                        id:
+                          type: integer
+                          example: 1
+                        clinic_id:
+                          type: integer
+                          example: 1
+                        name:
+                          type: string
+                          example: Basic
+                        description:
+                          type: string
+                          example: Basic subscription plan
+                        price:
+                          type: number
+                          example: 10
+                        price_without_tax:
+                          type: number
+                          example: 10
+                        tax:
+                          type: number
+                          deprecated: true
+                          description: Deprecated. Summed percentage of `tax_rates`. Use `tax_rates` instead.
+                          example: 0
+                        tax_rates:
+                          type: array
+                          description: Tax rates applied to this item. Always present.
+                          items:
+                            $ref: '#/paths/~1api~1v1~1plans~1%7Bid%7D/put/responses/200/content/application~1json/schema/properties/data/properties/tax_rates/items'
+                        upfront_fee:
+                          type: number
+                          example: 0
+                        upfront_fee_without_tax:
+                          type: number
+                          example: 0
+                        periodicity:
+                          type: integer
+                          example: 1
+                        periodicity_type:
+                          type: string
+                          enum:
+                          - day
+                          - week
+                          - month
+                          - quarter
+                          - year
+                        plan_duration:
+                          type: string
+                          enum:
+                          - indefinite
+                          - 1-year
+                          default: indefinite
+                        benefits:
+                          $ref: '#/paths/~1api~1v1~1plans~1%7Bid%7D/put/requestBody/content/application~1json/schema/properties/benefits'
+                  links:
+                    $ref: '#/paths/~1api~1v1~1pets/get/responses/200/content/application~1json/schema/properties/links'
+                  meta:
+                    $ref: '#/paths/~1api~1v1~1pets/get/responses/200/content/application~1json/schema/properties/meta'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: getApiV1PublicClinicsBySlugPlans
+      x-operation-id-source: derived
+components:
+  securitySchemes:
+    passport:
+      type: oauth2
+      description: Laravel passport oauth2 security.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://developer.digitail.io/oauth/authorize
+          tokenUrl: https://developer.digitail.io/oauth/token
+          refreshUrl: https://developer.digitail.io/oauth/token
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

@@ -1,0 +1,433 @@
+openapi: 3.2.0
+info:
+  title: Digitail Product API
+  description: Digitail API
+  contact:
+    email: developer@digitail.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+- url: https://developer.digitail.io
+  description: Sandbox server (uses test data)
+- url: https://vet.digitail.io
+  description: Production server (uses live data)
+security:
+- passport: []
+- Bearer: []
+tags:
+- name: Product
+paths:
+  /api/v1/products:
+    get:
+      tags:
+      - Product
+      summary: List all Products
+      description: 'Permissions needed: NONE
+
+        Search for products in the clinic'
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1pets/get/parameters/0'
+      - name: filter[updated_from]
+        in: query
+        description: Returns only the products updated after this datetime (exclusive). The value must be a UTC ISO 8601 timestamp with a Z suffix, for example 2020-08-16T08:56:44.000000Z. Timezone offsets such as +02:00 are rejected. Use it together with filter[updated_to] to pull only the products changed since your last sync.
+        required: false
+        schema:
+          type: string
+          format: date-time
+      - name: filter[updated_to]
+        in: query
+        description: Returns only the products updated at or before this datetime (inclusive). The value must be a UTC ISO 8601 timestamp with a Z suffix, for example 2020-08-16T08:56:44.000000Z. Timezone offsets such as +02:00 are rejected.
+        required: false
+        schema:
+          type: string
+          format: date-time
+      - name: filter[search]
+        in: query
+        description: Searching by product name
+        schema:
+          type: string
+      - name: filter[service_package_id]
+        in: query
+        schema:
+          type: integer
+      - name: filter[categories]
+        in: query
+        description: Categories Ids
+        explode: false
+        schema:
+          type: array
+          items:
+            type: integer
+      - name: filter[producer_ids]
+        in: query
+        explode: false
+        schema:
+          type: array
+          items:
+            type: integer
+      - name: filter[aaha_codes]
+        in: query
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+      - name: filter[status]
+        in: query
+        explode: false
+        description: 'Status: active, inactive'
+        schema:
+          type: string
+          enum:
+          - active
+          - inactive
+          - both
+          default: active
+      - name: filter[only_in_stock]
+        in: query
+        explode: false
+        schema:
+          type: boolean
+          default: 'false'
+      - name: filter[mapped_to_external_products]
+        in: query
+        schema:
+          type: boolean
+        description: Return only products that are mapped (true) or not mapped (false) to external products. If omitted, all products will be returned.
+      - name: filter[external_product_provider]
+        in: query
+        schema:
+          type: string
+          enum:
+          - cdmv
+          - midwest
+          - nsv
+        description: Should be used in conjuction with `filter[mapped_to_external_products]` to indicate to external products of which provider returned product should be or not be mapped to
+      - name: filter[exclude_newly_auto_created]
+        in: query
+        schema:
+          type: boolean
+      - name: filter[subset]
+        in: query
+        description: 'Only products in specified category group (supports: ''vaccination'')'
+        schema:
+          type: string
+      - name: filter[is_consumable]
+        in: query
+        schema:
+          type: boolean
+      - name: filter[vat]
+        in: query
+        description: VAT rate in percents (e.g. 23)
+        schema:
+          type: number
+      - name: sort
+        in: query
+        explode: false
+        description: 'Order by field(s) (name,aaha_code,vat) Use a minus before for descending order. Default: name'
+        schema:
+          type: array
+          items:
+            type: string
+      - name: include
+        in: query
+        description: 'Additional info to include:  productCategory,stock,nirProducts,nirProducts.nirStocks,aahaCategory,producer,taskTemplates,externalProducts,taxRates'
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/paths/~1api~1v1~1products~1%7Bid%7D/get/responses/200/content/application~1json/schema/properties/data'
+                  links:
+                    $ref: '#/paths/~1api~1v1~1pets/get/responses/200/content/application~1json/schema/properties/links'
+                  meta:
+                    $ref: '#/paths/~1api~1v1~1pets/get/responses/200/content/application~1json/schema/properties/meta'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: getApiV1Products
+      x-operation-id-source: derived
+  /api/v1/products/{id}:
+    get:
+      tags:
+      - Product
+      summary: Get a Product by ID
+      description: Returns a Product entity
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      - name: include
+        in: query
+        description: 'Additional info to include:  productCategory,stock,nirProducts,nirProducts.nirStocks,aahaCategory,producer,taskTemplates,externalProducts'
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    title: Product
+                    properties:
+                      id:
+                        type: integer
+                        example: 670
+                      name:
+                        type: string
+                        example: Product Prof. Peter Dach
+                      client_name:
+                        type:
+                        - string
+                        - 'null'
+                        example: Clinic Name
+                      staff_description:
+                        type:
+                        - string
+                        - 'null'
+                        example: Product description for staff
+                      unit:
+                        type: string
+                        example: package
+                      units:
+                        type: array
+                        items:
+                          type: string
+                        example:
+                        - package
+                        - tablets
+                      sub_unit:
+                        type: string
+                        example: tablets
+                      recommended_unit_price:
+                        type: number
+                        description: Represent the main unit price with vat, is equal to price_with_vat
+                        example: 11.853
+                      recommended_subunit_price:
+                        type: number
+                        description: Represent the subunit price with vat, is equal to price_with_vat
+                        example: 1.6932857142857143
+                      price_with_vat:
+                        type: number
+                        format: float
+                        example: 11.853
+                      price_without_vat:
+                        type: number
+                        format: float
+                        example: 11.853
+                      sub_price_with_vat:
+                        type: number
+                        format: float
+                        example: 1.853
+                      sub_price_without_vat:
+                        type: number
+                        format: float
+                        example: 1.853
+                      formula:
+                        type: integer
+                        example: 7
+                      recommended_markup:
+                        type:
+                        - number
+                        - 'null'
+                        format: float
+                        example: 70
+                      active_substances:
+                        type: string
+                        example: ''
+                      administration:
+                        type: string
+                        example: ''
+                      recommendations:
+                        type: string
+                        example: ''
+                      fixed_fee:
+                        type: string
+                        example: '0.000'
+                      barcode:
+                        type: string
+                        example: '99425161'
+                      producer_id:
+                        type: string
+                        example: '670'
+                      clinic_id:
+                        type: string
+                        example: '3876'
+                      vat:
+                        type: integer
+                        deprecated: true
+                        description: Deprecated. Summed percentage of `tax_rates`. Use `tax_rates` instead.
+                        example: 0
+                      tax_rates:
+                        type: array
+                        description: Tax rates applied to this item. Always present.
+                        items:
+                          $ref: '#/paths/~1api~1v1~1plans~1%7Bid%7D/put/responses/200/content/application~1json/schema/properties/data/properties/tax_rates/items'
+                      is_controlled:
+                        type: boolean
+                        example: false
+                      is_consumable:
+                        type: boolean
+                        example: false
+                      is_default:
+                        type: boolean
+                        example: false
+                        description: Relevant only in the context of the product being linked to an external product.
+                      status:
+                        type: boolean
+                        example: true
+                      is_used:
+                        type: boolean
+                        example: true
+                        description: available in the show endpoint of a specific product. Marks if the stock of the product has already been used. Formula can't be updated after product is used
+                      minimum_stock:
+                        type:
+                        - number
+                        - 'null'
+                        format: float
+                        example: 0.1
+                      optimum_stock:
+                        type:
+                        - number
+                        - 'null'
+                        format: float
+                        example: 0.1
+                      minimum_price:
+                        type: string
+                        description: When the total price of the line item is less than this value, the prices will change with this value
+                        example: '20.3'
+                      price_threshold:
+                        type: object
+                        description: These thresholds are used to in order to change the price (unit or subunit) of the product based on the quantity that is sold.
+                        properties:
+                          range:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                start:
+                                  type: numeric
+                                  format: float
+                                end:
+                                  type: numeric
+                                  format: float
+                          price:
+                            type: numeric
+                            format: float
+                          unit_type:
+                            type: integer
+                            description: 1 - unit, 0 - sub_unit
+                      task_templates:
+                        type:
+                        - array
+                        - 'null'
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                            name:
+                              type: string
+                      external_products:
+                        type: array
+                        items:
+                          type: object
+                          title: ExternalProduct
+                          properties:
+                            id:
+                              type: integer
+                              example: 123
+                            provider:
+                              $ref: '#/paths/~1api~1v1~1products/get/parameters/11/schema'
+                            external_id:
+                              type: string
+                            name:
+                              type: string
+                            producer:
+                              type: string
+                            category:
+                              type: string
+                            sku:
+                              type: string
+                            barcode:
+                              type: string
+                              example: 00068510041401
+                            unit:
+                              type: string
+                            subunit:
+                              type: string
+                            formula:
+                              type:
+                              - number
+                              - 'null'
+                              format: float
+                            price:
+                              type: number
+                              format: float
+                              example: 19.99
+                            currency:
+                              type:
+                              - string
+                              - 'null'
+                            products:
+                              type:
+                              - array
+                              - 'null'
+                              description: Present when `include=products` is used on the index endpoint; items are clinic products for `filter[clinic_id]` linked to this external product.
+                              items:
+                                $ref: '#/paths/~1api~1v1~1products~1%7Bid%7D/get/responses/200/content/application~1json/schema/properties/data'
+                            in_stock:
+                              type: boolean
+                            stock_qty:
+                              type: integer
+                            is_controlled:
+                              type: boolean
+                      is_plan_benefit:
+                        type: boolean
+                        example: false
+                      is_deleted:
+                        type: boolean
+                        example: false
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: getApiV1ProductsById
+      x-operation-id-source: derived
+components:
+  securitySchemes:
+    passport:
+      type: oauth2
+      description: Laravel passport oauth2 security.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://developer.digitail.io/oauth/authorize
+          tokenUrl: https://developer.digitail.io/oauth/token
+          refreshUrl: https://developer.digitail.io/oauth/token
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

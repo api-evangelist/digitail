@@ -1,0 +1,197 @@
+openapi: 3.2.0
+info:
+  title: Digitail Authentication API
+  description: Digitail API
+  contact:
+    email: developer@digitail.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+- url: https://developer.digitail.io
+  description: Sandbox server (uses test data)
+- url: https://vet.digitail.io
+  description: Production server (uses live data)
+security:
+- passport: []
+- Bearer: []
+tags:
+- name: Authentication
+  description: Current User information
+paths:
+  /api/v1/auth/me:
+    get:
+      tags:
+      - Authentication
+      summary: Get the logged-in User (Vet)
+      parameters:
+      - name: include[]
+        in: query
+        description: 'Additional info to include. You can use multiple, comma separated.  Possible options: clinic,clinic.chatUser,multipleClinic,employee,employee.chatUser'
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - clinic
+            - clinic.chatUser
+            - multipleClinic
+            - employee
+            - employee.chatUser
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    title: Me
+                    description: General information about the logged in user.
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      first_name:
+                        type: string
+                        example: Sarah
+                      last_name:
+                        type: string
+                        example: Connolly
+                      full_name:
+                        type: string
+                        example: Sarah Connolly
+                      email:
+                        type: string
+                        example: vet@example.com
+                      name_with_title:
+                        type: string
+                        example: DVM Sarah Connolly
+                      video_link:
+                        type:
+                        - string
+                        - 'null'
+                        example: null
+                      profile_picture:
+                        type:
+                        - string
+                        - 'null'
+                        example: https://dev-1-public-digitail.s3.eu-central-1.amazonaws.com/ionut/uploads/KXy8Rlv2vluiZYqwRCy2
+                      employee:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                            example: 2
+                          chat_user:
+                            $ref: '#/paths/~1api~1v1~1auth~1me/get/responses/200/content/application~1json/schema/properties/data/properties/clinic/properties/chat_user'
+                      clinic:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                            example: 766
+                          name:
+                            type: string
+                            example: Animal Hospital of All Pets
+                          logo:
+                            type: string
+                            example: https://dev-1-public-digitail.s3.eu-central-1.amazonaws.com/ionut/uploads/KXy8Rlv2vluiZYqwRCy2
+                          preferences:
+                            type: object
+                            properties:
+                              language_locale:
+                                type: string
+                                example: en-us
+                              timezone:
+                                type: string
+                                example: America/New_York
+                              date_format:
+                                type: string
+                                example: m-d-Y
+                              datetime_format:
+                                type: string
+                                example: m-d-Y g:i A
+                              discount_reason_required:
+                                type:
+                                - string
+                                - 'null'
+                                example: null
+                          hasClinicLegalInfo:
+                            type: boolean
+                            example: true
+                          hasOnlinePaymentEnabled:
+                            type: boolean
+                            example: true
+                          chat_user:
+                            type: object
+                            title: ChatUser
+                            description: User Data for CometChat
+                            properties:
+                              name:
+                                type: string
+                                example: DVM Sarah Connolly
+                              uid:
+                                type: string
+                                example: e58ed763-928c-4155-bee9-fdbaaadc15f3
+                              is_active:
+                                type: boolean
+                                description: If the user is active in comet-chat
+                                example: true
+                              is_verified:
+                                type: boolean
+                                description: If the user has a verified comet-chat account
+                                example: true
+                              user:
+                                type: object
+                                description: 'One of the following: Vet, Clinic, PetParent'
+                          care_credit_merchant:
+                            type: object
+                            properties:
+                              id:
+                                type: integer
+                                example: 1
+                              is_active:
+                                type: boolean
+                                example: true
+                          default_payment_provider_account:
+                            type: object
+                            properties:
+                              id:
+                                type: integer
+                                example: 1
+                              provider:
+                                type: string
+                                enum:
+                                - dsp
+                                - stripe_standard
+                                - scratchpay
+                                - paysafe
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: getApiV1AuthMe
+      x-operation-id-source: derived
+components:
+  securitySchemes:
+    passport:
+      type: oauth2
+      description: Laravel passport oauth2 security.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://developer.digitail.io/oauth/authorize
+          tokenUrl: https://developer.digitail.io/oauth/token
+          refreshUrl: https://developer.digitail.io/oauth/token
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

@@ -1,85 +1,442 @@
 openapi: 3.2.0
 info:
-  title: Digitail Open Records API
-  version: v1
-  description: Modeled OpenAPI for the Digitail Open API, a documented REST API for the Digitail cloud veterinary practice management platform (PIMS).
+  title: Digitail Records API
+  description: Digitail API
   contact:
-    name: API Evangelist
-    email: kin@apievangelist.com
-  x-endpoints-modeled: true
+    email: developer@digitail.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
 servers:
-- url: https://developer.digitail.io/api/v1
-  description: Digitail Open API v1
+- url: https://developer.digitail.io
+  description: Sandbox server (uses test data)
+- url: https://vet.digitail.io
+  description: Production server (uses live data)
 security:
-- oauth2: []
+- passport: []
+- Bearer: []
 tags:
 - name: Records
+  description: Api Endpoints For Records
 paths:
-  /records:
+  /api/v1/patients/{pet}/file-case/{fileCase}/pdf:
     get:
-      operationId: listRecords
-      summary: List medical records
-      description: List medical records. Modeled from the documented Records resource.
       tags:
       - Records
-      x-endpoints-modeled: true
+      summary: Export Record PDF
+      description: 'Permissions needed: ACCESS_PATIENTS, VIEW_CHECKUPS
+
+        Receive a pdf file with the summary of a record'
       parameters:
-      - $ref: '#/components/parameters/page'
-      - $ref: '#/components/parameters/perPage'
+      - name: pet
+        in: path
+        description: The id of the pet whose records are being requested
+        required: true
+        schema:
+          type: integer
+      - name: fileCase
+        in: path
+        description: The id of the record whose pdf is being requested
+        required: true
+        schema:
+          type: integer
       responses:
         '200':
-          $ref: '#/components/responses/Paginated'
-components:
-  parameters:
-    perPage:
-      name: per_page
-      in: query
-      description: Results per page (default 15).
-      required: false
-      schema:
-        type: integer
-        default: 15
-        minimum: 1
-    page:
-      name: page
-      in: query
-      description: Page number (default 1).
-      required: false
-      schema:
-        type: integer
-        default: 1
-        minimum: 1
-  responses:
-    Paginated:
-      description: A paginated list of resources.
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              data:
-                type: array
-                items:
-                  type: object
-              meta:
+          title: OK PDF
+          description: The response is a PDF file.
+          content:
+            application/pdf: {}
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: getApiV1PatientsByPetFileCaseByFileCasePdf
+      x-operation-id-source: derived
+  /api/v1/records:
+    get:
+      tags:
+      - Records
+      summary: List all Records
+      description: 'Permissions needed: ACCESS_PATIENTS
+
+        Returns list of Records'
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1pets/get/parameters/0'
+      - $ref: '#/paths/~1api~1v1~1files/get/parameters/0'
+      - $ref: '#/paths/~1api~1v1~1pets/get/parameters/1'
+      - name: filter[id]
+        in: query
+        description: Record ID
+        required: false
+        schema:
+          type: integer
+      - name: filter[sale_id]
+        in: query
+        description: Sale ID
+        required: false
+        schema:
+          type: integer
+      - name: filter[has_diagnoses]
+        in: query
+        description: 'Return only the records(file cases) that have a diagnoses attached(Ex: <i>1 - true; 0 - false</i>)'
+        required: false
+        schema:
+          type: integer
+      - name: filter[has_labs]
+        in: query
+        description: 'Return only the records(file cases) that have Labs(Ex: <i> 0 - false; 1 - true(will also automatically include the ''values'' field);</i>)'
+        required: false
+        schema:
+          type: integer
+      - name: include
+        in: query
+        description: 'Additional info to include. You can use multiple, comma separated. Options: selectedDiagnoses,structureData'
+        required: false
+        schema:
+          type: string
+      - name: append
+        in: query
+        description: 'Additional attributes to include (comma separated). Options: clinical_examination_notes'
+        required: false
+        schema:
+          type: string
+      - $ref: '#/paths/~1api~1v1~1tags/get/parameters/5'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
                 type: object
                 properties:
-                  current_page:
-                    type: integer
-                  per_page:
-                    type: integer
-                  total:
-                    type: integer
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/paths/~1api~1v1~1records/post/responses/201/content/application~1json/schema/properties/data'
+                  links:
+                    $ref: '#/paths/~1api~1v1~1pets/get/responses/200/content/application~1json/schema/properties/links'
+                  meta:
+                    $ref: '#/paths/~1api~1v1~1pets/get/responses/200/content/application~1json/schema/properties/meta'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: getApiV1Records
+      x-operation-id-source: derived
+    post:
+      tags:
+      - Records
+      summary: Create a Record
+      description: 'Permissions needed: CREATE_CHECKUPS
+
+        Create a new Record.'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                clinic_id:
+                  description: Clinic Id.
+                  type: integer
+                  example: 0
+                vet_id:
+                  description: Clinic Id.
+                  type: integer
+                  example: 0
+                pet_id:
+                  description: Pet Id.
+                  type: integer
+                  example: 0
+                appointment_id:
+                  description: Appointment Id.
+                  type:
+                  - integer
+                  - 'null'
+                  example: null
+                template_id:
+                  description: Template Id.
+                  type:
+                  - integer
+                  - 'null'
+                  example: null
+                internal_notes:
+                  description: Internal notes visible only to clinic staff members.
+                  type:
+                  - string
+                  - 'null'
+                diagnosis:
+                  description: Diagnosis.
+                  type:
+                  - string
+                  - 'null'
+                presumptive_diagnosis:
+                  description: Presumptive Diagnosis.
+                  type:
+                  - string
+                  - 'null'
+                treatment:
+                  description: Treatment.
+                  type:
+                  - string
+                  - 'null'
+                recommendations:
+                  description: Recommendations.
+                  type:
+                  - string
+                  - 'null'
+                template_default:
+                  description: 'Optional category of default record template to apply when `template_id` is not provided. When omitted, the `general` default template (if any) is applied. Pass `null` to skip default-template lookup entirely.
+
+                    '
+                  type:
+                  - string
+                  - 'null'
+                  enum:
+                  - general
+                  - refill
+      responses:
+        '201':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    title: Record
+                    description: Record = NewFileCase = Consultation = Soap. Record is the preferred naming.
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      number:
+                        type: string
+                        example: '175'
+                      status:
+                        type: integer
+                        enum:
+                        - 0
+                        - 1
+                        - 2
+                        - 3
+                        description: '`0` - Draft `1` - Saved `2` - Closed `3` - Hospitalized
+
+                          '
+                        example: 1
+                      vet_id:
+                        type: integer
+                        example: 1
+                      responsible_id:
+                        type:
+                        - integer
+                        - 'null'
+                        example: 1
+                      responsible:
+                        description: Vet responsible for the record. Only present when `responsible` is requested via the `include` query parameter.
+                        allOf:
+                        - $ref: '#/paths/~1api~1v1~1vets~1%7Bid%7D~1colleagues-calendar-order/get/responses/200/content/application~1json/schema/properties/data/items'
+                      clinic_id:
+                        type: integer
+                        example: 1
+                      pet_id:
+                        type: integer
+                        example: 1
+                      sale_id:
+                        type: integer
+                        example: 1
+                      date:
+                        type: string
+                        example: '2021-11-19'
+                      reason:
+                        type: string
+                        example: Routine checkup
+                      template_id:
+                        type: integer
+                        example: 0
+                      comments:
+                        type: string
+                        example: ''
+                      recommendations:
+                        type: string
+                        example: ''
+                      rabic_tag_number:
+                        type: string
+                        example: ''
+                      presumptive_diagnosis:
+                        type: string
+                        example: ''
+                      diagnosis:
+                        type: string
+                        example: ''
+                      treatment:
+                        type: string
+                        example: ''
+                      visit_types:
+                        type:
+                        - array
+                        - 'null'
+                        items:
+                          type:
+                          - object
+                          - 'null'
+                          title: Visit Type
+                          properties:
+                            id:
+                              type: integer
+                            clinic_id:
+                              type: integer
+                            name:
+                              type: string
+                            description:
+                              type: string
+                            category:
+                              type: string
+                              enum:
+                              - consultation_exams
+                              - vaccines
+                              - preventive_vaccines
+                              - euthanasia
+                              - spay_neuter
+                              - medical_procedures
+                              - imagining_diagnostics
+                              - boarding
+                              - grooming
+                              - microchipping
+                              - other
+                              - admin
+                            category_label:
+                              type: string
+                            duration:
+                              type: integer
+                            is_visible:
+                              type: boolean
+                            color:
+                              type: string
+                            order:
+                              type:
+                              - integer
+                              - 'null'
+                            deposit_for_online_booking:
+                              type: number
+                              format: float
+                            has_intake_enabled:
+                              type:
+                              - boolean
+                              - 'null'
+                              description: only valid for clinics with Tails integration in the Pet Parent App
+                            printable_files:
+                              type:
+                              - array
+                              - 'null'
+                              items:
+                                type: object
+                                properties:
+                                  id:
+                                    type: integer
+                                  title:
+                                    type: string
+                            service_packages:
+                              type:
+                              - array
+                              - 'null'
+                              items:
+                                type: object
+                                properties:
+                                  id:
+                                    type: integer
+                                  name:
+                                    type: string
+                                  client_name:
+                                    type:
+                                    - string
+                                    - 'null'
+                                  description:
+                                    type: string
+                                  unit_price:
+                                    type:
+                                    - string
+                                    - 'null'
+                                  price:
+                                    type:
+                                    - string
+                                    - 'null'
+                                  price_includes_tax:
+                                    type:
+                                    - boolean
+                                    - 'null'
+                                  tax:
+                                    type:
+                                    - float
+                                    - 'null'
+                      reason_visit_type:
+                        $ref: '#/paths/~1api~1v1~1records/post/responses/201/content/application~1json/schema/properties/data/properties/visit_types/items'
+                      structure:
+                        oneOf:
+                        - type: array
+                          items:
+                            type: object
+                        - type: object
+                      selectedDiagnoses:
+                        type: array
+                        description: Only present when `selectedDiagnoses` is requested via the `include` query parameter.
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                              example: 1
+                            name:
+                              type: string
+                              example: Otitis externa
+                            description:
+                              type:
+                              - string
+                              - 'null'
+                            recommendation:
+                              type:
+                              - string
+                              - 'null'
+                            clinic_id:
+                              type: integer
+                              example: 1
+                      clinical_examination_notes:
+                        type:
+                        - string
+                        - 'null'
+                        description: Only present when `clinical_examination_notes` is requested via the `append` query parameter.
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: postApiV1Records
+      x-operation-id-source: derived
+components:
   securitySchemes:
-    oauth2:
+    passport:
       type: oauth2
-      description: OAuth 2.0 authorization-code grant with PKCE. Bearer access token is long-lived; a refresh token is also returned.
+      description: Laravel passport oauth2 security.
       flows:
         authorizationCode:
-          authorizationUrl: https://vet.digitail.io/oauth/authorize
-          tokenUrl: https://vet.digitail.io/oauth/token
-          refreshUrl: https://vet.digitail.io/oauth/token
-          scopes: {}
-externalDocs:
-  description: Digitail API Documentation
-  url: https://documentation.digitail.io/
+          authorizationUrl: https://developer.digitail.io/oauth/authorize
+          tokenUrl: https://developer.digitail.io/oauth/token
+          refreshUrl: https://developer.digitail.io/oauth/token
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

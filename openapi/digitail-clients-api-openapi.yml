@@ -1,85 +1,157 @@
 openapi: 3.2.0
 info:
-  title: Digitail Open Clients API
-  version: v1
-  description: Modeled OpenAPI for the Digitail Open API, a documented REST API for the Digitail cloud veterinary practice management platform (PIMS).
+  title: Digitail Clients API
+  description: Digitail API
   contact:
-    name: API Evangelist
-    email: kin@apievangelist.com
-  x-endpoints-modeled: true
+    email: developer@digitail.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
 servers:
-- url: https://developer.digitail.io/api/v1
-  description: Digitail Open API v1
+- url: https://developer.digitail.io
+  description: Sandbox server (uses test data)
+- url: https://vet.digitail.io
+  description: Production server (uses live data)
 security:
-- oauth2: []
+- passport: []
+- Bearer: []
 tags:
 - name: Clients
 paths:
-  /clients:
+  /api/v1/clients/{client}/payment-provider-cards:
     get:
-      operationId: listClients
-      summary: List clients
-      description: List client accounts. Modeled from the documented Clients resource.
       tags:
       - Clients
-      x-endpoints-modeled: true
+      description: Get saved payment provider cards.
       parameters:
-      - $ref: '#/components/parameters/page'
-      - $ref: '#/components/parameters/perPage'
+      - name: client
+        in: path
+        description: Client id OR {clinic-id}-{pet-parent-id} tuple.
+        required: true
+        schema:
+          type: string
+        examples:
+          clientId:
+            value: '123'
+            summary: Client id
+          clinicIdAndPetParentId:
+            value: 766-371232
+            summary: Clinic id and pet parent id tuple
       responses:
         '200':
-          $ref: '#/components/responses/Paginated'
-components:
-  parameters:
-    perPage:
-      name: per_page
-      in: query
-      description: Results per page (default 15).
-      required: false
-      schema:
-        type: integer
-        default: 15
-        minimum: 1
-    page:
-      name: page
-      in: query
-      description: Page number (default 1).
-      required: false
-      schema:
-        type: integer
-        default: 1
-        minimum: 1
-  responses:
-    Paginated:
-      description: A paginated list of resources.
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              data:
-                type: array
-                items:
-                  type: object
-              meta:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
                 type: object
                 properties:
-                  current_page:
-                    type: integer
-                  per_page:
-                    type: integer
-                  total:
-                    type: integer
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      title: Payment Provider Card
+                      properties:
+                        id:
+                          type: string
+                          example: pi_fake
+                        brand:
+                          $ref: '#/paths/~1api~1v1~1charges/post/requestBody/content/application~1json/schema/properties/card_brand'
+                        last4:
+                          type: string
+                          example: '4242'
+                        exp_month:
+                          type: integer
+                          example: 12
+                        exp_year:
+                          type: integer
+                          example: 2022
+                  links:
+                    $ref: '#/paths/~1api~1v1~1pets/get/responses/200/content/application~1json/schema/properties/links'
+                  meta:
+                    $ref: '#/paths/~1api~1v1~1pets/get/responses/200/content/application~1json/schema/properties/meta'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      summary: Get api clients by client payment provider cards
+      x-summary-source: derived
+      operationId: getApiV1ClientsByClientPaymentProviderCards
+      x-operation-id-source: derived
+  /api/v1/clients/{client}/add-payment-provider-card-link:
+    post:
+      tags:
+      - Clients
+      description: Get add payment provider card link (that you can use to redirect) for a client.
+      parameters:
+      - name: client
+        in: path
+        description: Client id OR {clinic-id}-{pet-parent-id} tuple.
+        required: true
+        schema:
+          type: string
+        examples:
+          clientId:
+            value: '123'
+            summary: Client id
+          clinicIdAndPetParentId:
+            value: 766-371232
+            summary: Clinic id and pet parent id tuple
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                title: Payment Provider Card Link
+                properties:
+                  url:
+                    type: string
+                    example: https://stripe.com/setup-intents/si_1234567890abcdefg
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      summary: Create api clients by client add payment provider card link
+      x-summary-source: derived
+      operationId: postApiV1ClientsByClientAddPaymentProviderCardLink
+      x-operation-id-source: derived
+  /api/v1/clients/{client}/payment-provider-cards/{id}:
+    delete:
+      tags:
+      - Clients
+      description: Deletes a client's payment provider card
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      responses:
+        '204':
+          $ref: '#/paths/~1api~1v1~1sales/delete/responses/204'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      summary: Delete api clients by client payment provider cards by id
+      x-summary-source: derived
+      operationId: deleteApiV1ClientsByClientPaymentProviderCardsById
+      x-operation-id-source: derived
+components:
   securitySchemes:
-    oauth2:
+    passport:
       type: oauth2
-      description: OAuth 2.0 authorization-code grant with PKCE. Bearer access token is long-lived; a refresh token is also returned.
+      description: Laravel passport oauth2 security.
       flows:
         authorizationCode:
-          authorizationUrl: https://vet.digitail.io/oauth/authorize
-          tokenUrl: https://vet.digitail.io/oauth/token
-          refreshUrl: https://vet.digitail.io/oauth/token
-          scopes: {}
-externalDocs:
-  description: Digitail API Documentation
-  url: https://documentation.digitail.io/
+          authorizationUrl: https://developer.digitail.io/oauth/authorize
+          tokenUrl: https://developer.digitail.io/oauth/token
+          refreshUrl: https://developer.digitail.io/oauth/token
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

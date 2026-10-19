@@ -1,85 +1,476 @@
 openapi: 3.2.0
 info:
-  title: Digitail Open Invoices API
-  version: v1
-  description: Modeled OpenAPI for the Digitail Open API, a documented REST API for the Digitail cloud veterinary practice management platform (PIMS).
+  title: Digitail Invoices API
+  description: Digitail API
   contact:
-    name: API Evangelist
-    email: kin@apievangelist.com
-  x-endpoints-modeled: true
+    email: developer@digitail.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
 servers:
-- url: https://developer.digitail.io/api/v1
-  description: Digitail Open API v1
+- url: https://developer.digitail.io
+  description: Sandbox server (uses test data)
+- url: https://vet.digitail.io
+  description: Production server (uses live data)
 security:
-- oauth2: []
+- passport: []
+- Bearer: []
 tags:
 - name: Invoices
+  description: Get a list of invoices, invoice details, invoice pdf, and email invoice pdf to a recipient
 paths:
-  /invoices:
+  /api/v1/invoices:
     get:
-      operationId: listInvoices
-      summary: List invoices
-      description: List invoices. Modeled from the documented Invoices resource.
       tags:
       - Invoices
-      x-endpoints-modeled: true
+      summary: List all Invoices
+      description: 'Permissions needed: VIEW_INVOICES_CASHING
+
+        Returns list of Invoices'
       parameters:
-      - $ref: '#/components/parameters/page'
-      - $ref: '#/components/parameters/perPage'
+      - $ref: '#/paths/~1api~1v1~1pets/get/parameters/0'
+      - $ref: '#/paths/~1api~1v1~1pets/get/parameters/2'
+      - name: filter[pet_id]
+        in: query
+        description: Pet ID
+        style: form
+        explode: false
+        schema:
+          type: integer
+      - name: filter[sale_id]
+        in: query
+        description: Sale ID
+        required: false
+        schema:
+          type: integer
+      - name: filter[series]
+        in: query
+        description: Invoice series
+        required: false
+        schema:
+          type: string
+      - name: filter[number]
+        in: query
+        description: Invoice number (Required if series is provided)
+        required: false
+        schema:
+          type: integer
+      - name: filter[updated_from]
+        in: query
+        description: Returns only the invoices updated after this datetime (exclusive). The value must be a UTC ISO 8601 timestamp with a Z suffix, for example 2020-08-16T08:56:44.000000Z. Timezone offsets such as +02:00 are rejected. Updated at and created at are returned in UTC in the response.
+        required: false
+        schema:
+          type: string
+          format: date-time
+      - name: filter[updated_to]
+        in: query
+        description: Returns only the invoices updated at or before this datetime (inclusive). The value must be a UTC ISO 8601 timestamp with a Z suffix, for example 2020-08-16T08:56:44.000000Z. Timezone offsets such as +02:00 are rejected. Updated at and created at are returned in UTC in the response.
+        required: false
+        schema:
+          type: string
+          format: date-time
+      - name: sort
+        in: query
+        description: Order by field(s) (created_at,updated_at) Use a minus before for descending order -updated_at
+        required: false
+        schema:
+          type: string
+      - name: include
+        in: query
+        description: 'Additional info to include. You can use multiple, comma separated. Options: sale, sale.vet, sale.customer, sale.customer.legalEntity, sale.customer.country, sale.payments, sale.file, sale.treatments, sale.soldServices, sale.record.visitTypes'
+        required: false
+        schema:
+          type: string
+      - name: detailed
+        in: query
+        description: Set to true to get the full invoice details (this significantly increases the response size and response time)
+        required: false
+        schema:
+          type: boolean
+      - $ref: '#/paths/~1api~1v1~1tags/get/parameters/5'
       responses:
         '200':
-          $ref: '#/components/responses/Paginated'
-components:
-  parameters:
-    perPage:
-      name: per_page
-      in: query
-      description: Results per page (default 15).
-      required: false
-      schema:
-        type: integer
-        default: 15
-        minimum: 1
-    page:
-      name: page
-      in: query
-      description: Page number (default 1).
-      required: false
-      schema:
-        type: integer
-        default: 1
-        minimum: 1
-  responses:
-    Paginated:
-      description: A paginated list of resources.
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              data:
-                type: array
-                items:
-                  type: object
-              meta:
+          description: successful operation
+          content:
+            application/json:
+              schema:
                 type: object
                 properties:
-                  current_page:
-                    type: integer
-                  per_page:
-                    type: integer
-                  total:
-                    type: integer
+                  data:
+                    type: array
+                    items:
+                      oneOf:
+                      - type: object
+                        title: Invoice
+                        properties:
+                          id:
+                            type: integer
+                            example: 1
+                          clinic_id:
+                            type: string
+                            example: '1'
+                          sale_id:
+                            type: string
+                            example: '2'
+                          series:
+                            type: string
+                            example: DGT
+                          date:
+                            type: string
+                            example: '2022-07-18'
+                          number:
+                            type: string
+                            example: '1'
+                          total:
+                            type: string
+                            example: '250.00'
+                          created_at:
+                            type: string
+                            example: '2022-07-18T08:58:36.000000Z'
+                          updated_at:
+                            type: string
+                            example: '2022-07-18T08:58:36.000000Z'
+                          series_no:
+                            type: string
+                            example: DGT-1
+                          sale:
+                            $ref: '#/paths/~1api~1v1~1sales/post/responses/200/content/application~1json/schema/properties/data'
+                            example: null
+                      - type: object
+                        title: InvoiceDetailed
+                        description: A more detailed version of the Invoice which contains information about the products and services that were sold as well as a more debunked version of the totals involved in the sale.
+                        properties:
+                          id:
+                            type: integer
+                            example: 1
+                          clinic_id:
+                            type: string
+                            example: '1'
+                          sale_id:
+                            type: string
+                            example: '2'
+                          series:
+                            type: string
+                            example: DGT
+                          date:
+                            type: string
+                            example: '2022-07-18'
+                          number:
+                            type: string
+                            example: '1'
+                          created_at:
+                            type: string
+                            example: '2022-07-18T08:58:36.000000Z'
+                          updated_at:
+                            type: string
+                            example: '2022-07-18T08:58:36.000000Z'
+                          series_no:
+                            type: string
+                            example: DGT-1
+                          sale:
+                            $ref: '#/paths/~1api~1v1~1sales/post/responses/200/content/application~1json/schema/properties/data'
+                          vet:
+                            $ref: '#/paths/~1api~1v1~1vets~1%7Bid%7D~1colleagues-calendar-order/get/responses/200/content/application~1json/schema/properties/data/items'
+                          generalDiscount:
+                            type: string
+                            description: same as global_discount
+                            example: '0.00'
+                          global_discount:
+                            type: string
+                            description: same as generalDiscount
+                            example: '0.00'
+                          total:
+                            type: string
+                            example: '250.00'
+                          subtotal:
+                            type: string
+                            example: '250.00'
+                          amount_due:
+                            type: string
+                            example: '250.00'
+                          vat:
+                            type: string
+                            deprecated: true
+                            description: Deprecated alias of `tax_amount`. A tax amount, not a percentage. Use `tax_amount` instead.
+                            example: '0.00'
+                          tax_amount:
+                            type: string
+                            example: '0.00'
+                          hide_details:
+                            type: boolean
+                            example: false
+                          hide_total:
+                            type: boolean
+                            example: false
+                          totalDiscount:
+                            type: string
+                            description: same as items_discount
+                            example: '0.00'
+                          items_discount:
+                            type: string
+                            description: same as totalDiscount
+                            example: '0.00'
+                          products:
+                            type: array
+                            items:
+                              type: object
+                              title: ProductInvoiceData
+                              properties:
+                                name:
+                                  type: string
+                                  example: Product 1
+                                discount:
+                                  type: string
+                                  example: '-'
+                                discount_value:
+                                  type: string
+                                  example: '0.00'
+                                discount_type:
+                                  type: integer
+                                  enum:
+                                  - 0
+                                  - 1
+                                  description: '`0` - fixed  `1` - percentage
+
+                                    '
+                                  example: 0
+                                subtotalWithDiscount:
+                                  type: string
+                                  example: '230.00'
+                                vat:
+                                  type: string
+                                  deprecated: true
+                                  description: Deprecated. Use `effective_tax_percentage` instead.
+                                  example: '0.00'
+                                effective_tax_percentage:
+                                  type: number
+                                  format: float
+                                  description: Tax percentage applied to the line, summed from its tax rates.
+                                  example: 19
+                                category:
+                                  type: string
+                                  example: Category 1
+                                unit:
+                                  type: string
+                                  example: '-'
+                                quantity:
+                                  type: string
+                                  example: '1'
+                                unitPrice:
+                                  type: string
+                                  example: '230.00'
+                                subtotalPrice:
+                                  type: string
+                                  example: '230.00'
+                                vatValue:
+                                  type: string
+                                  example: 0.00 (0%)
+                                totalPrice:
+                                  type: string
+                                  example: '230.00'
+                          services:
+                            type: array
+                            items:
+                              type: object
+                              title: ServiceInvoiceData
+                              properties:
+                                name:
+                                  type: string
+                                  example: Service
+                                quantity:
+                                  type: string
+                                  example: '1'
+                                discount:
+                                  type: string
+                                  example: '-'
+                                discount_value:
+                                  type: string
+                                  example: '0.00'
+                                discount_type:
+                                  type: integer
+                                  enum:
+                                  - 0
+                                  - 1
+                                  description: '`0` - fixed  `1` - percentage
+
+                                    '
+                                  example: 0
+                                subtotalWithDiscount:
+                                  type: string
+                                  example: '20.00'
+                                vat:
+                                  type: string
+                                  deprecated: true
+                                  description: Deprecated. Use `effective_tax_percentage` instead.
+                                  example: '0.00'
+                                effective_tax_percentage:
+                                  type: number
+                                  format: float
+                                  description: Tax percentage applied to the line, summed from its tax rates.
+                                  example: 19
+                                unitPrice:
+                                  type: string
+                                  example: '20.00'
+                                subtotalPrice:
+                                  type: string
+                                  example: '20.00'
+                                vatValue:
+                                  type: string
+                                  example: 0.00 (0%)
+                                totalPrice:
+                                  type: string
+                                  example: '20.00'
+                                visibleProducts:
+                                  type: array
+                                  items:
+                                    type: object
+                                  example: []
+                  links:
+                    $ref: '#/paths/~1api~1v1~1pets/get/responses/200/content/application~1json/schema/properties/links'
+                  meta:
+                    $ref: '#/paths/~1api~1v1~1pets/get/responses/200/content/application~1json/schema/properties/meta'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: getApiV1Invoices
+      x-operation-id-source: derived
+  /api/v1/invoices/{id}:
+    get:
+      tags:
+      - Invoices
+      summary: Retrieve an Invoice
+      description: 'Permissions needed: VIEW_INVOICES_CASHING
+
+        Returns a invoice with all its details'
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      - name: include
+        in: query
+        description: 'Additional info to include. You can use multiple, comma separated. Options: sale, sale.customer, sale.customer.legalEntity, sale.customer.country, sale.payments'
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      oneOf:
+                      - $ref: '#/paths/~1api~1v1~1invoices/get/responses/200/content/application~1json/schema/properties/data/items/oneOf/0'
+                      - $ref: '#/paths/~1api~1v1~1invoices/get/responses/200/content/application~1json/schema/properties/data/items/oneOf/1'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: getApiV1InvoicesById
+      x-operation-id-source: derived
+  /api/v1/invoice/{id}/pdf/preview:
+    get:
+      tags:
+      - Invoices
+      summary: Retrieve Invoice HTML Preview
+      description: 'Permissions needed: VIEW_INVOICES_CASHING
+
+        Get Invoice HTML Preview'
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            text/html: {}
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: getApiV1InvoiceByIdPdfPreview
+      x-operation-id-source: derived
+  /api/v1/invoices/{id}/sendPdf:
+    get:
+      tags:
+      - Invoices
+      summary: Send Invoice PDF
+      description: 'Permissions needed: ACCESS_PATIENTS, SEND_PATIENT_DOCUMENTS
+
+        Send Invoice Pdf to a pet parent and/or a list of emails.'
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      - name: client_id
+        in: query
+        description: Id of the related PetParent
+        style: form
+        explode: false
+        required: false
+        schema:
+          type: integer
+          example: 1
+      - name: emails[]
+        in: query
+        description: Emails to send the invoice to
+        schema:
+          type: array
+          items:
+            type: string
+          example: user@email.com
+      - name: include_payment_link
+        in: query
+        description: If present and value is true the invoice message will contain the payment link.
+        required: false
+        schema:
+          type: boolean
+      responses:
+        '204':
+          $ref: '#/paths/~1api~1v1~1sales/delete/responses/204'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '422':
+          description: 'Validation errors. See the errors object '
+          content:
+            application/json:
+              example:
+                message: The given data was invalid.
+                errors:
+                  client_id:
+                  - The selected client id is invalid.
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: getApiV1InvoicesByIdSendPdf
+      x-operation-id-source: derived
+components:
   securitySchemes:
-    oauth2:
+    passport:
       type: oauth2
-      description: OAuth 2.0 authorization-code grant with PKCE. Bearer access token is long-lived; a refresh token is also returned.
+      description: Laravel passport oauth2 security.
       flows:
         authorizationCode:
-          authorizationUrl: https://vet.digitail.io/oauth/authorize
-          tokenUrl: https://vet.digitail.io/oauth/token
-          refreshUrl: https://vet.digitail.io/oauth/token
-          scopes: {}
-externalDocs:
-  description: Digitail API Documentation
-  url: https://documentation.digitail.io/
+          authorizationUrl: https://developer.digitail.io/oauth/authorize
+          tokenUrl: https://developer.digitail.io/oauth/token
+          refreshUrl: https://developer.digitail.io/oauth/token
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

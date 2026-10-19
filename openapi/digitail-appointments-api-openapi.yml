@@ -1,60 +1,924 @@
 openapi: 3.2.0
 info:
-  title: Digitail Open Appointments API
-  version: v1
-  description: Modeled OpenAPI for the Digitail Open API, a documented REST API for the Digitail cloud veterinary practice management platform (PIMS).
+  title: Digitail Appointments API
+  description: Digitail API
   contact:
-    name: API Evangelist
-    email: kin@apievangelist.com
-  x-endpoints-modeled: true
+    email: developer@digitail.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
 servers:
-- url: https://developer.digitail.io/api/v1
-  description: Digitail Open API v1
+- url: https://developer.digitail.io
+  description: Sandbox server (uses test data)
+- url: https://vet.digitail.io
+  description: Production server (uses live data)
 security:
-- oauth2: []
+- passport: []
+- Bearer: []
 tags:
 - name: Appointments
+  description: Get appointments, appointment details, and update appointment status
 paths:
-  /appointments:
+  /api/v1/appointments:
     get:
-      operationId: listAppointments
-      summary: Get all appointments
-      description: List appointments. Confirmed endpoint.
       tags:
       - Appointments
+      summary: Get all Appointments
+      description: 'Permissions needed: VIEW_APPOINTMENTS
+
+        Get all appointments in a given interval for a given clinic and vet'
       parameters:
-      - $ref: '#/components/parameters/page'
-      - $ref: '#/components/parameters/perPage'
+      - $ref: '#/paths/~1api~1v1~1files/get/parameters/6'
+      - $ref: '#/paths/~1api~1v1~1pets/get/parameters/1'
+      - name: filter[patient_id]
+        in: query
+        description: Ids of the patients that are related to the entity
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: integer
+      - name: filter[visit_type_id]
+        description: Filter by visit type ID
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: filter[date_before]
+        in: query
+        description: 'Appointments whose start time (`datetime_start_utc`) is on or before this date (Y-m-d). Filters on the appointment slot, not on when the appointment was created or updated. The whole supplied day is included, read in the clinic''s timezone (up to and including 00:00 at the start of the next day).
+
+          '
+        required: false
+        schema:
+          type: string
+      - name: filter[date_after]
+        in: query
+        description: 'Appointments whose start time (`datetime_start_utc`) is on or after this date (Y-m-d). Filters on the appointment slot, not on when the appointment was created or updated — use `filter[last_fetched]` for incremental sync by modification time.
+
+          '
+        required: false
+        schema:
+          type: string
+      - name: filter[statuses]
+        in: query
+        description: 'Statuses of appointments to fetch. Options `0` - Pending `1` - Pending Client Approval `2` - Pending Clinic Approval `3` - Rescheduled Clinic Approval `4` - Rescheduled Client Approval `5` - Confirmed `6` - Canceled By Client `7` - Canceled By Clinic'' `8` - Automatically Created'' `9` - No Show
+
+          '
+        required: false
+        explode: false
+        schema:
+          type: array
+          items:
+            type: integer
+      - name: filter[patient.owners.id]
+        in: query
+        description: Pet Parent ID
+        required: false
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: integer
+      - name: filter[date_between]
+        in: query
+        description: 'Dates Between (start_date, end_date), format: YYYY-MM-DD'
+        required: false
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+      - name: filter[date_between_utc]
+        in: query
+        description: 'Same as `filter[date_between]`, but the supplied dates are interpreted as UTC rather than the clinic''s timezone. Format: `YYYY-MM-DD,YYYY-MM-DD`.
+
+          '
+        required: false
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+      - name: filter[last_fetched]
+        in: query
+        description: 'Returns appointments whose `updated_at` is strictly greater than this moment. Use this for incremental sync: it catches appointments modified since your last poll regardless of when they are scheduled. Send an ISO-8601 datetime; include the offset or a `Z` suffix (e.g. `2026-06-21T00:00:00Z`) so the moment is unambiguous — a value without one is read in the clinic''s timezone. `updated_at` has one-second resolution and the comparison is exclusive, so subtract a small overlap (a minute is plenty) from your last cursor rather than passing it verbatim, otherwise a change written in the same second as your previous poll can be skipped.
+
+          '
+        required: false
+        schema:
+          type: string
+      - name: include
+        in: query
+        description: 'Additional info to include. You can use multiple, comma separated. Options:
+
+          patient, patient.species, patient.breed, patient.crossBreed, patient.owners, patient.owners.chatUser, patient.owners.appDownloadNotification, patient.owners.clients,
+
+          room, event, services (service-packages), visitType, visitType.tailsIntakeRule, visitType.defaultDropOffVet,
+
+          clinic, clinic.chatUser, clinic.rooms, clinic.schedules, clinic.schedules.intervals,
+
+          vet, vet.vetRolesAll, requests, notes, visit, activityLog, externalRefRecord, sentNotifications, toBeSentNotifications,
+
+          paymentDeposits, paymentDeposits.paymentLinks, paymentDeposits.appointments, paymentDeposits.appointments.patient,
+
+          dropOff, dropOff.vet
+
+
+          `service`, `service.serviceDetails` and `service.category` are still accepted for backwards
+
+          compatibility but return no data — use `services` instead. `consentForms` is only available on
+
+          `GET /api/v1/appointments/{id}`.'
+        required: false
+        schema:
+          type: string
+      - name: sort
+        in: query
+        description: 'Sort by. You can use multiple, comma separated. Options: datetime_start_utc'
+        required: false
+        schema:
+          type: string
+      - $ref: '#/paths/~1api~1v1~1tags/get/parameters/5'
+      - $ref: '#/paths/~1api~1v1~1pets/get/parameters/11'
       responses:
         '200':
-          $ref: '#/components/responses/Paginated'
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/paths/~1api~1v1~1appointments/post/responses/200/content/application~1json/schema/properties/data'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
         '401':
-          $ref: '#/components/responses/Unauthorized'
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
         '429':
-          $ref: '#/components/responses/TooManyRequests'
-  /appointments/{id}:
-    get:
-      operationId: retrieveAppointment
-      summary: Retrieve an appointment
-      description: Retrieve a single appointment. Confirmed endpoint.
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: getApiV1Appointments
+      x-operation-id-source: derived
+    post:
       tags:
       - Appointments
+      summary: Create an Appointment
+      description: 'Permissions needed: CREATE_APPOINTMENTS
+
+        Create Appointment
+
+
+        Start Date and End Date is set as is format(2022-10-20 10:09:00), no alterations are done, so queries will return the exact date and time that was set.
+
+        - Status enum is visible under the appointments change status method
+
+        - record_id, room_id and examination_id must be set as null if not used.'
       parameters:
-      - $ref: '#/components/parameters/idPath'
+      - name: include
+        in: query
+        description: 'Additional info to include. You can use multiple, comma separated. Options:   patient,patient.species,patient.breed,patient.crossBreed,patient.owners,patient.owners.appDownloadNotification,patient.owners.clients,room,event,
+
+          clinic,clinic.rooms,vet,vet.vetRolesAll,requests,notes,visitType,paymentDeposits.paymentLinks'
+        required: false
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              title: AppointmentRequestBodyStore
+              description: Appointment Create/Update Request Body
+              required:
+              - clinic_id
+              - vet_id
+              - patient_id
+              - visit_type_id
+              - datetime_start_utc
+              - datetime_end_utc
+              properties:
+                clinic_id:
+                  description: Clinic Id
+                  type: integer
+                  example: 1
+                vet_id:
+                  description: Vet Id
+                  type: integer
+                  example: 1
+                patient_id:
+                  description: Pet id
+                  type: integer
+                  example: 1
+                visit_type_id:
+                  description: Id of the VisitType
+                  type: integer
+                  example: 1
+                observations:
+                  description: Observations
+                  type: string
+                  example: ''
+                status:
+                  type: integer
+                  enum:
+                  - 1
+                  - 2
+                  - 3
+                  - 4
+                  - 5
+                  - 6
+                  - 7
+                  - 8
+                  - 9
+                  example: 1
+                  description: '`1` - Pending Client Approval `2` - Pending Clinic Approval `3` - Rescheduled Clinic Approval `4` - Rescheduled Client Approval `5` - Confirmed `6` - Canceled By Client `7` - Canceled By Clinic'' `8` - Automatically Created'' `9` - No Show
+
+                    '
+                notification_message:
+                  description: Notification message
+                  type: string
+                  example: ''
+                reminder_notifications:
+                  description: Reminder notifications
+                  type: array
+                  items:
+                    type: object
+                    title: ReminderNotification
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      period:
+                        type: integer
+                        example: 2
+                        description: Reminder will be sent X days/weeks/months (period_type) before the appointment
+                      period_type:
+                        type: integer
+                        enum:
+                        - 0
+                        - 1
+                        - 2
+                        example: 2
+                        description: '* `0` - Day, * `1` - Week, * `2` - Month,
+
+                          '
+                      notification_type:
+                        type: integer
+                        enum:
+                        - 0
+                        - 1
+                        - 2
+                        example: 1
+                        description: '* `0` - Upcoming Reminder, * `1` - Recommended Reminder, * `2` - Product Reminder,
+
+                          '
+                  example:
+                  - id: 1
+                    period: 1
+                    periodType: 0
+                    notificationType: 0
+                  - id: 2
+                    period: 1
+                    periodType: 1
+                    notificationType: 0
+                record_id:
+                  description: Record ID - set null if not used
+                  type:
+                  - integer
+                  - 'null'
+                  example: null
+                room_id:
+                  description: Room ID - set null if not used
+                  type:
+                  - integer
+                  - 'null'
+                  example: null
+                examination_id:
+                  description: Examination ID - set null if not used
+                  type:
+                  - integer
+                  - 'null'
+                  example: null
+                printable_file_ids:
+                  description: Consent forms
+                  type: array
+                  items:
+                    type: integer
+                  example:
+                  - 1
+                  - 2
+                video_link:
+                  description: Video link
+                  type:
+                  - string
+                  - 'null'
+                  example: null
+                datetime_start_utc:
+                  description: Start Date in UTC ISO Zulu format
+                  type: string
+                  example: '2022-06-16T13:42:38Z'
+                datetime_end_utc:
+                  description: End Date in UTC ISO Zulu format
+                  type: string
+                  example: '2022-06-16T14:42:38Z'
+                service_package_ids:
+                  description: Service package ids
+                  type: array
+                  items:
+                    type: integer
+                  example:
+                  - 1
+                  - 2
+                user_note:
+                  description: Notes introduced by the pet parent
+                  type: string
+                  example: Daisy has not been feeling well
+                recurrence:
+                  description: recurrence defined by RFC 5545
+                  type:
+                  - string
+                  - 'null'
+                  example: FREQ=DAILY;COUNT=10
+                source:
+                  type: integer
+                  description: '`0` - Added by clinic `1` - Requested via Web `2` - Requested via App
+
+                    '
+                requires_payment_deposit:
+                  type: boolean
+                pet_parent:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    email:
+                      type: string
+                    send_email:
+                      type: boolean
+                    name:
+                      type: string
+                    last_name:
+                      type: string
+                    phone:
+                      type: string
+                      description: Phone number in E.164 format
+                      example: '+16175551212'
+                    send_sms:
+                      type: boolean
+                    address:
+                      type: string
+                    address_2:
+                      type: string
+                pet:
+                  type: object
+                  properties:
+                    nickname:
+                      type: string
+                    species_id:
+                      type: integer
+                    breed_id:
+                      type: integer
+                    birthday_is_estimated:
+                      type: boolean
+                    birthdate:
+                      type: string
+                      example: '1990-01-01'
+                    gender:
+                      type: string
+                      enum:
+                      - male
+                      - female
+                      - unknown
+                    hormonal_status:
+                      type: integer
+                      enum:
+                      - 0
+                      - 1
+                      - 2
+                drop_off:
+                  type:
+                  - object
+                  - 'null'
+                  description: Drop-off scheduling data. Required when visit type has drop-off enabled.
+                  properties:
+                    time:
+                      type: string
+                      description: Drop-off time in HH:mm format
+                      example: 09:00
+                    vet_id:
+                      type: integer
+                      description: Vet ID who handles the drop-off
+                      example: 1
       responses:
         '200':
-          $ref: '#/components/responses/Resource'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-  /appointment/{id}/change-status:
-    put:
-      operationId: changeAppointmentStatus
-      summary: Change appointment status
-      description: Change the status of an appointment. Confirmed endpoint.
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    title: Appointment
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      event_id:
+                        type:
+                        - integer
+                        - 'null'
+                        example: null
+                      clinic_id:
+                        type: integer
+                        example: 1
+                      room_id:
+                        type:
+                        - integer
+                        - 'null'
+                        example: null
+                      guest:
+                        type: boolean
+                        example: false
+                      pet_id:
+                        type:
+                        - integer
+                        - 'null'
+                        example: 1
+                      record_id:
+                        type:
+                        - integer
+                        - 'null'
+                        example: null
+                      status:
+                        type: string
+                        enum:
+                        - '1'
+                        - '2'
+                        - '3'
+                        - '4'
+                        - '5'
+                        - '6'
+                        - '7'
+                        - '8'
+                        - '9'
+                        example: '1'
+                        description: '`1` - Pending Client Approval `2` - Pending Clinic Approval `3` - Rescheduled Clinic Approval `4` - Rescheduled Client Approval `5` - Confirmed `6` - Canceled By Client `7` - Canceled By Clinic'' `8` - Automatically Created'' `9` - No Show
+
+                          '
+                      datetime:
+                        type: string
+                        example: '2022-06-16 15:12:38'
+                      end_datetime:
+                        type: string
+                        example: '2022-06-16 15:42:38'
+                      datetime_start_utc:
+                        type: string
+                        format: date-time
+                        example: '2023-12-01T09:00:00.000000Z'
+                      datetime_end_utc:
+                        type: string
+                        format: date-time
+                        example: '2023-12-01T10:00:00.000000Z'
+                      observations:
+                        type:
+                        - string
+                        - 'null'
+                        example: ''
+                      user_note:
+                        type:
+                        - string
+                        - 'null'
+                        example: null
+                      pet_name:
+                        type:
+                        - string
+                        - 'null'
+                        example: null
+                      owner_name:
+                        type:
+                        - string
+                        - 'null'
+                        example: null
+                      patient:
+                        $ref: '#/paths/~1api~1v1~1pets/post/responses/201/content/application~1json/schema/properties/data'
+                      room:
+                        $ref: '#/paths/~1api~1v1~1clinic~1%7Bid%7D/get/responses/200/content/application~1json/schema/properties/data/properties/rooms/items'
+                        example: null
+                      event:
+                        example: null
+                        type:
+                        - object
+                        - 'null'
+                        title: Event
+                        description: A scheduled event in a clinic. Viewable on the calendar.
+                        properties:
+                          id:
+                            type: integer
+                            example: 1
+                          address_id:
+                            type: integer
+                            example: 1
+                          clinic_id:
+                            type: integer
+                            example: 1
+                          capacity:
+                            type: integer
+                            example: 25
+                          date:
+                            type: string
+                            format: date-time
+                            example: '2022-06-16 15:12:38'
+                          name:
+                            type: string
+                            example: Event Name
+                          preferences:
+                            type: string
+                            enum:
+                            - capacity-based
+                            - schedule-based
+                          appointments_number:
+                            type: integer
+                            example: 5
+                          visit_types:
+                            type: array
+                            items:
+                              $ref: '#/paths/~1api~1v1~1records/post/responses/201/content/application~1json/schema/properties/data/properties/visit_types/items'
+                      vet:
+                        $ref: '#/paths/~1api~1v1~1vets~1%7Bid%7D/get/responses/200/content/application~1json/schema/properties/data'
+                        example:
+                          id: 1
+                          first_name: Serena Heaney
+                          last_name: Oren Hettinger
+                          full_name: Serena Heaney Oren Hettinger
+                          name_with_title: Serena Heaney Oren Hettinger
+                          avatar: http://digitail.test/images/profilepic.jpg
+                          job_title: null
+                          active: true
+                      owner_email:
+                        type:
+                        - string
+                        - 'null'
+                        example: null
+                      owner_phone:
+                        type:
+                        - string
+                        - 'null'
+                        example: null
+                      reminder_notifications:
+                        type: object
+                        properties:
+                          items:
+                            $ref: '#/paths/~1api~1v1~1appointments/post/requestBody/content/application~1json/schema/properties/reminder_notifications/items'
+                        example:
+                        - id: 1
+                          period: 1
+                          periodType: 0
+                          notificationType: 0
+                        - id: 2
+                          period: 1
+                          periodType: 1
+                          notificationType: 0
+                      newRequests:
+                        type: array
+                        items:
+                          type: object
+                        example: []
+                      consentForms:
+                        type: array
+                        items:
+                          type: object
+                        example: []
+                      video_link:
+                        type:
+                        - string
+                        - 'null'
+                        example: https://example.com/1234235345.mp4
+                      notification_message:
+                        type: string
+                      cancellation_reason:
+                        type:
+                        - string
+                        - 'null'
+                      recurrence:
+                        description: recurrence defined by RFC 5545
+                        type:
+                        - string
+                        - 'null'
+                        example: FREQ=DAILY;COUNT=10
+                      has_google_cal_error:
+                        type:
+                        - boolean
+                        - 'null'
+                      duration:
+                        type: integer
+                      occasion:
+                        type:
+                        - string
+                        - 'null'
+                      token:
+                        type: string
+                      visit_type_id:
+                        type:
+                        - integer
+                        - 'null'
+                      visit_type:
+                        $ref: '#/paths/~1api~1v1~1records/post/responses/201/content/application~1json/schema/properties/data/properties/visit_types/items'
+                      last_confirmed_at:
+                        type:
+                        - string
+                        - 'null'
+                        format: date-time
+                        example: '2023-12-01T09:00:00.000000Z'
+                      confirmed_by:
+                        type:
+                        - string
+                        - 'null'
+                        enum:
+                        - client
+                        - staff
+                        example: client
+                      confirmation_source:
+                        type:
+                        - string
+                        - 'null'
+                        enum:
+                        - phone
+                        - sms_reminder
+                        - email_reminder
+                        - pet_portal
+                        - public_calendar
+                        - crm
+                        example: sms_reminder
+                      reconfirmed:
+                        type: boolean
+                        example: false
+                      is_reschedulable:
+                        type:
+                        - boolean
+                        - 'null'
+                      is_cancelable:
+                        type:
+                        - boolean
+                        - 'null'
+                      drop_off:
+                        type:
+                        - object
+                        - 'null'
+                        description: Drop-off scheduling data. Present when dropOff is included.
+                        properties:
+                          id:
+                            type: integer
+                            example: 1
+                          time:
+                            type: string
+                            description: Drop-off time in HH:mm format
+                            example: 09:00
+                          vet_id:
+                            type: integer
+                            example: 1
+                          appointment_id:
+                            type: integer
+                            example: 1
+                          vet:
+                            type:
+                            - object
+                            - 'null'
+                            description: Vet resource, present when dropOff.vet is included
+                          datetime:
+                            type:
+                            - string
+                            - 'null'
+                            description: Full UTC datetime computed from appointment date + drop-off time
+                            example: '2023-12-01T09:00:00Z'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+      operationId: postApiV1Appointments
+      x-operation-id-source: derived
+  /api/v1/appointments/{id}:
+    get:
       tags:
       - Appointments
+      summary: Retrieve an Appointment
+      description: 'Permissions needed: VIEW_APPOINTMENTS
+
+        Get an individual appointment by id'
       parameters:
-      - $ref: '#/components/parameters/idPath'
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      - name: include
+        in: query
+        description: 'Additional info to include. You can use multiple, comma separated. Options:   patient,patient.species,patient.breed,patient.crossBreed,patient.owners,patient.owners.appDownloadNotification,patient.owners.clients,room,event,
+
+          clinic,clinic.rooms,vet,vet.vetRolesAll,requests,notes,visitType,visitType.tailsIntakeRule'
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/paths/~1api~1v1~1appointments/post/responses/200/content/application~1json/schema/properties/data'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: getApiV1AppointmentsById
+      x-operation-id-source: derived
+    put:
+      tags:
+      - Appointments
+      summary: Update an Appointment
+      description: 'Permissions needed: EDIT_APPOINTMENTS
+
+        Update a singular a appointment. Cant do partial updates of resource'
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      - name: include
+        in: query
+        description: 'Additional info to include. You can use multiple, comma separated. Options:   patient,patient.species,patient.breed,patient.crossBreed,patient.owners,patient.owners.appDownloadNotification,patient.owners.clients,room,event,
+
+          clinic,clinic.rooms,vet,vet.vetRolesAll,requests,notes,visitType'
+        required: false
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              title: AppointmentRequestBodyUpdate
+              description: Appointment Create/Update Request Body
+              properties:
+                clinic_id:
+                  description: Clinic Id.
+                  type: integer
+                  example: 1
+                vet_id:
+                  description: Vet Id.
+                  type: integer
+                  example: 1
+                patient_id:
+                  description: Pet id
+                  type: integer
+                  example: 1
+                visit_type_id:
+                  description: Id of the VisitType
+                  type: integer
+                  example: 1
+                datetime_start_utc:
+                  description: Start Date in UTC ISO Zulu format
+                  type: string
+                  example: '2022-06-16T13:42:38Z'
+                datetime_end_utc:
+                  description: End Date in UTC ISO Zulu format
+                  type: string
+                  example: '2022-06-16T14:42:38Z'
+                observations:
+                  description: Observations
+                  type: string
+                  example: ''
+                status:
+                  type: integer
+                  enum:
+                  - 1
+                  - 2
+                  - 3
+                  - 4
+                  - 5
+                  - 6
+                  - 7
+                  - 8
+                  - 9
+                  example: 1
+                  description: '`1` - Pending Client Approval `2` - Pending Clinic Approval `3` - Rescheduled Clinic Approval `4` - Rescheduled Client Approval `5` - Confirmed `6` - Canceled By Client `7` - Canceled By Clinic'' `8` - Automatically Created'' `9` - No Show
+
+                    '
+                notification_message:
+                  description: Notification message
+                  type: string
+                  example: ''
+                reminder_notifications:
+                  description: Reminder notifications
+                  type: array
+                  items:
+                    $ref: '#/paths/~1api~1v1~1appointments/post/requestBody/content/application~1json/schema/properties/reminder_notifications/items'
+                  example:
+                  - id: 1
+                    period: 1
+                    periodType: 0
+                    notificationType: 0
+                  - id: 2
+                    period: 1
+                    periodType: 1
+                    notificationType: 0
+                record_id:
+                  description: Record ID - set null if not used
+                  type:
+                  - integer
+                  - 'null'
+                  example: null
+                room_id:
+                  description: Room ID - set null if not used
+                  type:
+                  - integer
+                  - 'null'
+                  example: null
+                examination_id:
+                  description: Examination ID - set null if not used
+                  type:
+                  - integer
+                  - 'null'
+                  example: null
+                printable_file_ids:
+                  description: Consent forms
+                  type: array
+                  items:
+                    type: integer
+                  example:
+                  - 1
+                  - 2
+                video_link:
+                  description: Video link
+                  type:
+                  - string
+                  - 'null'
+                  example: null
+                user_note:
+                  description: Notes introduced by the pet parent
+                  type: string
+                  example: Daisy has not been feeling well
+                recurrence:
+                  description: recurrence defined by RFC 5545
+                  type:
+                  - string
+                  - 'null'
+                  example: FREQ=DAILY;COUNT=10
+                recurrence_update_mode:
+                  description: Recurrence update mode
+                  type: string
+                  enum:
+                  - this
+                  - this_and_following
+                  - all
+                requires_payment_deposit:
+                  type: boolean
+                drop_off:
+                  type:
+                  - object
+                  - 'null'
+                  description: Drop-off scheduling data. Required when visit type has drop-off enabled.
+                  properties:
+                    time:
+                      type: string
+                      description: Drop-off time in HH:mm format
+                      example: 09:00
+                    vet_id:
+                      type: integer
+                      description: Vet ID who handles the drop-off
+                      example: 1
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/paths/~1api~1v1~1appointments/post/responses/200/content/application~1json/schema/properties/data'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+      operationId: putApiV1AppointmentsById
+      x-operation-id-source: derived
+  /api/v1/appointment/{id}/change-status:
+    put:
+      tags:
+      - Appointments
+      summary: Change Appointment status
+      description: 'Permissions needed: EDIT_APPOINTMENTS
+
+        Shorthand version of appointment update endpoint for changing just status.'
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
       requestBody:
         required: true
         content:
@@ -63,80 +927,178 @@ paths:
               type: object
               properties:
                 status:
-                  type: string
+                  type: integer
+                  enum:
+                  - 1
+                  - 2
+                  - 3
+                  - 4
+                  - 5
+                  - 6
+                  - 7
+                  - 8
+                  - 9
+                  example: 1
+                  description: '`0` - Pending `1` - Pending Client Approval `2` - Pending Clinic Approval `3` - Rescheduled Clinic Approval `4` - Rescheduled Client Approval `5` - Confirmed `6` - Canceled By Client `7` - Canceled By Clinic'' `8` - Automatically Created'' `9` - No Show
+
+                    '
       responses:
         '200':
-          $ref: '#/components/responses/Resource'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-components:
-  responses:
-    TooManyRequests:
-      description: Rate limit exceeded (200 requests per minute).
-    Unauthorized:
-      description: Missing or invalid OAuth 2.0 bearer token.
-    Paginated:
-      description: A paginated list of resources.
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              data:
-                type: array
-                items:
-                  type: object
-              meta:
+          description: successful operation
+          content:
+            application/json:
+              schema:
                 type: object
                 properties:
-                  current_page:
+                  data:
+                    $ref: '#/paths/~1api~1v1~1appointments/post/responses/200/content/application~1json/schema/properties/data'
+        '204':
+          $ref: '#/paths/~1api~1v1~1sales/delete/responses/204'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '422':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                example:
+                  message: The given data was invalid.
+                  errors:
+                    status:
+                    - This value is invalid
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: putApiV1AppointmentByIdChangeStatus
+      x-operation-id-source: derived
+  /api/v1/appointments-count-by-status:
+    get:
+      tags:
+      - Appointments
+      summary: List Appointments count by status
+      description: 'Permissions needed: VIEW_APPOINTMENTS
+
+        Return count of all appointments of the clinic grouped by their status'
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1files/get/parameters/0'
+      - $ref: '#/paths/~1api~1v1~1pets/get/parameters/0'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pendingCount:
                     type: integer
-                  per_page:
+                    example: 2
+                  canceledCount:
                     type: integer
-                  total:
+                    example: 0
+                  missedCount:
                     type: integer
-    Resource:
-      description: A single resource.
-      content:
-        application/json:
-          schema:
-            type: object
-  parameters:
-    page:
-      name: page
-      in: query
-      description: Page number (default 1).
-      required: false
-      schema:
-        type: integer
-        default: 1
-        minimum: 1
-    idPath:
-      name: id
-      in: path
-      description: Resource identifier.
-      required: true
-      schema:
-        type: integer
-    perPage:
-      name: per_page
-      in: query
-      description: Results per page (default 15).
-      required: false
-      schema:
-        type: integer
-        default: 15
-        minimum: 1
+                    example: 7
+                  recommendedCount:
+                    type: integer
+                    example: 0
+                  confirmedCount:
+                    type: integer
+                    example: 0
+                  allCount:
+                    type: integer
+                    example: 9
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '422':
+          $ref: '#/paths/~1api~1v1~1plans/get/responses/422'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+      operationId: getApiV1AppointmentsCountByStatus
+      x-operation-id-source: derived
+  /api/v1/appointments/{id}/cancel:
+    post:
+      tags:
+      - Appointments
+      summary: Cancel an Appointment
+      description: 'Permissions needed: EDIT_APPOINTMENTS
+
+        Shorthand version of appointment update endpoint for changing just status to cancelled.'
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                observations:
+                  type: string
+                  example: ''
+                notification_message:
+                  type: string
+                  example: null
+                cancellation_reason:
+                  type: string
+                  example: ''
+                recurrence_update_mode:
+                  description: Recurrence update mode
+                  type: string
+                  enum:
+                  - this
+                  - this_and_following
+                  - all
+              type: object
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/paths/~1api~1v1~1appointments/post/responses/200/content/application~1json/schema/properties/data'
+        '422':
+          $ref: '#/paths/~1api~1v1~1plans/get/responses/422'
+      operationId: postApiV1AppointmentsByIdCancel
+      x-operation-id-source: derived
+  /api/v1/appointments/{id}/confirm:
+    post:
+      tags:
+      - Appointments
+      summary: Confirm an Appointment
+      description: 'Permissions needed: EDIT_APPOINTMENTS
+
+
+        Shorthand version of appointment update endpoint for changing just status to cancelled.'
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      responses:
+        '204':
+          $ref: '#/paths/~1api~1v1~1sales/delete/responses/204'
+        '422':
+          $ref: '#/paths/~1api~1v1~1plans/get/responses/422'
+      operationId: postApiV1AppointmentsByIdConfirm
+      x-operation-id-source: derived
+components:
   securitySchemes:
-    oauth2:
+    passport:
       type: oauth2
-      description: OAuth 2.0 authorization-code grant with PKCE. Bearer access token is long-lived; a refresh token is also returned.
+      description: Laravel passport oauth2 security.
       flows:
         authorizationCode:
-          authorizationUrl: https://vet.digitail.io/oauth/authorize
-          tokenUrl: https://vet.digitail.io/oauth/token
-          refreshUrl: https://vet.digitail.io/oauth/token
-          scopes: {}
-externalDocs:
-  description: Digitail API Documentation
-  url: https://documentation.digitail.io/
+          authorizationUrl: https://developer.digitail.io/oauth/authorize
+          tokenUrl: https://developer.digitail.io/oauth/token
+          refreshUrl: https://developer.digitail.io/oauth/token
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

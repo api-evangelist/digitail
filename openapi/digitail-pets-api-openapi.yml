@@ -1,127 +1,1598 @@
 openapi: 3.2.0
 info:
-  title: Digitail Open Pets API
-  version: v1
-  description: Modeled OpenAPI for the Digitail Open API, a documented REST API for the Digitail cloud veterinary practice management platform (PIMS).
+  title: Digitail Pets API
+  description: Digitail API
   contact:
-    name: API Evangelist
-    email: kin@apievangelist.com
-  x-endpoints-modeled: true
+    email: developer@digitail.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
 servers:
-- url: https://developer.digitail.io/api/v1
-  description: Digitail Open API v1
+- url: https://developer.digitail.io
+  description: Sandbox server (uses test data)
+- url: https://vet.digitail.io
+  description: Production server (uses live data)
 security:
-- oauth2: []
+- passport: []
+- Bearer: []
 tags:
 - name: Pets
+  description: Get list of pets (patients), pet details, manage pet weight entries
 paths:
-  /pets:
+  /api/v1/patients/{pet}/file-case/{fileCase}/pdf:
     get:
-      operationId: listPets
-      summary: List all pets
-      description: List patient records (pets). Confirmed endpoint.
       tags:
       - Pets
+      summary: Export Record PDF
+      description: 'Permissions needed: ACCESS_PATIENTS, VIEW_CHECKUPS
+
+        Receive a pdf file with the summary of a record'
       parameters:
-      - $ref: '#/components/parameters/page'
-      - $ref: '#/components/parameters/perPage'
-      - $ref: '#/components/parameters/clinicIdFilter'
+      - name: pet
+        in: path
+        description: The id of the pet whose records are being requested
+        required: true
+        schema:
+          type: integer
+      - name: fileCase
+        in: path
+        description: The id of the record whose pdf is being requested
+        required: true
+        schema:
+          type: integer
       responses:
         '200':
-          $ref: '#/components/responses/Paginated'
+          title: OK PDF
+          description: The response is a PDF file.
+          content:
+            application/pdf: {}
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
         '401':
-          $ref: '#/components/responses/Unauthorized'
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
         '429':
-          $ref: '#/components/responses/TooManyRequests'
-  /pets/{id}:
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: getApiV1PatientsByPetFileCaseByFileCasePdf
+      x-operation-id-source: derived
+  /api/v1/pets:
     get:
-      operationId: retrievePet
-      summary: Retrieve a pet
-      description: Retrieve a single patient record. Confirmed endpoint.
       tags:
       - Pets
+      summary: List all Pets
+      description: 'Permissions needed: ACCESS_PATIENTS
+
+        Returns list of Pets'
       parameters:
-      - $ref: '#/components/parameters/idPath'
+      - name: filter[clinic_id]
+        in: query
+        description: ID of the clinic from where the entity was created
+        style: form
+        explode: false
+        required: true
+        schema:
+          type: integer
+      - name: filter[vet_id]
+        in: query
+        description: Id of the vet that performed/owns the entity
+        style: form
+        explode: false
+        schema:
+          type: integer
+      - name: filter[owner_id]
+        in: query
+        description: Id of the related PetParent
+        style: form
+        explode: false
+        schema:
+          type: integer
+          example: 1
+      - name: filter[id]
+        in: query
+        description: Pet ID
+        required: false
+        schema:
+          type: integer
+      - name: filter[nickname]
+        in: query
+        description: Pet nickname
+        required: false
+        schema:
+          type: string
+      - name: filter[updated_from]
+        in: query
+        description: Returns only the pets updated after this datetime (exclusive). The value must be a UTC ISO 8601 timestamp with a Z suffix, for example 2020-08-16T08:56:44.000000Z. Timezone offsets such as +02:00 are not accepted. Updated at and created at are returned in UTC in the response.
+        required: false
+        schema:
+          type: string
+          format: date-time
+      - name: filter[updated_to]
+        in: query
+        description: Returns only the pets updated at or before this datetime (inclusive). The value must be a UTC ISO 8601 timestamp with a Z suffix, for example 2020-08-16T08:56:44.000000Z. Timezone offsets such as +02:00 are not accepted. Updated at and created at are returned in UTC in the response.
+        required: false
+        schema:
+          type: string
+          format: date-time
+      - name: filter[birthday_between]
+        in: query
+        description: Date range for pet birthday, format is 'YYYY-MM-DD,YYYY-MM-DD' (e.g. '2021-02-01,2021-02-29'). This will return pets born between the two dates.
+        schema:
+          type: string
+          example: 2021-02-01,2021-02-29
+      - name: include
+        in: query
+        description: 'Additional info to include. You can use multiple, comma separated. Options: species,breed,trupanionSpecies,trupanionBreed,crossBreed,owners,clinics,vetPetRequests.clinic,patients,patients.archiveType'
+        required: false
+        schema:
+          type: string
+      - name: sort
+        in: query
+        description: 'Order by field(s)(ex: ''nickname,created_at,name-archived-last -> order by nickname with archived pets at the end'')'
+        required: false
+        schema:
+          type: string
+      - $ref: '#/paths/~1api~1v1~1tags/get/parameters/5'
+      - name: per_page
+        in: query
+        description: Number of items to retrieve per page
+        required: false
+        schema:
+          type: integer
+          default: 15
       responses:
         '200':
-          $ref: '#/components/responses/Resource'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-components:
-  responses:
-    TooManyRequests:
-      description: Rate limit exceeded (200 requests per minute).
-    Unauthorized:
-      description: Missing or invalid OAuth 2.0 bearer token.
-    Paginated:
-      description: A paginated list of resources.
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              data:
-                type: array
-                items:
-                  type: object
-              meta:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
                 type: object
                 properties:
-                  current_page:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/paths/~1api~1v1~1pets/post/responses/201/content/application~1json/schema/properties/data'
+                  links:
+                    type: object
+                    title: PaginationLinks
+                    properties:
+                      first:
+                        type:
+                        - string
+                        - 'null'
+                        example: null
+                      last:
+                        type:
+                        - string
+                        - 'null'
+                        example: https://developer.digitail.io/api/v1/entities?page=10
+                      prev:
+                        type:
+                        - string
+                        - 'null'
+                        example: null
+                      next:
+                        type:
+                        - string
+                        - 'null'
+                        example: https://developer.digitail.io/api/v1/entities?page=2
+                  meta:
+                    type: object
+                    title: PaginationMeta
+                    properties:
+                      current_page:
+                        type: integer
+                        example: 1
+                      from:
+                        type:
+                        - integer
+                        - 'null'
+                        example: 1
+                      last_page:
+                        type: integer
+                        example: 10
+                      links:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            url:
+                              type:
+                              - string
+                              - 'null'
+                              example: '&laquo; Previous'
+                        example:
+                        - url: null
+                          label: '&laquo; Previous'
+                          active: false
+                        - url: https://developer.digitail.io/api/v1/entities?page=1
+                          label: '1'
+                          active: true
+                        - url: https://developer.digitail.io/api/v1/entities?page=2
+                          label: Next &raquo;
+                          active: true
+                      path:
+                        type: string
+                        example: https://developer.digitail.io/api/v1/entities
+                      per_page:
+                        type: integer
+                        example: 15
+                      to:
+                        type:
+                        - integer
+                        - 'null'
+                        example: 10
+                      total:
+                        type: integer
+                        example: 145
+        '400':
+          title: Bad Request
+          description: The request was invalid or contained data that was not allowed.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Requested filter(s) `filter1` are not allowed. Allowed filter(s) are date, query, ...
+        '401':
+          title: Unauthorized
+          description: The authorization token is missing or invalid.
+          content:
+            application/json: {}
+        '403':
+          title: Forbidden
+          description: The user is not authorized to perform the requested operation.
+          content:
+            application/json: {}
+        '429':
+          title: Too Many Requests
+          description: The user has sent too many requests in a given amount of time ("rate limiting"). Max 200 requests per minute.
+          content:
+            application/json: {}
+      operationId: getApiV1Pets
+      x-operation-id-source: derived
+    post:
+      tags:
+      - Pets
+      summary: Create a Pet
+      description: 'Permissions needed: CREATE_PATIENTS
+
+        Create a pet'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              required:
+              - vet_id
+              - owner_id
+              - clinic_id
+              - birthday
+              - nickname
+              - species_id
+              - breed_id
+              - gender
+              - hormonal_status
+              type: object
+              properties:
+                clinic_id:
+                  description: Clinic id.
+                  type: integer
+                  example: 1
+                vet_id:
+                  description: Vet id.
+                  type: integer
+                  example: 1
+                owner_id:
+                  description: Owner Id.
+                  type: integer
+                  example: 1
+                nickname:
+                  description: Nickname
+                  type: string
+                  example: Fluffy
+                birthday:
+                  description: Birthday (Y-m-d)
+                  type: string
+                  example: '2017-11-28'
+                avatar:
+                  description: Profile picture.
+                  type: string
+                  format: binary
+                  example: avatar.jpg
+                species_id:
+                  description: Species Id.
+                  type:
+                  - integer
+                  - 'null'
+                  example: 1
+                breed_id:
+                  description: Breed ID.
+                  type: integer
+                  example: 1
+                crossbreed:
+                  description: Set to true if crossbreed. Do not send empty value, omit the key completely
+                  type: boolean
+                crossbreed_details:
+                  description: Crossbreed id (see breeds endpoint) Do not send empty value, omit the key completely
+                  type: string
+                color:
+                  description: Color
+                  type: string
+                  example: Pink
+                color_mask:
+                  description: Color mask
+                  type:
+                  - array
+                  - 'null'
+                  items:
                     type: integer
-                  per_page:
+                    example: 1
+                distinctive_marks:
+                  description: Distinctive marks
+                  type: string
+                  example: One spot on right ear
+                gender:
+                  description: Gender
+                  type: string
+                  enum:
+                  - male
+                  - female
+                  - unknown
+                observations:
+                  description: Observations (Pet notes)
+                  type:
+                  - string
+                  - 'null'
+                chip_number:
+                  description: Chip number
+                  type:
+                  - string
+                  - 'null'
+                  example: '123456789'
+                microchip_location:
+                  description: Microchip  Location
+                  type:
+                  - string
+                  - 'null'
+                  example: Neck
+                insurance_number:
+                  description: Insurance Number
+                  type:
+                  - string
+                  - 'null'
+                  example: '123456789'
+                insurance_provider:
+                  description: Insurance Provider
+                  type:
+                  - string
+                  - 'null'
+                  example: Petplan
+                policy_id:
+                  description: Policy ID
+                  type:
+                  - string
+                  - 'null'
+                  example: POLICY-123
+                passport:
+                  description: Passport
+                  type:
+                  - string
+                  - 'null'
+                  example: '123456789'
+                description:
+                  description: Description
+                  type:
+                  - string
+                  - 'null'
+                constitution:
+                  description: Constitution
+                  type: string
+                conformation:
+                  description: Conformation
+                  type: string
+                allergies:
+                  description: Allergies
+                  type: string
+                blood_type_id:
+                  description: Blood Type Id (see blood-types endpoint) Do not send empty value, omit the key completely
+                  type: integer
+                hormonal_status:
+                  description: Hormonal Status (0=neutered,1=normal,2=unknown)
+                  type: integer
+                  enum:
+                  - 0
+                  - 1
+                  - 2
+      responses:
+        '201':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    title: Pet
+                    description: A pet is an individual entity unique in all of Figitail. A pet can have a single PetParent, multiple contact persons and can be present on multiple clinics. The linkage between a pet and a clinics is called a patient.
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      nickname:
+                        type: string
+                        example: Fritz
+                      species_id:
+                        type: string
+                        example: '1'
+                      breed_id:
+                        type: string
+                        example: '1'
+                      trupanion_species:
+                        type:
+                        - object
+                        - 'null'
+                        description: Trupanion species mapping. Present when include=trupanionSpecies is used.
+                        properties:
+                          id:
+                            type: integer
+                            example: 1
+                          external_id:
+                            type: integer
+                            example: 1
+                          name:
+                            type: string
+                            example: Dog
+                      trupanion_breed:
+                        type:
+                        - object
+                        - 'null'
+                        description: Trupanion breed mapping. Present when include=trupanionBreed is used.
+                        properties:
+                          id:
+                            type: integer
+                            example: 1
+                          external_id:
+                            type: integer
+                            example: 101
+                          name:
+                            type: string
+                            example: Golden Retriever
+                      observations:
+                        type:
+                        - string
+                        - 'null'
+                        example: ''
+                      gender:
+                        type: string
+                        enum:
+                        - male
+                        - female
+                        - unknown
+                        example: male
+                      microchip:
+                        type:
+                        - string
+                        - 'null'
+                        example: null
+                      crossbreed:
+                        type: string
+                        enum:
+                        - '0'
+                        - '1'
+                        example: '0'
+                      crossbreed_details_id:
+                        type:
+                        - integer
+                        - 'null'
+                        example: null
+                      crossbreed_details:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                          label:
+                            type: string
+                          breed:
+                            type: string
+                          species_id:
+                            type: integer
+                      color:
+                        type: string
+                        example: NavajoWhite
+                      distinctive_marks:
+                        type: string
+                        example: ''
+                      birthday:
+                        type: string
+                        format: date
+                        example: '1983-03-29'
+                      gender_string:
+                        type:
+                        - string
+                        - 'null'
+                        example: null
+                      chip_number:
+                        type:
+                        - string
+                        - 'null'
+                        example: null
+                      microchip_location:
+                        type:
+                        - string
+                        - 'null'
+                        example: null
+                      insurance_number:
+                        type:
+                        - string
+                        - 'null'
+                        example: null
+                      passport:
+                        type:
+                        - string
+                        - 'null'
+                        example: ''
+                      profile_picture:
+                        type:
+                        - string
+                        - 'null'
+                        example: https://dev-1-public-digitail.s3.eu-central-1.amazonaws.com/ionut/uploads/KXy8Rlv2vluiZYqwRCy2
+                      description:
+                        type:
+                        - string
+                        - 'null'
+                        example: Lorem ipsum
+                      constitution:
+                        type:
+                        - string
+                        - 'null'
+                        example: null
+                      conformation:
+                        type:
+                        - string
+                        - 'null'
+                        example: null
+                      weight:
+                        type:
+                        - string
+                        - 'null'
+                        example: null
+                      weight_evolution:
+                        type:
+                        - integer
+                        - 'null'
+                        enum:
+                        - 0
+                        - 1
+                        - -1
+                      allergies:
+                        type:
+                        - string
+                        - 'null'
+                        example: null
+                      nr_recs:
+                        type:
+                        - integer
+                        - 'null'
+                        example: null
+                      blood_type:
+                        type:
+                        - string
+                        - 'null'
+                        example: null
+                      hormonal_status:
+                        type: integer
+                        enum:
+                        - 0
+                        - 1
+                        - 2
+                        example: 0
+                        description: '0: ''Unknown'' 1: ''Intact'' 2: ''Neutered''
+
+                          '
+                      age:
+                        type: string
+                        example: 38 Years, 3 Months, 19 Days
+                      age_breakdown:
+                        type: object
+                        properties:
+                          years:
+                            type: integer
+                            example: 38
+                          months:
+                            type: integer
+                            example: 3
+                          days:
+                            type: integer
+                            example: 19
+                      patientNumber:
+                        type: string
+                        example: 'mxc-1 #jwq-1'
+                      is_verified:
+                        type: string
+                        enum:
+                        - '0'
+                        - '1'
+                        example: '1'
+                      breeder:
+                        type:
+                        - string
+                        - 'null'
+                        example: null
+                      archive:
+                        type:
+                        - object
+                        - 'null'
+                        title: Archive
+                        description: Slim resource for archive, usually attached to other resources. Same as PetArchive
+                        properties:
+                          id:
+                            type: integer
+                            example: 1
+                          reason:
+                            type: string
+                            example: The patient was archived because...
+                          type:
+                            type: string
+                            enum:
+                            - Deceased
+                            - Moved away
+                            - Change of owner
+                            - Other
+                            example: Deceased
+                      patients:
+                        type: array
+                        items:
+                          type: object
+                          title: Patient
+                          description: The patient entity represents the many-to-many link between a Pet and a Clinic. It holds information that is specific to the relationship between the pet and the clinic, such as the pet's status at that clinic, the internal number.
+                          properties:
+                            id:
+                              type: integer
+                              example: 1
+                            pet_id:
+                              type: integer
+                              example: 1
+                            clinic_id:
+                              type: integer
+                              example: 1
+                            number:
+                              type:
+                              - string
+                              - 'null'
+                              example: DGT-102
+                            archived_at:
+                              type:
+                              - string
+                              - 'null'
+                              format: date-time
+                              example: '2020-08-16T08:56:44.000000Z'
+                            archive_type_id:
+                              type:
+                              - integer
+                              - 'null'
+                              example: 1
+                            archive_reason:
+                              type:
+                              - string
+                              - 'null'
+                              example: Pet deceased
+                      birthday_estimated:
+                        type: boolean
+                        example: false
+                      rabic_tag_number:
+                        type: string
+                        example: '12109384'
+                      updated_at:
+                        type: string
+                        example: '2020-06-12 15:45:43'
+                      insurance:
+                        type: object
+                        title: Insurance
+                        description: Pet insurance information
+                        properties:
+                          id:
+                            type: integer
+                            example: 1
+                          pet_id:
+                            type: integer
+                            example: 100
+                          provider:
+                            type: string
+                            example: trupanion
+                          policy_id:
+                            type:
+                            - string
+                            - 'null'
+                            example: abc-123-def
+                          edo_status:
+                            type:
+                            - string
+                            - 'null'
+                            enum:
+                            - pending
+                            - active
+                            - failed
+                            - pending_reconfirmation
+                            description: '`pending` - Certificate issued, awaiting activation
+
+                              `active` - Certificate activated
+
+                              `failed` - Certificate failed or expired
+
+                              `pending_reconfirmation` - Pending reconfirmation by the pet owner
+
+                              '
+                            example: active
+                          edo_last_sent_at:
+                            type:
+                            - string
+                            - 'null'
+                            format: date-time
+                            example: '2026-05-05T10:00:00Z'
+                          edo_activated_at:
+                            type:
+                            - string
+                            - 'null'
+                            format: date-time
+                            example: '2026-05-06T09:00:00Z'
+                          edo_reconfirmed_at:
+                            type:
+                            - string
+                            - 'null'
+                            format: date-time
+                            example: null
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: postApiV1Pets
+      x-operation-id-source: derived
+  /api/v1/pets/{id}:
+    get:
+      tags:
+      - Pets
+      summary: Retrieve a Pet
+      description: 'Permissions needed: ACCESS_PATIENTS
+
+        Returns a Pet record'
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      - name: include
+        in: query
+        description: 'Additional info to include. You can use multiple, comma separated. Options: species,breed,trupanionSpecies,trupanionBreed,crossBreed,owners,owners.clients,owners.chatUser,clinics,vetPetRequests.clinic'
+        required: false
+        schema:
+          type: string
+      - name: append
+        in: query
+        description: 'Additional attributes to include(comma separated attributes. Ex: <i>hormonalStatusString,mandatoryScheme,weightEvolution<i/>)'
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/paths/~1api~1v1~1pets/post/responses/201/content/application~1json/schema/properties/data'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: getApiV1PetsById
+      x-operation-id-source: derived
+    post:
+      tags:
+      - Pets
+      summary: Update a Pet
+      description: 'Permissions needed: UPDATE_PATIENTS
+
+        Update Pet by ID, empty values will overwrite, omit key to leave unchanged'
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      - name: X-HTTP-METHOD-OVERRIDE
+        in: header
+        description: PATCH header
+        required: true
+        schema:
+          type: string
+          default: PATCH
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              allOf:
+              - $ref: '#/paths/~1api~1v1~1pets~1%7Bid%7D/patch/requestBody/content/application~1json/schema'
+              - type: object
+                properties:
+                  avatar:
+                    description: Profile picture.
+                    type: string
+                    format: binary
+                    example: avatar.jpg
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/paths/~1api~1v1~1pets/post/responses/201/content/application~1json/schema/properties/data'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: postApiV1PetsById
+      x-operation-id-source: derived
+    patch:
+      tags:
+      - Pets
+      summary: Update a Pet (JSON)
+      description: 'Permissions needed: UPDATE_PATIENTS
+
+        Update Pet by ID, empty values will overwrite, omit key to leave unchanged.
+
+        For text-only updates (no photo). To upload a new avatar, use the multipart/form-data operation on this same path instead, since file uploads are not delivered on a native PATCH request body.'
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nickname:
+                  description: Nickname
+                  type: string
+                  example: Fluffy
+                birthday:
+                  description: Birthday (Y-m-d)
+                  type: string
+                  example: '2017-11-28'
+                species_id:
+                  description: Species Id.
+                  type:
+                  - integer
+                  - 'null'
+                  example: 1
+                breed_id:
+                  description: Breed ID.
+                  type: integer
+                  example: 1
+                crossbreed:
+                  description: Set to true if crossbreed. Do not send empty value, omit the key completely
+                  type: boolean
+                crossbreed_details:
+                  description: Crossbreed id (see breeds endpoint) Do not send empty value, omit the key completely
+                  type: string
+                color:
+                  description: Color
+                  type: string
+                  example: Pink
+                color_mask:
+                  description: Color mask
+                  type:
+                  - array
+                  - 'null'
+                  items:
                     type: integer
-                  total:
-                    type: integer
-    Resource:
-      description: A single resource.
-      content:
-        application/json:
-          schema:
-            type: object
-  parameters:
-    page:
-      name: page
-      in: query
-      description: Page number (default 1).
-      required: false
-      schema:
-        type: integer
-        default: 1
-        minimum: 1
-    clinicIdFilter:
-      name: filter[clinic_id]
-      in: query
-      description: Filter results by clinic ID.
-      required: false
-      schema:
-        type: integer
-    idPath:
-      name: id
-      in: path
-      description: Resource identifier.
-      required: true
-      schema:
-        type: integer
-    perPage:
-      name: per_page
-      in: query
-      description: Results per page (default 15).
-      required: false
-      schema:
-        type: integer
-        default: 15
-        minimum: 1
+                    example: 1
+                distinctive_marks:
+                  description: Distinctive marks
+                  type: string
+                  example: One spot on right ear
+                gender:
+                  description: Gender
+                  type: string
+                  enum:
+                  - male
+                  - female
+                  - unknown
+                observations:
+                  description: Observations (Pet notes)
+                  type:
+                  - string
+                  - 'null'
+                chip_number:
+                  description: Chip number
+                  type:
+                  - string
+                  - 'null'
+                  example: '123456789'
+                microchip_location:
+                  description: Microchip  Location
+                  type:
+                  - string
+                  - 'null'
+                  example: Neck
+                insurance_number:
+                  description: Insurance Number
+                  type:
+                  - string
+                  - 'null'
+                  example: '123456789'
+                insurance_provider:
+                  description: Insurance Provider
+                  type:
+                  - string
+                  - 'null'
+                  example: Petplan
+                policy_id:
+                  description: Policy ID
+                  type:
+                  - string
+                  - 'null'
+                  example: POLICY-123
+                passport:
+                  description: Passport
+                  type:
+                  - string
+                  - 'null'
+                  example: '123456789'
+                description:
+                  description: Description
+                  type:
+                  - string
+                  - 'null'
+                constitution:
+                  description: Constitution
+                  type: string
+                conformation:
+                  description: Conformation
+                  type: string
+                allergies:
+                  description: Allergies
+                  type: string
+                blood_type_id:
+                  description: Blood Type Id (see blood-types endpoint) Do not send empty value, omit the key completely
+                  type: integer
+                hormonal_status:
+                  description: Hormonal Status (0=neutered,1=normal,2=unknown)
+                  type: integer
+                  enum:
+                  - 0
+                  - 1
+                  - 2
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/paths/~1api~1v1~1pets/post/responses/201/content/application~1json/schema/properties/data'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: patchApiV1PetsById
+      x-operation-id-source: derived
+  /api/v1/pets/{id}/weights:
+    get:
+      tags:
+      - Pets
+      summary: List all Weights for Pet
+      description: 'Permissions needed: ACCESS_PATIENTS
+
+        Returns the list of Weights for Pet'
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      - name: filter[type]
+        in: query
+        description: 'Who registerd the Weights(ex.: <i>vet<i/> | <i>owner</i>)'
+        required: true
+        schema:
+          type: string
+        example: vet
+      - name: filter[clinic_id]
+        in: query
+        description: Clinic ID (<font color='red'>required</font> when <i>filter[type]</i> is  <i>vet</i>)
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    title: Weight
+                    properties:
+                      clinic_unit:
+                        type: string
+                        example: lbs
+                      last_weight_value:
+                        type: number
+                        example: 79.38
+                      weight_trend_is_up:
+                        type: boolean
+                        example: true
+                      weights:
+                        type: object
+                        properties:
+                          dateTimes:
+                            type: array
+                            items:
+                              type: string
+                              format: date-time
+                            example:
+                            - 17-01-2020
+                            - 21-01-2020
+                            - 26-02-2020
+                            - 31-03-2020
+                            - 29-04-2020
+                            - 08-05-2020
+                            - 12-05-2020
+                            - 14-05-2020
+                            - 18-05-2020
+                            - 19-05-2020
+                            - 26-05-2020
+                            - 10-06-2020
+                            - 10-06-2020
+                            - 15-06-2020
+                            - 17-06-2020
+                          kg:
+                            type: array
+                            items:
+                              type: number
+                              format: float
+                            example:
+                            - 71
+                            - 71
+                            - 22
+                            - 20
+                            - 28
+                            - 20
+                            - 20
+                            - 22
+                            - 40
+                            - 32
+                            - 24
+                            - 30
+                            - 23
+                            - 35
+                            - 36
+                          lbs:
+                            type: array
+                            items:
+                              type: number
+                              format: float
+                            example:
+                            - 156.555
+                            - 156.555
+                            - 48.51
+                            - 44.1
+                            - 61.74
+                            - 44.1
+                            - 44.1
+                            - 48.51
+                            - 88.2
+                            - 70.56
+                            - 52.92
+                            - 66.15
+                            - 50.715
+                            - 77.175
+                            - 79.38
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: getApiV1PetsByIdWeights
+      x-operation-id-source: derived
+    post:
+      tags:
+      - Pets
+      summary: Create a Weight for Pet
+      description: 'Permissions needed: ACCESS_PATIENTS
+
+        Store weights for Pet'
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      requestBody:
+        description: For <b>measurement_unit_id</b>:<i>1 - kg ; 2 - lbs</i>
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                clinic_id:
+                  description: Clinic ID
+                  type: integer
+                  example: 766
+                vet_id:
+                  description: Vet ID
+                  type:
+                  - integer
+                  - 'null'
+                  example: null
+                value:
+                  description: Weight value
+                  type: number
+                  example: 12
+                measurement_unit_id:
+                  description: Measurement unit id (<i>1 - kg ; 2 - lbs</i>)
+                  type: number
+                  enum:
+                  - 1
+                  - 2
+                  example: 1
+                date:
+                  description: Measurement date( Y-m-d)
+                  type:
+                  - string
+                  - 'null'
+                  format: date
+                  example: null
+      responses:
+        '201':
+          description: successful operation
+          content:
+            application/json: {}
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '422':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                example:
+                  message: The given data was invalid.
+                  errors:
+                    measurement_id:
+                    - The selected measurement id is invalid.
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: postApiV1PetsByIdWeights
+      x-operation-id-source: derived
+  /api/v1/pets/{id}/weights/{measurement_id}:
+    patch:
+      tags:
+      - Pets
+      summary: Update a Weight for Pet
+      description: 'Permissions needed: ACCESS_PATIENTS
+
+        Update weights Weights for Pet'
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      - name: measurement_id
+        in: path
+        description: Measurement Id
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        description: For <b>measurement_unit_id</b>:<i>1 - kg ; 2 - lbs</i>
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                vet_id:
+                  description: Vet ID
+                  type:
+                  - integer
+                  - 'null'
+                  example: null
+                value:
+                  description: Weight value
+                  type: number
+                  example: 12.5
+                measurement_unit_id:
+                  description: Measurement unit id (<i>1 - kg ; 2 - lbs</i>)
+                  type: integer
+                  enum:
+                  - 1
+                  - 2
+                  example: 1
+                date:
+                  description: Measurement date(Y-m-d)
+                  type:
+                  - string
+                  - 'null'
+                  format: date
+                  example: null
+      responses:
+        '204':
+          $ref: '#/paths/~1api~1v1~1sales/delete/responses/204'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '422':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                example:
+                  message: The given data was invalid.
+                  errors:
+                    measurement_id:
+                    - The selected measurement id is invalid.
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: patchApiV1PetsByIdWeightsByMeasurementId
+      x-operation-id-source: derived
+    delete:
+      tags:
+      - Pets
+      summary: Delete a Weight for Pet
+      description: 'Permissions needed: ACCESS_PATIENTS
+
+        Delete Pet''s Weight from measurements'
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      - name: measurement_id
+        in: path
+        description: Measurement Id
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          $ref: '#/paths/~1api~1v1~1sales/delete/responses/204'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: deleteApiV1PetsByIdWeightsByMeasurementId
+      x-operation-id-source: derived
+  /api/v1/pets/{id}/temperatures:
+    get:
+      tags:
+      - Pets
+      summary: List all Temperatures for Pet
+      description: 'Permissions needed: ACCESS_PATIENTS
+
+        Returns the list of Temperatures for Pet'
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      - name: filter[type]
+        in: query
+        description: 'Who registerd the Temperatures(ex.: <i>vet<i/> | <i>owner</i>)'
+        required: true
+        schema:
+          type: string
+        example: vet
+      - name: filter[clinic_id]
+        in: query
+        description: Clinic ID (<font color='red'>required</font> when <i>filter[type]</i> is  <i>vet</i>)
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    title: Weight
+                    properties:
+                      clinic_unit:
+                        type: string
+                        example: °F
+                      last_temperature_value:
+                        type: number
+                        example: 99
+                      temperature_trend_is_up:
+                        type: boolean
+                        example: true
+                      temperatures:
+                        type: object
+                        properties:
+                          dateTimes:
+                            type: array
+                            items:
+                              type: string
+                              format: date-time
+                            example:
+                            - 17-01-2020
+                            - 21-01-2020
+                          °C:
+                            type: array
+                            items:
+                              type: number
+                              format: float
+                            example:
+                            - 35.55
+                            - 37.22
+                          °F:
+                            type: array
+                            items:
+                              type: number
+                              format: float
+                            example:
+                            - 96
+                            - 99
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: getApiV1PetsByIdTemperatures
+      x-operation-id-source: derived
+    post:
+      tags:
+      - Pets
+      summary: Create a Temperature for Pet
+      description: 'Permissions needed: ACCESS_PATIENTS
+
+        Store temperatures for Pet'
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      requestBody:
+        description: For <b>measurement_unit_id</b>:<i>3 - °C ; 4 - °F</i>
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                clinic_id:
+                  description: Clinic ID
+                  type: integer
+                  example: 766
+                vet_id:
+                  description: Vet ID
+                  type:
+                  - integer
+                  - 'null'
+                  example: null
+                value:
+                  description: Temperature value
+                  type: number
+                  example: 35
+                measurement_unit_id:
+                  description: Measurement unit id (<i>3 - °C ; 4 - °F</i>)
+                  type: number
+                  enum:
+                  - 1
+                  - 2
+                  example: 1
+                date:
+                  description: Measurement date( Y-m-d)
+                  type:
+                  - string
+                  - 'null'
+                  format: date
+                  example: null
+      responses:
+        '201':
+          description: successful operation
+          content:
+            application/json: {}
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '422':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                example:
+                  message: The given data was invalid.
+                  errors:
+                    measurement_id:
+                    - The selected measurement id is invalid.
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: postApiV1PetsByIdTemperatures
+      x-operation-id-source: derived
+  /api/v1/pets/{id}/temperatures/{measurement_id}:
+    patch:
+      tags:
+      - Pets
+      summary: Update a Temperature for Pet
+      description: 'Permissions needed: ACCESS_PATIENTS
+
+        Update temperatures for Pet'
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      - name: measurement_id
+        in: path
+        description: Measurement Id
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        description: For <b>measurement_unit_id</b>:<i>3 - °C ; 4 - °F</i>
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                vet_id:
+                  description: Vet ID
+                  type:
+                  - integer
+                  - 'null'
+                  example: null
+                value:
+                  description: Temperature value
+                  type: number
+                  example: 35.6
+                measurement_unit_id:
+                  description: Measurement unit id (<i>3 - °C ; 4 - °F</i>)
+                  type: integer
+                  enum:
+                  - 1
+                  - 2
+                  example: 1
+                date:
+                  description: Measurement date(Y-m-d)
+                  type:
+                  - string
+                  - 'null'
+                  format: date
+                  example: null
+      responses:
+        '204':
+          $ref: '#/paths/~1api~1v1~1sales/delete/responses/204'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '422':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                example:
+                  message: The given data was invalid.
+                  errors:
+                    measurement_id:
+                    - The selected measurement id is invalid.
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: patchApiV1PetsByIdTemperaturesByMeasurementId
+      x-operation-id-source: derived
+    delete:
+      tags:
+      - Pets
+      summary: Delete a Temperature for Pet
+      description: 'Permissions needed: ACCESS_PATIENTS
+
+        Delete Pet''s Temperature from measurements'
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      - name: measurement_id
+        in: path
+        description: Measurement Id
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          $ref: '#/paths/~1api~1v1~1sales/delete/responses/204'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: deleteApiV1PetsByIdTemperaturesByMeasurementId
+      x-operation-id-source: derived
+  /api/v1/patients/{id}/estimates:
+    get:
+      tags:
+      - Pets
+      summary: List all Estimates for Patient
+      description: Returns list of Patient's Estimates
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      - $ref: '#/paths/~1api~1v1~1client-communications/get/parameters/3'
+      - name: include
+        in: query
+        description: Additional relationships or information to include with the main entity(s) of the response. Each endpoint has its own set of available includes.
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+          example:
+          - clinic
+          - patient
+          - patient.petParent
+      - name: filter[status]
+        description: Estimate status (PENDING - 0, DECLINED - 1, APPROVED - 2)
+        in: query
+        type: string
+        enum:
+        - 0
+        - 1
+        - 2
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/paths/~1api~1v1~1patients~1%7Bid%7D~1estimates~1%7Bestimate%7D/get/responses/200/content/application~1json/schema'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+      operationId: getApiV1PatientsByIdEstimates
+      x-operation-id-source: derived
+components:
   securitySchemes:
-    oauth2:
+    passport:
       type: oauth2
-      description: OAuth 2.0 authorization-code grant with PKCE. Bearer access token is long-lived; a refresh token is also returned.
+      description: Laravel passport oauth2 security.
       flows:
         authorizationCode:
-          authorizationUrl: https://vet.digitail.io/oauth/authorize
-          tokenUrl: https://vet.digitail.io/oauth/token
-          refreshUrl: https://vet.digitail.io/oauth/token
-          scopes: {}
-externalDocs:
-  description: Digitail API Documentation
-  url: https://documentation.digitail.io/
+          authorizationUrl: https://developer.digitail.io/oauth/authorize
+          tokenUrl: https://developer.digitail.io/oauth/token
+          refreshUrl: https://developer.digitail.io/oauth/token
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

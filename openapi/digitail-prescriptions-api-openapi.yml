@@ -1,85 +1,748 @@
 openapi: 3.2.0
 info:
-  title: Digitail Open Prescriptions API
-  version: v1
-  description: Modeled OpenAPI for the Digitail Open API, a documented REST API for the Digitail cloud veterinary practice management platform (PIMS).
+  title: Digitail Prescriptions API
+  description: Digitail API
   contact:
-    name: API Evangelist
-    email: kin@apievangelist.com
-  x-endpoints-modeled: true
+    email: developer@digitail.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
 servers:
-- url: https://developer.digitail.io/api/v1
-  description: Digitail Open API v1
+- url: https://developer.digitail.io
+  description: Sandbox server (uses test data)
+- url: https://vet.digitail.io
+  description: Production server (uses live data)
 security:
-- oauth2: []
+- passport: []
+- Bearer: []
 tags:
 - name: Prescriptions
 paths:
-  /prescriptions:
+  /api/v1/pets/{id}/prescriptions:
     get:
-      operationId: listPrescriptions
-      summary: List prescriptions
-      description: List prescriptions. Modeled from the documented Prescriptions resource.
       tags:
       - Prescriptions
-      x-endpoints-modeled: true
+      summary: List all Prescriptions for Pet
+      description: 'Permissions needed: ACCESS_PATIENTS
+
+        Get pet''s prescriptions'
       parameters:
-      - $ref: '#/components/parameters/page'
-      - $ref: '#/components/parameters/perPage'
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      - $ref: '#/paths/~1api~1v1~1pets/get/parameters/0'
+      - name: filter[status]
+        in: query
+        description: Prescription's Status
+        required: true
+        schema:
+          type: string
+      - $ref: '#/paths/~1api~1v1~1tags/get/parameters/5'
       responses:
         '200':
-          $ref: '#/components/responses/Paginated'
-components:
-  parameters:
-    perPage:
-      name: per_page
-      in: query
-      description: Results per page (default 15).
-      required: false
-      schema:
-        type: integer
-        default: 15
-        minimum: 1
-    page:
-      name: page
-      in: query
-      description: Page number (default 1).
-      required: false
-      schema:
-        type: integer
-        default: 1
-        minimum: 1
-  responses:
-    Paginated:
-      description: A paginated list of resources.
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              data:
-                type: array
-                items:
-                  type: object
-              meta:
+          description: successful operation
+          content:
+            application/json:
+              schema:
                 type: object
                 properties:
-                  current_page:
-                    type: integer
-                  per_page:
-                    type: integer
-                  total:
-                    type: integer
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/paths/~1api~1v1~1pets~1%7Bid%7D~1prescriptions/post/responses/201/content/application~1json/schema/properties/data'
+                  links:
+                    $ref: '#/paths/~1api~1v1~1pets/get/responses/200/content/application~1json/schema/properties/links'
+                  meta:
+                    $ref: '#/paths/~1api~1v1~1pets/get/responses/200/content/application~1json/schema/properties/meta'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: getApiV1PetsByIdPrescriptions
+      x-operation-id-source: derived
+    post:
+      tags:
+      - Prescriptions
+      summary: Create Prescription for Pet
+      description: 'Permissions needed: ACCESS_PATIENTS
+
+        Store Prescriptions for a specific patient'
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - clinic_id
+              - vet_id
+              - quantity
+              - prescribed_at
+              - status
+              - max_refills
+              properties:
+                record_id:
+                  type:
+                  - integer
+                  - 'null'
+                  example: 1
+                clinic_id:
+                  type: integer
+                  example: 1
+                vet_id:
+                  type: integer
+                  example: 1
+                product_id:
+                  type: integer
+                  example: 1
+                product_name:
+                  description: (<font color='red'>required</font> when <i>product_id</i> is  <i>null</i>)
+                  type: string
+                type:
+                  type: integer
+                  enum:
+                  - 0
+                  - 1
+                  description: '`0` - External `1` - In House
+
+                    '
+                  example: 0
+                quantity:
+                  type: integer
+                  example: 5
+                unit_id:
+                  type: integer
+                  example: 1
+                unit:
+                  description: (<font color='red'>required</font> when <i>unit_id</i> is  <i>null</i>)
+                  type: string
+                  example: Tablet
+                label:
+                  description: Label
+                  type:
+                  - string
+                  - 'null'
+                  example: 1/2 Tablet every day
+                prescribed_at:
+                  type: string
+                  format: date
+                  example: '2020-01-01'
+                expiration_date:
+                  type: string
+                  format: date
+                  example: '2020-01-01'
+                status:
+                  type: string
+                  enum:
+                  - ACTIVE
+                  - INACTIVE
+                  example: ACTIVE
+                internal_notes:
+                  type:
+                  - string
+                  - 'null'
+                  example: Internal notes
+      responses:
+        '201':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    title: Prescription
+                    description: Prescriptions can be dispensed to patients for medications.
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      record_id:
+                        type: integer
+                        example: 1
+                      clinic_id:
+                        type: integer
+                        example: 1
+                      vet_id:
+                        type: integer
+                        example: 1
+                      pet_id:
+                        type: integer
+                        example: 1
+                      product_id:
+                        type: integer
+                        example: 1
+                      product_name:
+                        type:
+                        - string
+                        - 'null'
+                        example: Product name
+                      type:
+                        type: integer
+                        enum:
+                        - 0
+                        - 1
+                        description: '`0` - External `1` - In House
+
+                          '
+                        example: 0
+                      quantity:
+                        type: integer
+                        example: 1
+                      unit_id:
+                        type:
+                        - integer
+                        - 'null'
+                        example: 1
+                      unit:
+                        type:
+                        - string
+                        - 'null'
+                        example: Unit
+                      label:
+                        type:
+                        - string
+                        - 'null'
+                        example: Administer 1 tablet by mouth every 12 hours for 7 days
+                      prescribed_at:
+                        type: string
+                        format: date-time
+                        example: '2020-01-01T00:00:00Z'
+                      expires_at:
+                        type: string
+                        format: date-time
+                        example: '2020-01-01T00:00:00Z'
+                      status:
+                        type: string
+                        enum:
+                        - ACTIVE
+                        - INACTIVE
+                        example: ACTIVE
+                      delivery_status:
+                        type: string
+                        example: Complete
+                      delivery_provider:
+                        type: string
+                        example: vetsource
+                      internal_notes:
+                        type:
+                        - string
+                        - 'null'
+                        example: Internal notes
+                      product_ext_id:
+                        type: string
+                      prescription_ext_id:
+                        type: string
+                      order_ext_id:
+                        type: string
+                      refills_received:
+                        type: integer
+                        example: 1
+                      max_refills:
+                        type: integer
+                        example: 3
+                      last_refill_at:
+                        type: string
+                        format: date-time
+                        example: '2020-01-01T00:00:00Z'
+                      refills:
+                        type: array
+                        items:
+                          $ref: '#/paths/~1api~1v1~1prescriptions~1%7Bid%7D~1refills/post/responses/201/content/application~1json/schema/properties/data'
+                      created_at:
+                        type: string
+                        format: date-time
+                        example: '2022-02-06T22:00:00.000000Z'
+                      updated_at:
+                        type: string
+                        format: date-time
+                        example: '2022-02-06T22:00:00.000000Z'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '422':
+          $ref: '#/paths/~1api~1v1~1plans/get/responses/422'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: postApiV1PetsByIdPrescriptions
+      x-operation-id-source: derived
+  /api/v1/pets/{id}/prescriptions/{prescription}:
+    get:
+      tags:
+      - Prescriptions
+      summary: Retrieve Prescription for Pet
+      description: 'Permissions needed: ACCESS_PATIENTS
+
+        Get pet''s prescription by id'
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      - name: prescription
+        in: path
+        description: Prescription Id
+        required: true
+        schema:
+          type: integer
+      - name: include
+        in: query
+        description: 'Additional info to include. Ex.: ''clinic'',''record'',''product'',''vet'',''pet'',''pet.owners'',''pet.breed'',''pet.species'',''refills'',''refills.refillProducts'''
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/paths/~1api~1v1~1pets~1%7Bid%7D~1prescriptions/post/responses/201/content/application~1json/schema/properties/data'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: getApiV1PetsByIdPrescriptionsByPrescription
+      x-operation-id-source: derived
+    patch:
+      tags:
+      - Prescriptions
+      summary: Update Prescription for Pet
+      description: 'Permissions needed: ACCESS_PATIENTS
+
+        Update Prescriptions for Pet'
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      - name: prescription
+        in: path
+        description: Prescription Id
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                vet_id:
+                  type: integer
+                  example: 1
+                product_id:
+                  type: integer
+                  example: 1
+                product_name:
+                  description: (<font color='red'>required</font> when <i>product_id</i> is  <i>null</i>)
+                  type: string
+                type:
+                  type: integer
+                  enum:
+                  - 0
+                  - 1
+                  description: '`0` - External `1` - In House
+
+                    '
+                  example: 0
+                quantity:
+                  type: integer
+                  example: 5
+                unit_id:
+                  type: integer
+                  example: 1
+                unit:
+                  description: (<font color='red'>required</font> when <i>unit_id</i> is  <i>null</i>)
+                  type: string
+                  example: Tablet
+                label:
+                  description: Label
+                  type:
+                  - string
+                  - 'null'
+                  example: 1/2 Tablet every day
+                prescribed_at:
+                  type: string
+                  format: date
+                  example: '2020-01-01'
+                expiration_date:
+                  type: string
+                  format: date
+                  example: '2020-01-01'
+                status:
+                  type: string
+                  enum:
+                  - ACTIVE
+                  - INACTIVE
+                  example: ACTIVE
+                internal_notes:
+                  type:
+                  - string
+                  - 'null'
+                  example: Internal notes
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/paths/~1api~1v1~1pets~1%7Bid%7D~1prescriptions/post/responses/201/content/application~1json/schema/properties/data'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '422':
+          $ref: '#/paths/~1api~1v1~1plans/get/responses/422'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: patchApiV1PetsByIdPrescriptionsByPrescription
+      x-operation-id-source: derived
+    delete:
+      tags:
+      - Prescriptions
+      summary: Delete Prescription for Pet
+      description: 'Permissions needed: ACCESS_PATIENTS
+
+        Delete a pet Prescriptions'
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      - name: prescription
+        in: path
+        description: Prescription Id
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          $ref: '#/paths/~1api~1v1~1sales/delete/responses/204'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: deleteApiV1PetsByIdPrescriptionsByPrescription
+      x-operation-id-source: derived
+  /api/v1/prescriptions/{id}/refills:
+    get:
+      tags:
+      - Prescriptions
+      summary: List all Refills for Prescription
+      description: 'Permissions needed: ACCESS_PATIENTS
+
+        Get prescription''s refills'
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      - name: include
+        in: query
+        description: 'Additional info to include. Ex.: refillProducts'
+        required: false
+        schema:
+          type: string
+      - $ref: '#/paths/~1api~1v1~1tags/get/parameters/5'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/paths/~1api~1v1~1prescriptions~1%7Bid%7D~1refills/post/responses/201/content/application~1json/schema/properties/data'
+                  links:
+                    $ref: '#/paths/~1api~1v1~1pets/get/responses/200/content/application~1json/schema/properties/links'
+                  meta:
+                    $ref: '#/paths/~1api~1v1~1pets/get/responses/200/content/application~1json/schema/properties/meta'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: getApiV1PrescriptionsByIdRefills
+      x-operation-id-source: derived
+    post:
+      tags:
+      - Prescriptions
+      summary: Create Refill for Prescription
+      description: 'Permissions needed: ACCESS_PATIENTS
+
+        Create a new refill for a said prescription'
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - record_id
+              - vet_id
+              - refilled_at
+              properties:
+                record_id:
+                  type: integer
+                  example: 1
+                vet_id:
+                  type: integer
+                  example: 1
+                type:
+                  type: integer
+                  enum:
+                  - 0
+                  - 1
+                  description: '`0` - External `1` - In House
+
+                    '
+                  example: 0
+                label:
+                  type:
+                  - string
+                  - 'null'
+                  example: 1/2 Tablet every day
+                refilled_at:
+                  type: string
+                  format: date
+                  example: '2020-01-01'
+                internal_notes:
+                  type:
+                  - string
+                  - 'null'
+                  example: Internal notes
+                quantity:
+                  description: 'Overrides the dispensed quantity for this refill. Defaults to the prescription quantity when omitted. Ignored for external and treatment-based refills.
+
+                    '
+                  type:
+                  - number
+                  - 'null'
+                  example: 10
+                  exclusiveMinimum: 0
+                max_refills:
+                  description: 'Overrides the prescription''s maximum number of refills and is persisted on the prescription. Lowering it below the number of existing refills rejects the request.
+
+                    '
+                  type:
+                  - integer
+                  - 'null'
+                  minimum: 0
+                  example: 3
+      responses:
+        '201':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    title: Refill
+                    description: An individual refill of a prescription.
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      prescription_id:
+                        type: integer
+                        example: 1
+                      record_id:
+                        type:
+                        - integer
+                        - 'null'
+                        example: 1
+                      vet_id:
+                        type: integer
+                        example: 1
+                      type:
+                        type: integer
+                        enum:
+                        - 0
+                        - 1
+                        description: '`0` - External `1` - In House
+
+                          '
+                        example: 0
+                      label:
+                        type:
+                        - string
+                        - 'null'
+                        example: Refill
+                      refilled_at:
+                        type: string
+                        format: date-time
+                        example: '2020-01-01T00:00:00.000Z'
+                      is_initial:
+                        type: boolean
+                        example: false
+                      number:
+                        type: integer
+                        example: 1
+                      internal_notes:
+                        type:
+                        - string
+                        - 'null'
+                        example: Internal Notes
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '422':
+          $ref: '#/paths/~1api~1v1~1plans/get/responses/422'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: postApiV1PrescriptionsByIdRefills
+      x-operation-id-source: derived
+  /api/v1/prescriptions/{id}/refills/{refill}:
+    get:
+      tags:
+      - Prescriptions
+      summary: Retrieve Refill for Prescription
+      description: 'Permissions needed: ACCESS_PATIENTS
+
+        Get prescription''s refill by id'
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      - name: refill
+        in: path
+        description: Prescription Refill Id
+        required: true
+        schema:
+          type: integer
+      - name: include
+        in: query
+        description: 'Additional info to include. Ex.: refillProducts'
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/paths/~1api~1v1~1prescriptions~1%7Bid%7D~1refills/post/responses/201/content/application~1json/schema/properties/data'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: getApiV1PrescriptionsByIdRefillsByRefill
+      x-operation-id-source: derived
+    patch:
+      tags:
+      - Prescriptions
+      summary: Update Refill for Prescription
+      description: 'Permissions needed: ACCESS_PATIENTS
+
+        Update a specific refill for a prescription'
+      parameters:
+      - $ref: '#/paths/~1api~1v1~1sales/delete/parameters/0'
+      - name: refill
+        in: path
+        description: Refill Id
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - vet_id
+              properties:
+                vet_id:
+                  type: integer
+                  example: 1
+                type:
+                  type: integer
+                  enum:
+                  - 0
+                  - 1
+                  description: '`0` - External `1` - In House
+
+                    '
+                  example: 0
+                refilled_at:
+                  type: string
+                  format: date
+                  example: '2020-01-01'
+                label:
+                  type:
+                  - string
+                  - 'null'
+                  example: 1/2 Tablet every day
+                internal_notes:
+                  type:
+                  - string
+                  - 'null'
+                  example: Internal notes
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/paths/~1api~1v1~1prescriptions~1%7Bid%7D~1refills/post/responses/201/content/application~1json/schema/properties/data'
+        '400':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/400'
+        '401':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/401'
+        '403':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/403'
+        '422':
+          $ref: '#/paths/~1api~1v1~1plans/get/responses/422'
+        '429':
+          $ref: '#/paths/~1api~1v1~1pets/get/responses/429'
+      operationId: patchApiV1PrescriptionsByIdRefillsByRefill
+      x-operation-id-source: derived
+components:
   securitySchemes:
-    oauth2:
+    passport:
       type: oauth2
-      description: OAuth 2.0 authorization-code grant with PKCE. Bearer access token is long-lived; a refresh token is also returned.
+      description: Laravel passport oauth2 security.
       flows:
         authorizationCode:
-          authorizationUrl: https://vet.digitail.io/oauth/authorize
-          tokenUrl: https://vet.digitail.io/oauth/token
-          refreshUrl: https://vet.digitail.io/oauth/token
-          scopes: {}
-externalDocs:
-  description: Digitail API Documentation
-  url: https://documentation.digitail.io/
+          authorizationUrl: https://developer.digitail.io/oauth/authorize
+          tokenUrl: https://developer.digitail.io/oauth/token
+          refreshUrl: https://developer.digitail.io/oauth/token
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

@@ -1,0 +1,12 @@
+{
+ "url": "https://developer.digitail.io/api-docs",
+ "final": "https://developer.digitail.io/api-docs",
+ "status": 200,
+ "content_type": "application/json",
+ "bytes": 1120769,
+ "sha256": "09495db179588b1a8ce52abe7fac440d61d294d0e6aa68a6f084e0b54393d598",
+ "fetched_at": "2026-10-19",
+ "fetched_by": "APIEvangelist-Harvest/1.0 (+https://apievangelist.com)",
+ "match": "byte-identical",
+ "note": "re-archived: the provider's current document replaced a stale archive (roadmap#793); the old files are in openapi/_superseded/2026-10-19-stale"
+}
