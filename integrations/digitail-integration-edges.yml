@@ -1,0 +1,697 @@
+edges:
+- partner_name: Antech
+  app: Antech
+  partner: antech-diagnostics
+  partner_match: domain
+  type: marketplace
+  marketplace: own
+  channel: partner-built
+  relationship: platform-app
+  direction: partner-built
+  evidence: https://digitail.com/integrations/
+  category: Digitail integration
+  detected_by: sweep-veterinary-pet.py
+  detected: '2026-10-20'
+  partner_url: https://www.antechdiagnostics.com/
+- partner_name: bandl
+  app: bandl
+  partner: null
+  partner_match: null
+  type: marketplace
+  marketplace: own
+  channel: partner-built
+  relationship: platform-app
+  direction: partner-built
+  evidence: https://digitail.com/integrations/
+  category: Digitail integration
+  detected_by: sweep-veterinary-pet.py
+  detected: '2026-10-20'
+- partner_name: Bionote
+  app: Bionote
+  partner: null
+  partner_match: null
+  type: marketplace
+  marketplace: own
+  channel: partner-built
+  relationship: platform-app
+  direction: partner-built
+  evidence: https://digitail.com/integrations/
+  category: Digitail integration
+  detected_by: sweep-veterinary-pet.py
+  detected: '2026-10-20'
+  partner_url: https://www.bionote.com/
+- partner_name: Ellie Diagnostics
+  app: Ellie Diagnostics
+  partner: null
+  partner_match: null
+  type: marketplace
+  marketplace: own
+  channel: partner-built
+  relationship: platform-app
+  direction: partner-built
+  evidence: https://digitail.com/integrations/
+  category: Digitail integration
+  detected_by: sweep-veterinary-pet.py
+  detected: '2026-10-20'
+  partner_url: https://www.elliediagnostics.com/
+- partner_name: Heska
+  app: Heska
+  partner: null
+  partner_match: null
+  type: marketplace
+  marketplace: own
+  channel: partner-built
+  relationship: platform-app
+  direction: partner-built
+  evidence: https://digitail.com/integrations/
+  category: Digitail integration
+  detected_by: sweep-veterinary-pet.py
+  detected: '2026-10-20'
+  partner_url: https://www.heska.com.au/products/lab-diagnostics/
+- partner_name: IDEXX Labs
+  app: IDEXX Labs
+  partner: idexx-labs
+  partner_match: domain
+  type: marketplace
+  marketplace: own
+  channel: partner-built
+  relationship: platform-app
+  direction: partner-built
+  evidence: https://digitail.com/integrations/
+  category: Digitail integration
+  detected_by: sweep-veterinary-pet.py
+  detected: '2026-10-20'
+  partner_url: https://www.idexx.com/en/veterinary/reference-laboratories/
+- partner_name: MicroVet Diagnostics
+  app: MicroVet Diagnostics
+  partner: null
+  partner_match: null
+  type: marketplace
+  marketplace: own
+  channel: partner-built
+  relationship: platform-app
+  direction: partner-built
+  evidence: https://digitail.com/integrations/
+  category: Digitail integration
+  detected_by: sweep-veterinary-pet.py
+  detected: '2026-10-20'
+  partner_url: https://www.microvetdiagnostics.com/
+- partner_name: Midwest Veterinary Laboratory (MVL)
+  app: Midwest Veterinary Laboratory (MVL)
+  partner: null
+  partner_match: null
+  type: marketplace
+  marketplace: own
+  channel: partner-built
+  relationship: platform-app
+  direction: partner-built
+  evidence: https://digitail.com/integrations/
+  category: Digitail integration
+  detected_by: sweep-veterinary-pet.py
+  detected: '2026-10-20'
+  partner_url: https://midwestvetlab.com/
+- partner_name: Moichor
+  app: Moichor
+  partner: null
+  partner_match: null
+  type: marketplace
+  marketplace: own
+  channel: partner-built
+  relationship: platform-app
+  direction: partner-built
+  evidence: https://digitail.com/integrations/
+  category: Digitail integration
+  detected_by: sweep-veterinary-pet.py
+  detected: '2026-10-20'
+  partner_url: https://www.moichor.com/
+- partner_name: National Biovet Laboratory (NBVL)
+  app: National Biovet Laboratory (NBVL)
+  partner: null
+  partner_match: null
+  type: marketplace
+  marketplace: own
+  channel: partner-built
+  relationship: platform-app
+  direction: partner-built
+  evidence: https://digitail.com/integrations/
+  category: Digitail integration
+  detected_by: sweep-veterinary-pet.py
+  detected: '2026-10-20'
+  partner_url: https://www.nbvl.cc/
+- partner_name: QSM Diagnostics
+  app: QSM Diagnostics
+  partner: null
+  partner_match: null
+  type: marketplace
+  marketplace: own
+  channel: partner-built
+  relationship: platform-app
+  direction: partner-built
+  evidence: https://digitail.com/integrations/
+  category: Digitail integration
+  detected_by: sweep-veterinary-pet.py
+  detected: '2026-10-20'
+  partner_url: https://qsmdiagnostics.com/
+- partner_name: veteklabs
+  app: veteklabs
+  partner: null
+  partner_match: null
+  type: marketplace
+  marketplace: own
+  channel: partner-built
+  relationship: platform-app
+  direction: partner-built
+  evidence: https://digitail.com/integrations/
+  category: Digitail integration
+  detected_by: sweep-veterinary-pet.py
+  detected: '2026-10-20'
+  partner_url: https://www.veteklabs.com/
+- partner_name: Zoetis
+  app: Zoetis
+  partner: null
+  partner_match: null
+  type: marketplace
+  marketplace: own
+  channel: partner-built
+  relationship: platform-app
+  direction: partner-built
+  evidence: https://digitail.com/integrations/
+  category: Digitail integration
+  detected_by: sweep-veterinary-pet.py
+  detected: '2026-10-20'
+  partner_url: https://www.zoetisus.com/products/diagnostics/zoetis-reference-labs/
+- partner_name: Zomedica
+  app: Zomedica
+  partner: null
+  partner_match: null
+  type: marketplace
+  marketplace: own
+  channel: partner-built
+  relationship: platform-app
+  direction: partner-built
+  evidence: https://digitail.com/integrations/
+  category: Digitail integration
+  detected_by: sweep-veterinary-pet.py
+  detected: '2026-10-20'
+- partner_name: Digicare Animal Health
+  app: Digicare Animal Health
+  partner: null
+  partner_match: null
+  type: marketplace
+  marketplace: own
+  channel: partner-built
+  relationship: platform-app
+  direction: partner-built
+  evidence: https://digitail.com/integrations/
+  category: Digitail integration
+  detected_by: sweep-veterinary-pet.py
+  detected: '2026-10-20'
+  partner_url: https://www.digi-vet.com/veterinary-monitors/
+- partner_name: Parasight
+  app: Parasight
+  partner: null
+  partner_match: null
+  type: marketplace
+  marketplace: own
+  channel: partner-built
+  relationship: platform-app
+  direction: partner-built
+  evidence: https://digitail.com/integrations/
+  category: Digitail integration
+  detected_by: sweep-veterinary-pet.py
+  detected: '2026-10-20'
+  partner_url: https://www.parasightsystem.com/
+- partner_name: Purview
+  app: Purview
+  partner: null
+  partner_match: null
+  type: marketplace
+  marketplace: own
+  channel: partner-built
+  relationship: platform-app
+  direction: partner-built
+  evidence: https://digitail.com/integrations/
+  category: Digitail integration
+  detected_by: sweep-veterinary-pet.py
+  detected: '2026-10-20'
+  partner_url: https://www.purview.net/
+- partner_name: radimal
+  app: radimal
+  partner: null
+  partner_match: null
+  type: marketplace
+  marketplace: own
+  channel: partner-built
+  relationship: platform-app
+  direction: partner-built
+  evidence: https://digitail.com/integrations/
+  category: Digitail integration
+  detected_by: sweep-veterinary-pet.py
+  detected: '2026-10-20'
+- partner_name: Vets-Choice
+  app: Vets-Choice
+  partner: null
+  partner_match: null
+  type: marketplace
+  marketplace: own
+  channel: partner-built
+  relationship: platform-app
+  direction: partner-built
+  evidence: https://digitail.com/integrations/
+  category: Digitail integration
+  detected_by: sweep-veterinary-pet.py
+  detected: '2026-10-20'
+- partner_name: Blue Rabbit
+  app: Blue Rabbit
+  partner: null
+  partner_match: null
+  type: marketplace
+  marketplace: own
+  channel: partner-built
+  relationship: platform-app
+  direction: partner-built
+  evidence: https://digitail.com/integrations/
+  category: Digitail integration
+  detected_by: sweep-veterinary-pet.py
+  detected: '2026-10-20'
+  partner_url: https://www.wedgewood.com/our-expertise/blue-rabbit/
+- partner_name: Creative Science
+  app: Creative Science
+  partner: null
+  partner_match: null
+  type: marketplace
+  marketplace: own
+  channel: partner-built
+  relationship: platform-app
+  direction: partner-built
+  evidence: https://digitail.com/integrations/
+  category: Digitail integration
+  detected_by: sweep-veterinary-pet.py
+  detected: '2026-10-20'
+- partner_name: cubex-logo-
+  app: cubex-logo-
+  partner: null
+  partner_match: null
+  type: marketplace
+  marketplace: own
+  channel: partner-built
+  relationship: platform-app
+  direction: partner-built
+  evidence: https://digitail.com/integrations/
+  category: Digitail integration
+  detected_by: sweep-veterinary-pet.py
+  detected: '2026-10-20'
+- partner_name: dvmRX
+  app: dvmRX
+  partner: null
+  partner_match: null
+  type: marketplace
+  marketplace: own
+  channel: partner-built
+  relationship: platform-app
+  direction: partner-built
+  evidence: https://digitail.com/integrations/
+  category: Digitail integration
+  detected_by: sweep-veterinary-pet.py
+  detected: '2026-10-20'
+- partner_name: R&S Northeast
+  app: R&S Northeast
+  partner: null
+  partner_match: null
+  type: marketplace
+  marketplace: own
+  channel: partner-built
+  relationship: platform-app
+  direction: partner-built
+  evidence: https://digitail.com/integrations/
+  category: Digitail integration
+  detected_by: sweep-veterinary-pet.py
+  detected: '2026-10-20'
+- partner_name: Vet S8
+  app: Vet S8
+  partner: null
+  partner_match: null
+  type: marketplace
+  marketplace: own
+  channel: partner-built
+  relationship: platform-app
+  direction: partner-built
+  evidence: https://digitail.com/integrations/
+  category: Digitail integration
+  detected_by: sweep-veterinary-pet.py
+  detected: '2026-10-20'
+- partner_name: Vetcove
+  app: Vetcove
+  partner: vetcove
+  partner_match: domain
+  type: marketplace
+  marketplace: own
+  channel: partner-built
+  relationship: platform-app
+  direction: partner-built
+  evidence: https://digitail.com/integrations/
+  category: Digitail integration
+  detected_by: sweep-veterinary-pet.py
+  detected: '2026-10-20'
+  partner_url: https://shop.vetcove.com/
+- partner_name: Vetsnap
+  app: Vetsnap
+  partner: null
+  partner_match: null
+  type: marketplace
+  marketplace: own
+  channel: partner-built
+  relationship: platform-app
+  direction: partner-built
+  evidence: https://digitail.com/integrations/
+  category: Digitail integration
+  detected_by: sweep-veterinary-pet.py
+  detected: '2026-10-20'
+- partner_name: Vetsource
+  app: Vetsource
+  partner: vetsource
+  partner_match: domain
+  type: marketplace
+  marketplace: own
+  channel: partner-built
+  relationship: platform-app
+  direction: partner-built
+  evidence: https://digitail.com/integrations/
+  category: Digitail integration
+  detected_by: sweep-veterinary-pet.py
+  detected: '2026-10-20'
+  partner_url: https://vetsource.com/products/prescription-management/
+- partner_name: CareCredit
+  app: CareCredit
+  partner: null
+  partner_match: null
+  type: marketplace
+  marketplace: own
+  channel: partner-built
+  relationship: platform-app
+  direction: partner-built
+  evidence: https://digitail.com/integrations/carecredit-integration/
+  category: Digitail integration
+  detected_by: sweep-veterinary-pet.py
+  detected: '2026-10-20'
+- partner_name: Digitail Secure Payments
+  app: Digitail Secure Payments
+  partner: null
+  partner_match: null
+  type: marketplace
+  marketplace: own
+  channel: partner-built
+  relationship: platform-app
+  direction: partner-built
+  evidence: https://digitail.com/integrations/digitail-secure-payments/
+  category: Digitail integration
+  detected_by: sweep-veterinary-pet.py
+  detected: '2026-10-20'
+- partner_name: myBalto foundation
+  app: myBalto foundation
+  partner: null
+  partner_match: null
+  type: marketplace
+  marketplace: own
+  channel: partner-built
+  relationship: platform-app
+  direction: partner-built
+  evidence: https://digitail.com/integrations/
+  category: Digitail integration
+  detected_by: sweep-veterinary-pet.py
+  detected: '2026-10-20'
+  partner_url: https://charity.mybalto.com/
+- partner_name: Trupanion
+  app: Trupanion
+  partner: trupanion
+  partner_match: domain
+  type: marketplace
+  marketplace: own
+  channel: partner-built
+  relationship: platform-app
+  direction: partner-built
+  evidence: https://digitail.com/integrations/
+  category: Digitail integration
+  detected_by: sweep-veterinary-pet.py
+  detected: '2026-10-20'
+  identity: wikidata Q7848008 'Trupanion' P856 http://trupanion.com/
+  identity_source: wikidata P856 (labelled provenance step; Kin 2026-10-15 decision 1)
+- partner_name: dodo-logo-green
+  app: dodo-logo-green
+  partner: null
+  partner_match: null
+  type: marketplace
+  marketplace: own
+  channel: partner-built
+  relationship: platform-app
+  direction: partner-built
+  evidence: https://digitail.com/integrations/
+  category: Digitail integration
+  detected_by: sweep-veterinary-pet.py
+  detected: '2026-10-20'
+  partner_url: https://www.vetdodo.com/
+- partner_name: MissedCalls Help
+  app: MissedCalls Help
+  partner: null
+  partner_match: null
+  type: marketplace
+  marketplace: own
+  channel: partner-built
+  relationship: platform-app
+  direction: partner-built
+  evidence: https://digitail.com/integrations/
+  category: Digitail integration
+  detected_by: sweep-veterinary-pet.py
+  detected: '2026-10-20'
+- partner_name: ReviewTrackers
+  app: ReviewTrackers
+  partner: null
+  partner_match: null
+  type: marketplace
+  marketplace: own
+  channel: partner-built
+  relationship: platform-app
+  direction: partner-built
+  evidence: https://digitail.com/integrations/
+  category: Digitail integration
+  detected_by: sweep-veterinary-pet.py
+  detected: '2026-10-20'
+  partner_url: https://www.reviewtrackers.com/
+  partner_held:
+    candidate: reviewtrackers
+    why: 'market-fit gate: partner''s own tags carry no veterinary / animal-health / pet term'
+- partner_name: ReviewTree
+  app: ReviewTree
+  partner: null
+  partner_match: null
+  type: marketplace
+  marketplace: own
+  channel: partner-built
+  relationship: platform-app
+  direction: partner-built
+  evidence: https://digitail.com/integrations/
+  category: Digitail integration
+  detected_by: sweep-veterinary-pet.py
+  detected: '2026-10-20'
+  partner_url: https://reviewtree.com/
+- partner_name: cdmv
+  app: cdmv
+  partner: null
+  partner_match: null
+  type: marketplace
+  marketplace: own
+  channel: partner-built
+  relationship: platform-app
+  direction: partner-built
+  evidence: https://digitail.com/integrations/
+  category: Digitail integration
+  detected_by: sweep-veterinary-pet.py
+  detected: '2026-10-20'
+- partner_name: Inventory Ally
+  app: Inventory Ally
+  partner: null
+  partner_match: null
+  type: marketplace
+  marketplace: own
+  channel: partner-built
+  relationship: platform-app
+  direction: partner-built
+  evidence: https://digitail.com/integrations/
+  category: Digitail integration
+  detected_by: sweep-veterinary-pet.py
+  detected: '2026-10-20'
+  partner_url: https://inventoryally.com/
+- partner_name: Midwest Veterinary Supply
+  app: Midwest Veterinary Supply
+  partner: null
+  partner_match: null
+  type: marketplace
+  marketplace: own
+  channel: partner-built
+  relationship: platform-app
+  direction: partner-built
+  evidence: https://digitail.com/integrations/
+  category: Digitail integration
+  detected_by: sweep-veterinary-pet.py
+  detected: '2026-10-20'
+- partner_name: Greenline
+  app: Greenline
+  partner: null
+  partner_match: null
+  type: marketplace
+  marketplace: own
+  channel: partner-built
+  relationship: platform-app
+  direction: partner-built
+  evidence: https://digitail.com/integrations/
+  category: Digitail integration
+  detected_by: sweep-veterinary-pet.py
+  detected: '2026-10-20'
+  partner_url: https://www.greenlinepet.com/
+- partner_name: ivet360
+  app: ivet360
+  partner: null
+  partner_match: null
+  type: marketplace
+  marketplace: own
+  channel: partner-built
+  relationship: platform-app
+  direction: partner-built
+  evidence: https://digitail.com/integrations/
+  category: Digitail integration
+  detected_by: sweep-veterinary-pet.py
+  detected: '2026-10-20'
+- partner_name: PetLink
+  app: PetLink
+  partner: null
+  partner_match: null
+  type: marketplace
+  marketplace: own
+  channel: partner-built
+  relationship: platform-app
+  direction: partner-built
+  evidence: https://digitail.com/integrations/
+  category: Digitail integration
+  detected_by: sweep-veterinary-pet.py
+  detected: '2026-10-20'
+  partner_url: https://www.petlink.net/
+- partner_name: FetchIt
+  app: FetchIt
+  partner: null
+  partner_match: null
+  type: marketplace
+  marketplace: own
+  channel: partner-built
+  relationship: platform-app
+  direction: partner-built
+  evidence: https://digitail.com/integrations/
+  category: Digitail integration
+  detected_by: sweep-veterinary-pet.py
+  detected: '2026-10-20'
+  partner_url: https://www.schultztechnology.com/fetchit-solutions/
+- partner_name: Google Calendar
+  app: Google Calendar
+  partner: null
+  partner_match: null
+  type: marketplace
+  marketplace: own
+  channel: partner-built
+  relationship: platform-app
+  direction: partner-built
+  evidence: https://digitail.com/integrations/
+  category: Digitail integration
+  detected_by: sweep-veterinary-pet.py
+  detected: '2026-10-20'
+- partner_name: Google Maps
+  app: Google Maps
+  partner: null
+  partner_match: null
+  type: marketplace
+  marketplace: own
+  channel: partner-built
+  relationship: platform-app
+  direction: partner-built
+  evidence: https://digitail.com/integrations/
+  category: Digitail integration
+  detected_by: sweep-veterinary-pet.py
+  detected: '2026-10-20'
+- partner_name: Text Blaze
+  app: Text Blaze
+  partner: null
+  partner_match: null
+  type: marketplace
+  marketplace: own
+  channel: partner-built
+  relationship: platform-app
+  direction: partner-built
+  evidence: https://digitail.com/integrations/
+  category: Digitail integration
+  detected_by: sweep-veterinary-pet.py
+  detected: '2026-10-20'
+  partner_url: https://chrome.google.com/webstore/detail/text-blaze/idgadaccgipmpannjkmfddolnnhmeklj
+- partner_name: Kumba
+  app: Kumba
+  partner: null
+  partner_match: null
+  type: marketplace
+  marketplace: own
+  channel: partner-built
+  relationship: platform-app
+  direction: partner-built
+  evidence: https://digitail.com/integrations/
+  category: Digitail integration
+  detected_by: sweep-veterinary-pet.py
+  detected: '2026-10-20'
+  partner_url: https://kumba.pet/
+- partner_name: Okta
+  app: Okta
+  partner: null
+  partner_match: null
+  type: marketplace
+  marketplace: own
+  channel: partner-built
+  relationship: platform-app
+  direction: partner-built
+  evidence: https://digitail.com/integrations/
+  category: Digitail integration
+  detected_by: sweep-veterinary-pet.py
+  detected: '2026-10-20'
+  partner_url: https://www.okta.com/
+  partner_held:
+    candidate: okta
+    why: 'market-fit gate: partner''s own tags carry no veterinary / animal-health / pet term'
+- partner_name: TypingDNA
+  app: TypingDNA
+  partner: null
+  partner_match: null
+  type: marketplace
+  marketplace: own
+  channel: partner-built
+  relationship: platform-app
+  direction: partner-built
+  evidence: https://digitail.com/integrations/
+  category: Digitail integration
+  detected_by: sweep-veterinary-pet.py
+  detected: '2026-10-20'
+  partner_url: https://www.typingdna.com/
+  partner_held:
+    candidate: typingdna
+    why: 'market-fit gate: partner''s own tags carry no veterinary / animal-health / pet term'
+generated: '2026-10-20'
+method: searched
+source:
+- https://www.ezyvet.com/integrations
+- https://www.provet.com/integrations
+- https://digitail.com/integrations/
+- https://www.shepherd.vet/integrations/
+- https://instinct.vet/integrations/
+- https://covetrus.com/covetrus-platform/workflow-and-productivity-tools/avimark/
+- https://covetrus.com/covetrus-platform/industry-partners/
+checked:
+- https://covetrus.com/covetrus-platform/industry-partners/
+- https://covetrus.com/covetrus-platform/workflow-and-productivity-tools/avimark/
+- https://digitail.com/integrations/
+- https://instinct.vet/integrations/
+- https://www.ezyvet.com/integrations
+- https://www.provet.com/integrations
+- https://www.shepherd.vet/integrations/
