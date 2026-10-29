@@ -1,4 +1,4 @@
-# Digitail (digitail)
+# Digitail
 
 <!-- API-EVANGELIST-PROVENANCE:BEGIN -->
 > ### About this repository
@@ -64,125 +64,157 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-Digitail is a cloud-based, AI-native veterinary practice management software (PIMS) that consolidates scheduling, electronic medical records, AI SOAP dictation, client communication, billing, inventory, and reporting into one platform, paired with a Pet Parent mobile app for booking, records access, and payments. The **Digitail Open API** is a documented REST API (base `https://developer.digitail.io/api/v1`) secured with OAuth 2.0 authorization-code grant with PKCE, giving clinics, technology partners, and ecosystem players (labs, insurers, pharmacies, telemedicine, analytics) programmatic, real-time access to clinic data.
+Digitail is a cloud-based, AI-native veterinary practice management software (PIMS) that consolidates scheduling, electronic medical records, AI SOAP dictation, client communication, billing, inventory, and reporting into one platform, paired with a Pet Parent mobile app for booking, records access, and payments. The Digitail Open API is a documented REST API (base https://developer.digitail.io/api/v1) secured with OAuth 2.0 authorization-code grant with PKCE, giving clinics, technology partners, and ecosystem players (labs, insurers, pharmacies, telemedicine, analytics) programmatic, real-time access to clinic data. API credentials are provisioned via an access registration; Open API access is included across Digitail subscription plans.
 
-**APIs.json:** [https://raw.githubusercontent.com/api-evangelist/digitail/refs/heads/main/apis.yml](https://raw.githubusercontent.com/api-evangelist/digitail/refs/heads/main/apis.yml)
+**Areas:** Veterinary · PIMS · Practice Management · Pets · Healthcare · Scheduling · Billing · Software-as-a-Service
 
-## Access Model
+## Digitail on APIs.io
 
-Digitail publishes a full public API reference at [documentation.digitail.io](https://documentation.digitail.io/). The API is production-real and openly documented, but it is **credential-gated**: to obtain a `client_id`/`client_secret` and use the OAuth 2.0 authorization-code + PKCE flow, an organization completes an API access registration at [digitail.com/api/access](https://digitail.com/api/access). "Open API access" is listed as an included feature across Digitail subscription plans (Mobile, Growth, Growth AI, Enterprise), so API use is tied to being a Digitail customer or approved integration partner rather than being open to anonymous sign-up.
+Everything profiled for Digitail is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/digitail/](https://apis.io/providers/digitail/)** — or go straight to one of the APIs or properties below.
 
-- **Authorization endpoint:** `https://vet.digitail.io/oauth/authorize`
-- **Token endpoint:** `https://vet.digitail.io/oauth/token`
-- **API base URL:** `https://developer.digitail.io/api/v1`
-- **Auth:** OAuth 2.0 authorization-code grant with PKCE; bearer access token (long-lived), refresh token, CSRF `state`.
-- **Headers:** `accept: application/json`, `content-type: application/json`.
-- **Pagination:** `page` (default 1) and `per_page` (default 15) query parameters.
-- **Rate limit:** 200 requests per minute.
+### APIs (18)
 
-The logical APIs below are grouped from the documented resource categories in the Digitail API reference. Endpoints marked confirmed were verified against the public documentation; the remaining resource operations are modeled from the documented resource list and standard REST/pagination conventions, and are flagged as modeled in the OpenAPI (`x-endpoints-modeled`).
+- [Digitail Appointments API](https://apis.io/apis/digitail/digitail-appointments-api/) — The Appointments API from Digitail — 3 operation(s) for appointments.
+- [Digitail Breeds API](https://apis.io/apis/digitail/digitail-breeds-api/) — The Breeds API from Digitail — 1 operation(s) for breeds.
+- [Digitail Charges API](https://apis.io/apis/digitail/digitail-charges-api/) — The Charges API from Digitail — 1 operation(s) for charges.
+- [Digitail Clients API](https://apis.io/apis/digitail/digitail-clients-api/) — The Clients API from Digitail — 1 operation(s) for clients.
+- [Digitail Clinics API](https://apis.io/apis/digitail/digitail-clinics-api/) — The Clinics API from Digitail — 1 operation(s) for clinics.
+- [Digitail Files API](https://apis.io/apis/digitail/digitail-files-api/) — The Files API from Digitail — 1 operation(s) for files.
+- [Digitail Invoices API](https://apis.io/apis/digitail/digitail-invoices-api/) — The Invoices API from Digitail — 1 operation(s) for invoices.
+- [Digitail Labs API](https://apis.io/apis/digitail/digitail-labs-api/) — The Labs API from Digitail — 1 operation(s) for labs.
+- [Digitail Medication API](https://apis.io/apis/digitail/digitail-medication-api/) — The Medication API from Digitail — 1 operation(s) for medication.
+- [Digitail Pet Parents API](https://apis.io/apis/digitail/digitail-pet-parents-api/) — The Pet Parents API from Digitail — 1 operation(s) for pet parents.
+- [Digitail Pets API](https://apis.io/apis/digitail/digitail-pets-api/) — The Pets API from Digitail — 2 operation(s) for pets.
+- [Digitail Prescriptions API](https://apis.io/apis/digitail/digitail-prescriptions-api/) — The Prescriptions API from Digitail — 1 operation(s) for prescriptions.
+- [Digitail Records API](https://apis.io/apis/digitail/digitail-records-api/) — The Records API from Digitail — 1 operation(s) for records.
+- [Digitail Reports API](https://apis.io/apis/digitail/digitail-reports-api/) — The Reports API from Digitail — 1 operation(s) for reports.
+- [Digitail Sales API](https://apis.io/apis/digitail/digitail-sales-api/) — The Sales API from Digitail — 1 operation(s) for sales.
+- [Digitail Species API](https://apis.io/apis/digitail/digitail-species-api/) — The Species API from Digitail — 1 operation(s) for species.
+- [Digitail Vets API](https://apis.io/apis/digitail/digitail-vets-api/) — The Vets API from Digitail — 1 operation(s) for vets.
+- [Digitail Visit Types API](https://apis.io/apis/digitail/digitail-visit-types-api/) — The Visit Types API from Digitail — 1 operation(s) for visit types.
 
-## Tags
+### Published properties
 
-- Veterinary
-- PIMS
-- Practice Management
-- Pets
-- Healthcare
-- Scheduling
-- Billing
-- SaaS
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
 
-## Timestamps
+#### Agentic access (1)
 
-- **Created:** 2026-07-04
-- **Modified:** 2026-07-04
+Which operations an agent can call, which act, and which need a human in the loop.
 
-## APIs
+- [Digitail Agentic Access](https://apis.io/agentic-access/digitail/digitail-agentic-access/)
 
-### Digitail Pets API
+#### Collections (18)
 
-List, retrieve, and manage patient records (pets) and their archive, along with supporting reference data - species, breeds, and blood types. Confirmed endpoints include `GET /pets` and `GET /pets/{id}`.
+Postman and Open Collection request collections.
 
-- **Human URL:** [https://documentation.digitail.io/list-all-pets](https://documentation.digitail.io/list-all-pets)
-- **Base URL:** `https://developer.digitail.io/api/v1`
+- [Digitail Open Appointments API](https://apis.io/collections/digitail/open-digitail-appointments-api/)
+- [Digitail Open Appointments Breeds API](https://apis.io/collections/digitail/open-digitail-breeds-api/)
+- [Digitail Open Appointments Charges API](https://apis.io/collections/digitail/open-digitail-charges-api/)
+- [Digitail Open Appointments Clients API](https://apis.io/collections/digitail/open-digitail-clients-api/)
+- [Digitail Open Appointments Clinics API](https://apis.io/collections/digitail/open-digitail-clinics-api/)
+- [Digitail Open Appointments Files API](https://apis.io/collections/digitail/open-digitail-files-api/)
+- [Digitail Open Appointments Invoices API](https://apis.io/collections/digitail/open-digitail-invoices-api/)
+- [Digitail Open Appointments Labs API](https://apis.io/collections/digitail/open-digitail-labs-api/)
+- [Digitail Open Appointments Medication API](https://apis.io/collections/digitail/open-digitail-medication-api/)
+- [Digitail Open Appointments Pet Parents API](https://apis.io/collections/digitail/open-digitail-pet-parents-api/)
+- [Digitail Open Appointments Pets API](https://apis.io/collections/digitail/open-digitail-pets-api/)
+- [Digitail Open Appointments Prescriptions API](https://apis.io/collections/digitail/open-digitail-prescriptions-api/)
+- [Digitail Open Appointments Records API](https://apis.io/collections/digitail/open-digitail-records-api/)
+- [Digitail Open Appointments Reports API](https://apis.io/collections/digitail/open-digitail-reports-api/)
+- [Digitail Open Appointments Sales API](https://apis.io/collections/digitail/open-digitail-sales-api/)
+- [Digitail Open Appointments Species API](https://apis.io/collections/digitail/open-digitail-species-api/)
+- [Digitail Open Appointments Vets API](https://apis.io/collections/digitail/open-digitail-vets-api/)
+- [Digitail Open Appointments Visit Types API](https://apis.io/collections/digitail/open-digitail-visit-types-api/)
 
-### Digitail Pet Parents and Clients API
+#### Security (2)
 
-Manage pet parents (owners) and client records - the people and accounts a clinic bills and communicates with - and their association to pets and clinics.
+Authentication, trust centre, and vulnerability disclosure.
 
-- **Human URL:** [https://documentation.digitail.io/](https://documentation.digitail.io/)
-- **Base URL:** `https://developer.digitail.io/api/v1`
+- [Digitail Authentication](https://apis.io/security/digitail/digitail-authentication/)
+- [Digitail Domain Security](https://apis.io/security/digitail/digitail-domain-security/)
 
-### Digitail Appointments API
+#### OAuth scopes (1)
 
-List and retrieve appointments, change appointment status, and read visit types for scheduling integrations. Confirmed endpoints include `GET /appointments`, `GET /appointments/{id}`, and `PUT /appointment/{id}/change-status`.
+The permissions the API asks for.
 
-- **Human URL:** [https://documentation.digitail.io/get-all-appointments](https://documentation.digitail.io/get-all-appointments)
-- **Base URL:** `https://developer.digitail.io/api/v1`
+- [Digitail Scopes](https://apis.io/scopes/digitail/digitail-scopes/)
 
-### Digitail Clinical Records API
+#### Plans and pricing (1)
 
-Read and manage clinical records - medical records, prescriptions, medications, periodical treatments, and reminder protocol usages - that make up a patient's health history.
+Published plans, tiers and prices.
 
-- **Human URL:** [https://documentation.digitail.io/](https://documentation.digitail.io/)
-- **Base URL:** `https://developer.digitail.io/api/v1`
+- [Digitail Plans Pricing](https://apis.io/plans/digitail/digitail-plans-pricing/)
 
-### Digitail Labs API
+#### Rate limits (1)
 
-Push and retrieve laboratory data - diagnostic orders and results - enabling reference labs and in-house analyzers to sync results into the patient record.
+Published request limits.
 
-- **Human URL:** [https://documentation.digitail.io/](https://documentation.digitail.io/)
-- **Base URL:** `https://developer.digitail.io/api/v1`
+- [Digitail Rate Limits](https://apis.io/rate-limits/digitail/digitail-rate-limits/)
 
-### Digitail Billing and Invoicing API
+#### FinOps (1)
 
-Read and sync financial data - invoices, charges, sales, patient estimates, and service packages - for accounting, payments, and revenue reporting integrations.
+What the API costs to run, by operation.
 
-- **Human URL:** [https://documentation.digitail.io/](https://documentation.digitail.io/)
-- **Base URL:** `https://developer.digitail.io/api/v1`
+- [Digitail Finops](https://apis.io/finops/digitail/digitail-finops/)
 
-### Digitail Clinics and Staff API
+## Where to find this API
 
-Read clinic, veterinarian, and role records - including public clinic and public vet directories - and the logged-in user context. Confirmed endpoints include `GET /vets/{id}` and `GET /clinic/{id}`.
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
 
-- **Human URL:** [https://documentation.digitail.io/retrieve-a-vet](https://documentation.digitail.io/retrieve-a-vet)
-- **Base URL:** `https://developer.digitail.io/api/v1`
-
-### Digitail Client Communication API
-
-Send and manage client communications - SMS, chat, and email messaging with pet parents - for reminder, marketing, and telemedicine workflows.
-
-- **Human URL:** [https://documentation.digitail.io/](https://documentation.digitail.io/)
-- **Base URL:** `https://developer.digitail.io/api/v1`
-
-### Digitail Files API
-
-Upload, attach, and retrieve files and documents - such as imaging, scanned records, and attachments - tied to pets, clients, and records.
-
-- **Human URL:** [https://documentation.digitail.io/](https://documentation.digitail.io/)
-- **Base URL:** `https://developer.digitail.io/api/v1`
-
-### Digitail Reports API
-
-Retrieve reporting data and tags for building dashboards and financial, operational, and performance analytics on top of clinic data.
-
-- **Human URL:** [https://documentation.digitail.io/](https://documentation.digitail.io/)
-- **Base URL:** `https://developer.digitail.io/api/v1`
-
-## Common Properties
-
-- [LinkedIn](https://www.linkedin.com/company/digitail-veterinary-software/)
 - [Website](https://digitail.com/)
 - [Documentation](https://documentation.digitail.io/)
-- [Sign Up / API Access](https://digitail.com/api/access)
-- [Plans](plans/digitail-plans-pricing.yml)
-- [Rate Limits](rate-limits/digitail-rate-limits.yml)
-- [Fin Ops](finops/digitail-finops.yml)
-- [Integrations](https://digitail.com/integrations/)
+- [Sign up](https://digitail.com/api/access)
 - [Blog](https://digitail.com/blog/)
 
-## Maintainers
+## API Evangelist rating
 
-**FN:** Kin Lane
-**Email:** kin@apievangelist.com
+**Kin Score 16.0** — emerging · rubric 0.24.0 · scored 2026-10-17
+
+| Facet | Score |
+|---|---|
+| Discoverability | 66.1 |
+| Contract quality | 0.0 |
+| Contract governance | 0.0 |
+| Operational transparency | 5.3 |
+| Developer ergonomics | 31.0 |
+| Access clarity | 7.9 |
+
+**Agent readiness 22.9** — agent-aware
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | derived (partial credit) |
+| Reversibility Documented | — |
+| MCP Server | — |
+| Auth Clarity | negotiable (partial credit) |
+| Idempotency | — |
+| Error Semantics | — |
+| OpenAPI Examples | — |
+| Rate Limit Signal | derived (partial credit) |
+| Event Surface Described | — |
+| Agent Skills | — |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | — |
+| Delegated Identity | documented (partial credit) |
+| Protected Resource Metadata | — |
+| Dynamic Client Registration | — |
+| Agentic Commerce | — |
+
+**Regulatory alignment 22.7** — Health
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/digitail/](https://apis.io/providers/digitail/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for Digitail: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/digitail/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
